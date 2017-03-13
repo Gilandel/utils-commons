@@ -32,8 +32,11 @@
 	
 	<properties>
 		<gpg.home>${env.HOME}/build/Gilandel/${project.artifactId}/distribution</gpg.home>
+		
+		<!-- Dependencies version -->
+		<utils-microbenchmark.version>1.0.0</utils-microbenchmark.version>
 	</properties>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -125,7 +128,7 @@
 		<dependency>
 			<groupId>fr.landel</groupId>
 			<artifactId>utils-microbenchmark</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${utils-microbenchmark.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
