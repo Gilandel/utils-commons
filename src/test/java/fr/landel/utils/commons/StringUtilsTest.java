@@ -32,6 +32,19 @@ import org.junit.Test;
 public class StringUtilsTest {
 
     /**
+     * Test method for {@link StringUtils} .
+     * 
+     * @throws IllegalAccessException
+     *             On access error
+     * @throws InstantiationException
+     *             On creation error
+     */
+    @Test(expected = IllegalAccessException.class)
+    public void testNew() throws InstantiationException, IllegalAccessException {
+        StringUtils.class.newInstance();
+    }
+
+    /**
      * Test method for
      * {@link fr.landel.utils.commons.StringUtils#nullIfEmpty(java.lang.CharSequence)}
      * .

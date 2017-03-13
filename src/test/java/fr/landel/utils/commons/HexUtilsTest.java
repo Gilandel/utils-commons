@@ -19,8 +19,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import fr.landel.utils.commons.HexUtils;
-
 /**
  * Check hexadecimal utils
  *
@@ -29,6 +27,19 @@ import fr.landel.utils.commons.HexUtils;
  *
  */
 public class HexUtilsTest {
+
+    /**
+     * Test method for {@link NumberUtils} .
+     * 
+     * @throws IllegalAccessException
+     *             On access error
+     * @throws InstantiationException
+     *             On creation error
+     */
+    @Test(expected = IllegalAccessException.class)
+    public void testNew() throws InstantiationException, IllegalAccessException {
+        HexUtils.class.newInstance();
+    }
 
     /**
      * Test method for {@link fr.landel.utils.commons.HexUtils#intToByte(int)} .
@@ -42,7 +53,8 @@ public class HexUtilsTest {
     }
 
     /**
-     * Test method for {@link fr.landel.utils.commons.HexUtils#intToBytes(int)} .
+     * Test method for {@link fr.landel.utils.commons.HexUtils#intToBytes(int)}
+     * .
      */
     @Test
     public void testIntToBytes() {

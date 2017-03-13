@@ -31,9 +31,21 @@ import ch.qos.logback.classic.Logger;
 public class EnumUtilsTest {
 
     /**
+     * Test method for {@link EnumUtils} .
+     * 
+     * @throws IllegalAccessException
+     *             On access error
+     * @throws InstantiationException
+     *             On creation error
+     */
+    @Test(expected = IllegalAccessException.class)
+    public void testNew() throws InstantiationException, IllegalAccessException {
+        EnumUtils.class.newInstance();
+    }
+
+    /**
      * Test method for
-     * {@link fr.landel.utils.commons.EnumUtils#getNullIfEmpty(java.lang.Class, java.lang.String)}
-     * .
+     * {@link EnumUtils#getNullIfEmpty(java.lang.Class, java.lang.String)} .
      */
     @Test
     public void testGetNullIfEmpty() {

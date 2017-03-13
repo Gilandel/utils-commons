@@ -35,6 +35,19 @@ import org.junit.Test;
 public class NumberUtilsTest {
 
     /**
+     * Test method for {@link NumberUtils} .
+     * 
+     * @throws IllegalAccessException
+     *             On access error
+     * @throws InstantiationException
+     *             On creation error
+     */
+    @Test(expected = IllegalAccessException.class)
+    public void testNew() throws InstantiationException, IllegalAccessException {
+        NumberUtils.class.newInstance();
+    }
+
+    /**
      * Test method for {@link NumberUtils#isEqual(Double, Double)} .
      */
     @Test
