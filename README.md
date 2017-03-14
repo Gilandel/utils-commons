@@ -179,7 +179,7 @@ new ToStringBuilder(this, ToStringStyle.JSON)
 ```
 
 ## Expect
-Validate a thrown exception and its message.
+Validates a thrown exception and its message.
 
 * Signatures:
 	- exception(AssertConsumer<Throwable> consumer, Class<? extends Throwable> expectedException)
@@ -188,7 +188,7 @@ Validate a thrown exception and its message.
 	- exception(AssertConsumer<Throwable> consumer, Class<? extends Throwable> expectedException, String expectedMessage, final TriFunction<Boolean, String, String, E> exceptionFunction)
 
 * Parameters:
-	- consumer: The consumer or where the code to checked can be placed
+	- consumer: The consumer or where the code to check can be placed
 	- expectedException: The class of expected exception
 	- expectedMessage: The expected exception message
 	- exceptionFunction: The exception builder, only called on mismatch. Has 3 parameters:
