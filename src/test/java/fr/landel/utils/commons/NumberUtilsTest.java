@@ -32,19 +32,14 @@ import org.junit.Test;
  * @author Gilles Landel
  *
  */
-public class NumberUtilsTest {
+public class NumberUtilsTest extends AbstractTest {
 
     /**
-     * Test method for {@link NumberUtils} .
-     * 
-     * @throws IllegalAccessException
-     *             On access error
-     * @throws InstantiationException
-     *             On creation error
+     * Test constructor for {@link NumberUtils} .
      */
-    @Test(expected = IllegalAccessException.class)
-    public void testNew() throws InstantiationException, IllegalAccessException {
-        NumberUtils.class.newInstance();
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(NumberUtils.class));
     }
 
     /**

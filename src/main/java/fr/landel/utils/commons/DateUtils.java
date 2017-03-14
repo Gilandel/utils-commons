@@ -155,7 +155,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * Hidden constructor.
      */
     private DateUtils() {
-        super();
+        throw new UnsupportedOperationException();
     }
 
     /**

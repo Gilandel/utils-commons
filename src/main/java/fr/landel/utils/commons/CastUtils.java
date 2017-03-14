@@ -70,6 +70,7 @@ public final class CastUtils {
      * Hidden constructor.
      */
     private CastUtils() {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -96,15 +97,13 @@ public final class CastUtils {
      *            The object (required)
      * @param <T>
      *            The object type
-     * @return The object or null (if cast failed)
+     * @return The casted object
+     * @throws ClassCastException
+     *             on cast failure
      */
     @SuppressWarnings("unchecked")
     public static <T> T cast(final Object object) {
-        try {
-            return (T) object;
-        } catch (ClassCastException e) {
-            return null;
-        }
+        return (T) object;
     }
 
     /**

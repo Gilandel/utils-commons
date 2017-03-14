@@ -47,7 +47,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
      * Hidden constructor.
      */
     private StringUtils() {
-        super();
+        throw new UnsupportedOperationException();
     }
 
     /**

@@ -13,6 +13,7 @@
 package fr.landel.utils.commons;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -29,7 +30,15 @@ import org.junit.Test;
  * @author Gilles
  *
  */
-public class ComparatorsTest {
+public class ComparatorsTest extends AbstractTest {
+
+    /**
+     * Test constructor for {@link Comparators} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(Comparators.class));
+    }
 
     /**
      * {@link Comparators#BYTE} {@link Comparators#BYTE_REVERSE}

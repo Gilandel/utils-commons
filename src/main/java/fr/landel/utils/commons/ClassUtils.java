@@ -32,6 +32,7 @@ public final class ClassUtils {
      * Hidden constructor.
      */
     private ClassUtils() {
+        throw new UnsupportedOperationException();
     }
 
     /**

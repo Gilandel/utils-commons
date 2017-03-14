@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
@@ -44,11 +45,19 @@ import org.junit.Test;
  * @author Gilles Landel
  *
  */
-public class DateUtilsTest {
+public class DateUtilsTest extends AbstractTest {
 
     private static final int YEAR = 2014;
     private static final int MONTH = 7;
     private static final int DAY = 15;
+
+    /**
+     * Test constructor for {@link DateUtils} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(DateUtils.class));
+    }
 
     /**
      * Check get date wrapper

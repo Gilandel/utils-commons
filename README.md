@@ -34,25 +34,26 @@ Work progress:
   2. [EqualsBuilder2](#equalsbuilder2)
   3. [HashCodeBuilder](#hashcodebuilder)
   4. [ToStringBuilder](#tostringbuilder)
-4. [Exception](#exception)
-5. [Function](#function)
-6. [Listener](#listener)
-7. [Over](#over)
-8. [Tuple](#tuple)
+4. [Expect](#expect)
+5. [Exception](#exception)
+6. [Function](#function)
+7. [Listener](#listener)
+8. [Over](#over)
+9. [Tuple](#tuple)
 
 ##Commons
-- ArrayUtils: Extend ArrayUtils from Apache project, add methods to check array,
+- ArrayUtils: Extends ArrayUtils from Apache project, adds methods to check array,
 - CastUtils: To cast map / list / object into typed objects,
 - ClassUtils: To get super classes or to get common super classes,
-- CollectionUtils2: Add missing transform methods (in complement of CollectionUtils provided by Apache Team),
+- CollectionUtils2: Adds missing transform methods (in complement of CollectionUtils provided by Apache Team),
 - Comparators: Basics comparators (Byte, Short, Long, Float, Double, BigInteger BigDecimal, Char, String, Date, Calendar, Duration, Instant, OffsetTime, OffsetDateTime, LocalTime, LocalDateTime, ZonedDateTime) and Maven version comparator,
-- DateUtils: Extend DateUtils from Apache project, add methods to get date if null, getDate wrapper to secure date transfer and between to calculate time between dates,
+- DateUtils: Extends DateUtils from Apache project, adds methods to get date if null, getDate wrapper to secure date transfer and between to calculate time between dates,
 - Default: A class like Optional, but if a null value is set or is defined as empty, this method returns the default value,
 - EnumChar: A list of ASCII characters and others with their unicode and HTML version,
-- EnumUtils: Extend EnumUtils from Apache project, add methods to get null if empty name is used (to avoid exception)
+- EnumUtils: Extends EnumUtils from Apache project, adds methods to get null if empty name is used (to avoid exception)
 - HexUtils: To convert hexadecimal in bytes,
-- NumberUtils: Extend NumberUtils from Apache project, add methods to check number equality,
-- ObjectUtils: Extend ObjectUtils from Apache project, add features for Object,
+- NumberUtils: Extends NumberUtils from Apache project, adds methods to check number equality,
+- ObjectUtils: Extends ObjectUtils from Apache project, adds features for Object,
 - Result: A class like Optional, but if a null value is set (not empty), this method returns 'present', the aim is to differentiate an empty value and a null,
 - StringUtils: Extend StringUtils from Apache project, add methods to get default string if empty or null.
 
@@ -96,9 +97,9 @@ Result.ofNullable(text).ifNotNull(consumer); // executes the consumer if 'text' 
 ```
 
 ##Builder
-- EqualsBuilder: Extend EqualsBuilder from Apache project, add the possibility to append a property through a functional getter function,
+- EqualsBuilder: Extends EqualsBuilder from Apache project, allows to append a property through a functional getter function,
 - EqualsBuilder2: Based on the fact that the most of the time I compare DTOs, the class provide a constructor for both checked objects and appenders based on these objects with the ability to check them througth functional getters and predicates.
-- HashCodeBuilder: Extend EqualsBuilder from Apache project, add the possibility to append a property through a functional getter function,
+- HashCodeBuilder: Extends EqualsBuilder from Apache project, allows to append a property through a functional getter function,
 - ToStringBuilder: Another version of the ToStringBuilder, simple and also faster.
 
 ###EqualsBuilder
@@ -175,6 +176,90 @@ new ToStringBuilder(this, ToStringStyle.JSON)
 	.appendIfPresent("key", Optional.ofNullable(null))
 	.build();
 // =&gt; {"org.test.MyClass":{"key":"value","key":"value","key":"VALUE","key":"126 452.222"}}
+```
+
+## Expect
+Validate a thrown exception and its message.
+
+* Signatures:
+	- exception(AssertConsumer<Throwable> consumer, Class<? extends Throwable> expectedException)
+	- exception(AssertConsumer<Throwable> consumer, Class<? extends Throwable> expectedException, String expectedMessage)
+	- exception(AssertConsumer<Throwable> consumer, Class<? extends Throwable> expectedException, final TriFunction<Boolean, String, String, E> exceptionFunction)
+	- exception(AssertConsumer<Throwable> consumer, Class<? extends Throwable> expectedException, String expectedMessage, final TriFunction<Boolean, String, String, E> exceptionFunction)
+
+* Parameters:
+	- consumer: The consumer or where the code to checked can be placed
+	- expectedException: The class of expected exception
+	- expectedMessage: The expected exception message
+	- exceptionFunction: The exception builder, only called on mismatch. Has 3 parameters:
+		- first: true, if the expected exception matches
+		- second: the expected message
+		- third: the actual message
+
+* Prerequisites:
+	- consumer NOT null
+	- expectedException NOT null
+
+* Examples:
+```java
+Expect.exception(() -> {
+    // throw new IllegalArgumentException("parameter cannot be null");
+    getMyType(null);
+}, IllegalArgumentException.class); // -> OK
+
+Expect.exception(() -> {
+    // throw new IOException("parameter cannot be null");
+    getMyType(null);
+}, IllegalArgumentException.class); // -> throw an ExpectException
+
+
+
+Expect.exception(() -> {
+     // throw new IllegalArgumentException("parameter cannot be null");
+     getMyType(null);
+ }, IllegalArgumentException.class, "parameter cannot be null"); // -> OK
+ 
+ Expect.exception(() -> {
+     // throw new IllegalArgumentException("type cannot be null");
+     getMyType(null);
+ }, IllegalArgumentException.class, "parameter cannot be null");  // -> throw an ExpectException
+
+
+
+// Obviously, you can save this in a static variable to share it.
+// This function is not provided by module to avoid a JUnit dependency.
+// ComparisonFailure come from: org.junit.ComparisonFailure
+
+TriFunction<Boolean, String, String> junitError = (catched, expected, actual) -> {
+    if (catched) {
+        return new ComparisonFailure("The exception message don't match.", expected, actual);
+    } else {
+        return new AssertionError("The expected exception never came up");
+    }
+};
+
+
+
+Expect.exception(() -> {
+    // throw new IllegalArgumentException("parameter cannot be null");
+    getMyType(null);
+}, IllegalArgumentException.class, junitError); // -> OK
+
+Expect.exception(() -> {
+    // throw new IOException("parameter cannot be null");
+    getMyType(null);
+}, IllegalArgumentException.class, junitError); // -> throw an AssertionError
+
+
+Expect.exception(() -> {
+     // throw new IllegalArgumentException("parameter cannot be null");
+     getMyType(null);
+ }, IllegalArgumentException.class, "parameter cannot be null", junitError); // -> OK
+ 
+ Expect.exception(() -> {
+     // throw new IllegalArgumentException("type cannot be null");
+     getMyType(null);
+ }, IllegalArgumentException.class, "parameter cannot be null", junitError);  // -> throw a ComparisonFailure
 ```
 
 ##Exception

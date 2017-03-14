@@ -45,9 +45,17 @@ import org.junit.Test;
  * @author Gilles Landel
  *
  */
-public class CastUtilsTest {
+public class CastUtilsTest extends AbstractTest {
 
     private static final Comparator<String> COMPARATOR = Comparators.STRING.desc();
+
+    /**
+     * Test constructor for {@link CastUtils} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(CastUtils.class));
+    }
 
     /**
      * Check get the class of an object

@@ -15,6 +15,7 @@ package fr.landel.utils.commons;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
@@ -29,19 +30,14 @@ import org.junit.Test;
  * @author Gilles Landel
  *
  */
-public class StringUtilsTest {
+public class StringUtilsTest extends AbstractTest {
 
     /**
-     * Test method for {@link StringUtils} .
-     * 
-     * @throws IllegalAccessException
-     *             On access error
-     * @throws InstantiationException
-     *             On creation error
+     * Test constructor for {@link StringUtils} .
      */
-    @Test(expected = IllegalAccessException.class)
-    public void testNew() throws InstantiationException, IllegalAccessException {
-        StringUtils.class.newInstance();
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(StringUtils.class));
     }
 
     /**
