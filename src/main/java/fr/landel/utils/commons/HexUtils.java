@@ -49,6 +49,7 @@ public final class HexUtils {
      * Hidden constructor.
      */
     private HexUtils() {
+        throw new UnsupportedOperationException();
     }
 
     /**

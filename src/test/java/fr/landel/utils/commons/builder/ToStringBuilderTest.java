@@ -37,7 +37,7 @@ public class ToStringBuilderTest {
      * Test method for {@link ToStringBuilder#build()}.
      */
     @Test
-    public void testToStringStyleDefaultBuild() {
+    public void testStyleDefaultBuild() {
         // Default
 
         StringBuilder expected = new StringBuilder("test");
@@ -126,14 +126,14 @@ public class ToStringBuilderTest {
         builder.appendAndFormatIf("red", Color.RED, color -> color.getBlue() > 0, color -> String.valueOf(color.getBlue()));
 
         builder.appendIfNotNull((Object) null);
-        builder.appendIfNotNullIf((Object) null, v -> v.equals("Check NullPointerException"));
+        builder.appendIfNotNullIf((Object) null, v -> "Check NullPointerException".equals(v));
         builder.appendIfNotNull("value");
         builder.appendIfNotNullIf("value1", s -> s.startsWith("a"));
         builder.appendIfNotNullIf("value2", s -> s.startsWith("v"));
         builder.appendAndFormatIfNotNull("value", text -> text.toUpperCase());
         builder.appendAndFormatIfNotNullIf("value", v -> v.startsWith("a"), text -> text.toUpperCase());
         builder.appendIfNotNull("key", (String) null);
-        builder.appendIfNotNullIf("key", (Object) null, v -> v.equals("Check NullPointerException"));
+        builder.appendIfNotNullIf("key", (Object) null, v -> "Check NullPointerException".equals(v));
         builder.appendIfNotNull("key", "value");
         builder.appendIfNotNullIf("key", "value1", s -> s.startsWith("a"));
         builder.appendIfNotNullIf("key", "value2", s -> s.startsWith("v"));
@@ -190,7 +190,7 @@ public class ToStringBuilderTest {
      * Test method for {@link ToStringBuilder#build()}.
      */
     @Test
-    public void testToStringStyleJSONBuild() {
+    public void testStyleJSONBuild() {
         StringBuilder expected = new StringBuilder("{test:");
         expected.append("{");
         expected.append("java.awt.Color[r=0,g=0,b=0]");
@@ -229,7 +229,7 @@ public class ToStringBuilderTest {
      * Test method for {@link ToStringBuilder#build()}.
      */
     @Test
-    public void testToStringStyleJSONSpacedBuild() {
+    public void testStyleJSONSpacedBuild() {
         StringBuilder expected = new StringBuilder("{test: ");
         expected.append("{");
         expected.append("java.awt.Color[r=0,g=0,b=0]");
@@ -268,7 +268,7 @@ public class ToStringBuilderTest {
      * Test method for {@link ToStringBuilder#build()}.
      */
     @Test
-    public void testToStringStyleJSONQuotedBuild() {
+    public void testStyleJSONQuotedBuild() {
         StringBuilder expected = new StringBuilder("{\"test\":");
         expected.append("{");
         expected.append("\"java.awt.Color[r=0,g=0,b=0]\"");
@@ -307,7 +307,7 @@ public class ToStringBuilderTest {
      * Test method for {@link ToStringBuilder#build()}.
      */
     @Test
-    public void testToStringStyleReadableBuild() {
+    public void testStyleReadableBuild() {
         StringBuilder expected = new StringBuilder("test = ");
         expected.append("\n[");
         expected.append("'java.awt.Color[r=0,g=0,b=0]'");
@@ -347,7 +347,7 @@ public class ToStringBuilderTest {
      * Test method for {@link ToStringBuilder#build()}.
      */
     @Test
-    public void testToStringStyleParenthesisBuild() {
+    public void testStyleParenthesisBuild() {
         StringBuilder expected = new StringBuilder("(test:");
         expected.append("(");
         expected.append("java.awt.Color[r=0,g=0,b=0]");

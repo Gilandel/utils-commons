@@ -32,7 +32,15 @@ import org.junit.Test;
  * @author Gilles Landel
  *
  */
-public class NumberUtilsTest {
+public class NumberUtilsTest extends AbstractTest {
+
+    /**
+     * Test constructor for {@link NumberUtils} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(NumberUtils.class));
+    }
 
     /**
      * Test method for {@link NumberUtils#isEqual(Double, Double)} .

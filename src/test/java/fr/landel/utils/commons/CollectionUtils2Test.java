@@ -43,7 +43,7 @@ import org.junit.Test;
  * @author Gilles Landel
  *
  */
-public class CollectionUtils2Test {
+public class CollectionUtils2Test extends AbstractTest {
 
     private static final Transformer<Point, String> TRANSFORMER = new Transformer<Point, String>() {
         @Override
@@ -54,6 +54,14 @@ public class CollectionUtils2Test {
             return null;
         }
     };
+
+    /**
+     * Test constructor for {@link CollectionUtils2} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(CollectionUtils2.class));
+    }
 
     /**
      * Test method for

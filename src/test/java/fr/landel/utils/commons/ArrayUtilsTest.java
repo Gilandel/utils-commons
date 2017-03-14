@@ -27,7 +27,15 @@ import org.junit.Test;
  * @author Gilles
  *
  */
-public class ArrayUtilsTest {
+public class ArrayUtilsTest extends AbstractTest {
+
+    /**
+     * Test constructor for {@link ArrayUtils} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(ArrayUtils.class));
+    }
 
     /**
      * Test method for {@link ArrayUtils#containsAll(T[], U[])}.

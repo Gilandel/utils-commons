@@ -142,6 +142,13 @@ public class Comparators {
     public static final BiComparator<Version> VERSION = new BiComparator<>();
 
     /**
+     * Hidden constructor
+     */
+    private Comparators() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Compare two comparables
      * 
      * @param o1

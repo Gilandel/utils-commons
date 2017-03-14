@@ -40,6 +40,7 @@ public final class CollectionUtils2 {
      * Hidden constructor.
      */
     private CollectionUtils2() {
+        throw new UnsupportedOperationException();
     }
 
     /**

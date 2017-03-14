@@ -37,7 +37,7 @@ public class HashCodeBuilderTest {
     public void testAppendTFunctionOfTX() {
         final String uid = UUID.randomUUID().toString();
         final IllegalArgumentException e1 = new IllegalArgumentException(uid);
-        final NullPointerException e2 = new NullPointerException(uid);
+        final IllegalStateException e2 = new IllegalStateException(uid);
 
         assertEquals(new HashCodeBuilder().append(e1, e -> e.getMessage()).toHashCode(),
                 new HashCodeBuilder().append(e2, e -> e.getMessage()).toHashCode());

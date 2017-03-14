@@ -19,8 +19,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import fr.landel.utils.commons.HexUtils;
-
 /**
  * Check hexadecimal utils
  *
@@ -28,10 +26,18 @@ import fr.landel.utils.commons.HexUtils;
  * @author Gilles Landel
  *
  */
-public class HexUtilsTest {
+public class HexUtilsTest extends AbstractTest {
 
     /**
-     * Test method for {@link fr.landel.utils.commons.HexUtils#intToByte(int)} .
+     * Test constructor for {@link HexUtils} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(HexUtils.class));
+    }
+
+    /**
+     * Test method for {@link HexUtils#intToByte(int)} .
      */
     @Test
     public void testIntToByte() {
@@ -42,7 +48,7 @@ public class HexUtilsTest {
     }
 
     /**
-     * Test method for {@link fr.landel.utils.commons.HexUtils#intToBytes(int)} .
+     * Test method for {@link HexUtils#intToBytes(int)} .
      */
     @Test
     public void testIntToBytes() {
@@ -53,8 +59,7 @@ public class HexUtilsTest {
     }
 
     /**
-     * Test method for
-     * {@link fr.landel.utils.commons.HexUtils#byteArrayToHexString(byte[])} .
+     * Test method for {@link HexUtils#byteArrayToHexString(byte[])} .
      */
     @Test
     public void testByteArrayToHexString() {

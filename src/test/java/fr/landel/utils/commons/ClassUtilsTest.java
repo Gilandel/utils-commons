@@ -38,7 +38,15 @@ import org.junit.Test;
  * @author Gilles Landel
  *
  */
-public class ClassUtilsTest {
+public class ClassUtilsTest extends AbstractTest {
+
+    /**
+     * Test constructor for {@link ClassUtils} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(ClassUtils.class));
+    }
 
     /**
      * Test method for {@link ClassUtils#getSuperclasses(java.lang.Class)} .

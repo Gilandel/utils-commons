@@ -14,6 +14,7 @@ package fr.landel.utils.commons;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,19 @@ import ch.qos.logback.classic.Logger;
  * @author Gilles Landel
  * 
  */
-public class EnumUtilsTest {
+public class EnumUtilsTest extends AbstractTest {
+
+    /**
+     * Test constructor for {@link EnumUtils} .
+     */
+    @Test
+    public void testConstructors() {
+        assertTrue(checkPrivateConstructor(EnumUtils.class));
+    }
 
     /**
      * Test method for
-     * {@link fr.landel.utils.commons.EnumUtils#getNullIfEmpty(java.lang.Class, java.lang.String)}
-     * .
+     * {@link EnumUtils#getNullIfEmpty(java.lang.Class, java.lang.String)} .
      */
     @Test
     public void testGetNullIfEmpty() {

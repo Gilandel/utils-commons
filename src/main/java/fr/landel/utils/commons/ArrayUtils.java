@@ -39,7 +39,7 @@ public final class ArrayUtils extends org.apache.commons.lang3.ArrayUtils {
      * Hidden constructor
      */
     private ArrayUtils() {
-        super();
+        throw new UnsupportedOperationException();
     }
 
     /**

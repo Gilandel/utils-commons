@@ -38,7 +38,7 @@ public class EqualsBuilder2Test {
         final BiPredicate<String, String> equalsIgnoreCase = (a, b) -> a.equalsIgnoreCase(b);
 
         IllegalArgumentException e1 = new IllegalArgumentException("error");
-        NullPointerException e2 = new NullPointerException("error");
+        IllegalStateException e2 = new IllegalStateException("error");
         IllegalArgumentException e3 = new IllegalArgumentException("ERROR");
 
         assertTrue(new EqualsBuilder2<>(e1, e1).build());

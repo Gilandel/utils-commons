@@ -30,7 +30,7 @@ public final class EnumUtils extends org.apache.commons.lang3.EnumUtils {
      * Hidden constructor.
      */
     private EnumUtils() {
-        super();
+        throw new UnsupportedOperationException();
     }
 
     /**
