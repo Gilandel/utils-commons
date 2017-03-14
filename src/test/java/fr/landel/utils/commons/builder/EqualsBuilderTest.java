@@ -38,7 +38,7 @@ public class EqualsBuilderTest {
     @Test
     public void testAppend() {
         final IllegalArgumentException e1 = new IllegalArgumentException("error");
-        final NullPointerException e2 = new NullPointerException("error");
+        final IllegalStateException e2 = new IllegalStateException("error");
         final IllegalArgumentException e3 = new IllegalArgumentException("ERROR");
         final IllegalArgumentException e4 = new IllegalArgumentException((String) null);
 
