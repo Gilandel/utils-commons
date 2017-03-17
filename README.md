@@ -40,6 +40,7 @@ Work progress:
 7. [Listener](#listener)
 8. [Over](#over)
 9. [Tuple](#tuple)
+10. [License](#license)
 
 ##Commons
 - ArrayUtils: Extends ArrayUtils from Apache project, adds methods to check array,
@@ -325,3 +326,6 @@ final Single<Color> colorContainer = Single.ofMutable(c);
 checker.test(v -> colorContainer.set(v));
 LOGGER.info("My new color: {}", colorContainer.get());
 ```
+
+## License
+See [https://github.com/Gilandel/utils/LICENSE](main project license): Apache License, version 2.0
