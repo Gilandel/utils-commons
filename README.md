@@ -23,7 +23,7 @@ Work progress:
 </dependency>
 ```
 
-##Summary
+## Summary
 
 1. [Summary](#summary)
 2. [Commons](#commons)
@@ -42,7 +42,7 @@ Work progress:
 9. [Tuple](#tuple)
 10. [License](#license)
 
-##Commons
+## Commons
 - ArrayUtils: Extends ArrayUtils from Apache project, adds methods to check array,
 - CastUtils: To cast map / list / object into typed objects,
 - ClassUtils: To get super classes or to get common super classes,
@@ -58,7 +58,7 @@ Work progress:
 - Result: A class like Optional, but if a null value is set (not empty), this method returns 'present', the aim is to differentiate an empty value and a null,
 - StringUtils: Extend StringUtils from Apache project, add methods to get default string if empty or null.
 
-###Default
+### Default
 
 ```java
 Default.empty(defaultText).get(); // => returns 'defaultText' content ('defaultText' cannot be null)
@@ -78,7 +78,7 @@ Default.ofNullable(text, defaultText).ifPresent(consumer); // executes the consu
 Default.ofNullable(text, defaultText).ifAbsent(consumer); // executes the consumer if 'text' is null (on the default value)
 ```
 
-###Result
+### Result
 
 ```java
 Result.empty().isPresent(); // => returns 'false'
@@ -97,13 +97,13 @@ Result.ofNullable(text).ifPresent(consumer); // executes the consumer
 Result.ofNullable(text).ifNotNull(consumer); // executes the consumer if 'text' is not null
 ```
 
-##Builder
+## Builder
 - EqualsBuilder: Extends EqualsBuilder from Apache project, allows to append a property through a functional getter function,
 - EqualsBuilder2: Based on the fact that the most of the time I compare DTOs, the class provide a constructor for both checked objects and appenders based on these objects with the ability to check them througth functional getters and predicates.
 - HashCodeBuilder: Extends EqualsBuilder from Apache project, allows to append a property through a functional getter function,
 - ToStringBuilder: Another version of the ToStringBuilder, simple and also faster.
 
-###EqualsBuilder
+### EqualsBuilder
 
 ```java
 new EqualsBuilder()
@@ -111,7 +111,7 @@ new EqualsBuilder()
 	.isEqual();
 ```
 
-###EqualsBuilder2
+### EqualsBuilder2
 
 ```java
 // To check 2 DTOs with 2 properties (id and name)
@@ -158,7 +158,7 @@ dto1.setName(newName);
 builder.isEqual(); // the equality will take account of the dto1 new name.
 ```
 
-###HashCodeBuilder
+### HashCodeBuilder
 
 ```java
 new HashCodeBuilder()
@@ -166,7 +166,7 @@ new HashCodeBuilder()
 	.isEqual();
 ```
 
-###ToStringBuilder
+### ToStringBuilder
 
 ```java
 new ToStringBuilder(this, ToStringStyle.JSON)
@@ -263,13 +263,13 @@ Expect.exception(() -> {
  }, IllegalArgumentException.class, "parameter cannot be null", junitError);  // -> throw a ComparisonFailure
 ```
 
-##Exception
+## Exception
 - AbstractException: Base class for Exception (add constructors to directly create message with arguments),
 - AbstractException: Base class for RuntimeException (add constructors to directly create message with arguments),
 - FunctionException: Runtime Exception thrown on error with throwable functional interfaces,
 - IllegalOperationException: Specific Runtime Exception used by functional interface in case of unauthorized operation (mainly in QueryBuilder).
 
-##Function
+## Function
 Functional interfaces that support to throw exception:
 - ThrowableSupplier: To supply an exception (just throws the given exception),
 - *Throwable: Functional interfaces that manage one parameters,
@@ -295,14 +295,14 @@ void myMethod(SupplierThrowable<String, MyException> supplier);
 myMethod(() -> Optional.ofNullable(myString).orElseThrow(new MyException("myString cannot be null")));
 ```
 
-##Listener
+## Listener
 Very simple classes to manage events (listenable / event / listener).
 
-##Over
+## Over
 - AbstractOverComparable: Class to force the implementation of compareTo method
 - AbstractOverObject: Class to force implementation of toString, equals and hashCode 
 
-##Tuple
+## Tuple
 In addition of tuples provided by the Apache Team, this package provides new tuples to create container object for 1, 2, 3 and 4 parameters.
 Main entry points to use this, are the classes with the following names:
 - Single: To create a container for an object (interesting when you use a variable in and out a functional interface),
