@@ -1,5 +1,8 @@
 # utils-commons
 
+[![Tokei LoC](https://tokei.rs/b1/github/Gilandel/utils-commons)](https://github.com/Aaronepower/tokei)
+[![Tokei NoFiles](https://tokei.rs/b1/github/Gilandel/utils-commons?category=files)](https://github.com/Aaronepower/tokei)
+[![Tokei LoComments](https://tokei.rs/b1/github/Gilandel/utils-commons?category=comments)](https://github.com/Aaronepower/tokei)
 [![Build Status](https://api.travis-ci.org/Gilandel/utils-commons.svg?branch=master)](https://travis-ci.org/Gilandel/utils-commons/builds)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/8f3069e16a174fecaeeaff3cd742414b)](https://www.codacy.com/app/gilles/utils-commons)
 [![Dependency Status](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544)
