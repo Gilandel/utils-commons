@@ -146,6 +146,15 @@ public final class Default<T> {
     }
 
     /**
+     * Return the value
+     * 
+     * @return the value (may be {@code null})
+     */
+    public T getValue() {
+        return this.value;
+    }
+
+    /**
      * Return the default value
      * 
      * @return the default value

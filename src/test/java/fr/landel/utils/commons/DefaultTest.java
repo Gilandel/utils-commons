@@ -102,6 +102,17 @@ public class DefaultTest {
     }
 
     /**
+     * Test method for {@link Default#getValue()}.
+     */
+    @Test
+    public void testGetValue() {
+        assertEquals(5, (int) Default.of(5).getValue());
+        assertEquals(5, (int) Default.ofNullable(5, 2).getValue());
+        assertNull(Default.ofNullable(null, 2).getValue());
+        assertNull(Default.empty(2).getValue());
+    }
+
+    /**
      * Test method for {@link Default#getDefault()}.
      */
     @Test

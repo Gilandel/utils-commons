@@ -48,14 +48,12 @@ import org.apache.commons.lang3.builder.Builder;
  *
  * @param <T>
  *            the type of reference object
- * @param <O>
- *            the type of compared object
  */
-public class EqualsBuilder2<T, O> implements Builder<Boolean> {
+public class EqualsBuilder2<T> implements Builder<Boolean> {
 
     private final EqualsBuilder builder;
     private final T current;
-    private final O other;
+    private final Object other;
     private final Class<T> superClass;
     private final Supplier<Boolean> isEqualSupplier;
     private T casted = null;
@@ -69,7 +67,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      * @param other
      *            the compared object (may be {@code null})
      */
-    public EqualsBuilder2(final T current, final O other) {
+    public EqualsBuilder2(final T current, final Object other) {
         this(current, other, null);
     }
 
@@ -83,7 +81,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      * @param superClass
      *            the common class of both checked objects
      */
-    public EqualsBuilder2(final T current, final O other, final Class<T> superClass) {
+    public EqualsBuilder2(final T current, final Object other, final Class<T> superClass) {
         this(current, other, superClass, null);
     }
 
@@ -99,7 +97,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      * @param isEqualSupplier
      *            the previous builder supplier
      */
-    private EqualsBuilder2(final T current, final O other, final Class<T> superClass, final Supplier<Boolean> isEqualSupplier) {
+    private EqualsBuilder2(final T current, final Object other, final Class<T> superClass, final Supplier<Boolean> isEqualSupplier) {
         this.builder = new EqualsBuilder();
         this.current = current;
         this.other = other;
@@ -131,7 +129,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      *            the type of the property
      * @return the current builder
      */
-    public <V> EqualsBuilder2<T, O> append(final Function<T, V> getter) {
+    public <V> EqualsBuilder2<T> append(final Function<T, V> getter) {
         return this.append(getter, null);
     }
 
@@ -148,7 +146,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      *            The type of the property
      * @return the current builder
      */
-    public <V> EqualsBuilder2<T, O> append(final Function<T, V> getter, final BiPredicate<V, V> predicate) {
+    public <V> EqualsBuilder2<T> append(final Function<T, V> getter, final BiPredicate<V, V> predicate) {
         return this.append(this.current, this.casted, getter, predicate);
     }
 
@@ -163,7 +161,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      *            the object type
      * @return the current builder
      */
-    public <X> EqualsBuilder2<T, O> append(final X lhs, final X rhs) {
+    public <X> EqualsBuilder2<T> append(final X lhs, final X rhs) {
         if (this.isEqual) {
             this.builder.append(lhs, rhs);
         }
@@ -185,7 +183,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      *            the getter return type
      * @return the current builder
      */
-    public <X, V> EqualsBuilder2<T, O> append(final X lhs, final X rhs, final Function<X, V> getter) {
+    public <X, V> EqualsBuilder2<T> append(final X lhs, final X rhs, final Function<X, V> getter) {
         return this.append(lhs, rhs, getter, null);
     }
 
@@ -208,7 +206,7 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      *            the getter return type
      * @return the current builder
      */
-    public <X, V> EqualsBuilder2<T, O> append(final X lhs, final X rhs, final Function<X, V> getter, final BiPredicate<V, V> predicate) {
+    public <X, V> EqualsBuilder2<T> append(final X lhs, final X rhs, final Function<X, V> getter, final BiPredicate<V, V> predicate) {
         if (this.isEqual) {
             this.builder.append(lhs, rhs, getter, predicate);
         }
@@ -224,11 +222,9 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      *            the compared object
      * @param <X>
      *            the type of reference object
-     * @param <Y>
-     *            the type of compared object
      * @return A new {@link EqualsBuilder2}
      */
-    public <X, Y> EqualsBuilder2<X, Y> and(final X newCurrent, final Y newOther) {
+    public <X> EqualsBuilder2<X> and(final X newCurrent, final Object newOther) {
         return new EqualsBuilder2<>(newCurrent, newOther, null, () -> this.isEqual());
     }
 
@@ -243,11 +239,9 @@ public class EqualsBuilder2<T, O> implements Builder<Boolean> {
      *            the common class of both checked objects
      * @param <X>
      *            the type of reference object
-     * @param <Y>
-     *            the type of compared object
      * @return A new {@link EqualsBuilder2}
      */
-    public <X, Y extends X> EqualsBuilder2<X, Y> and(final X newCurrent, final Y newOther, Class<X> superClass) {
+    public <X> EqualsBuilder2<X> and(final X newCurrent, final Object newOther, Class<X> superClass) {
         return new EqualsBuilder2<>(newCurrent, newOther, superClass, () -> this.isEqual());
     }
 

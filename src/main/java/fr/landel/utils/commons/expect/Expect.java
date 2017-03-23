@@ -40,7 +40,7 @@ public final class Expect {
     }
 
     /**
-     * Check that the consumed code raise the specified exception.
+     * Check that the consumed code raises the specified exception.
      * 
      * <pre>
      * Expect.exception(() -&gt; {
@@ -61,7 +61,7 @@ public final class Expect {
     }
 
     /**
-     * Check that the consumed code raise the specified exception, also check
+     * Check that the consumed code raises the specified exception, also check
      * the message.
      * 
      * <pre>
@@ -86,7 +86,7 @@ public final class Expect {
     }
 
     /**
-     * Check that the consumed code raise the specified exception, also check
+     * Check that the consumed code raises the specified exception, also check
      * the message with the specified pattern.
      * 
      * <pre>
@@ -111,7 +111,7 @@ public final class Expect {
     }
 
     /**
-     * Check that the consumed code raise the specified exception and allow to
+     * Check that the consumed code raises the specified exception and allow to
      * change the thrown exception.
      * 
      * <pre>
@@ -155,7 +155,7 @@ public final class Expect {
     }
 
     /**
-     * Check that the consumed code raise the specified exception, also check
+     * Check that the consumed code raises the specified exception, also check
      * the message and allow to change the thrown exception.
      * 
      * <pre>
@@ -203,7 +203,7 @@ public final class Expect {
     }
 
     /**
-     * Check that the consumed code raise the specified exception, also check
+     * Check that the consumed code raises the specified exception, also check
      * the message with the specified pattern and allow to change the thrown
      * exception.
      * 
@@ -252,7 +252,7 @@ public final class Expect {
     }
 
     /**
-     * Check that the consumed code raise the specified exception, also check
+     * Check that the consumed code raises the specified exception, also check
      * the message and allow to change the thrown exception.
      * 
      * @param exceptionSupplier
