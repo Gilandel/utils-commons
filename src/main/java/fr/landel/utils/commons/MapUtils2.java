@@ -1,3 +1,15 @@
+/*-
+ * #%L
+ * utils-commons
+ * %%
+ * Copyright (C) 2016 - 2017 Gilandel
+ * %%
+ * Authors: Gilles Landel
+ * URL: https://github.com/Gilandel
+ * 
+ * This file is under Apache License, version 2.0 (2004).
+ * #L%
+ */
 package fr.landel.utils.commons;
 
 import java.util.HashMap;
@@ -47,6 +59,10 @@ public class MapUtils2 {
      * map.put("key2", "value2");
      * </pre>
      * 
+     * @param keyClass
+     *            the class of key
+     * @param valueClass
+     *            the class of value
      * @param objects
      *            objects pair to put in the new {@link Map}
      * @param <K>
@@ -147,12 +163,18 @@ public class MapUtils2 {
      * 
      * @param mapProvider
      *            map constructor supplier
+     * @param keyClass
+     *            the class of key
+     * @param valueClass
+     *            the class of value
      * @param objects
      *            objects pair to put in the new {@link Map}
      * @param <K>
      *            the type of map key
      * @param <V>
      *            the type of map value
+     * @param <M>
+     *            the type of map
      * @return the new {@link Map}
      * @throws NullPointerException
      *             if {@code mapProvider}, {@code keyClass} or
