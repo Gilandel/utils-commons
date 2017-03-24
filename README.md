@@ -57,6 +57,7 @@ Work progress:
 - EnumChar: A list of ASCII characters and others with their unicode and HTML version,
 - EnumUtils: Extends EnumUtils from Apache project, adds methods to get null if empty name is used (to avoid exception)
 - HexUtils: To convert hexadecimal in bytes,
+- MapUtils2: Helper class to create Map,
 - NumberUtils: Extends NumberUtils from Apache project, adds methods to check number equality,
 - ObjectUtils: Extends ObjectUtils from Apache project, adds features for Object,
 - Result: A class like Optional, but if a null value is set (not empty), this method returns 'present', the aim is to differentiate an empty value and a null,

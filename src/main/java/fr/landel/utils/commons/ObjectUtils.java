@@ -220,4 +220,61 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
         }
         return false;
     }
+
+    /**
+     * Check if the {@code object} is not {@code null}, otherwise throws the
+     * {@code throwableSupplier}.
+     * 
+     * <p>
+     * precondition: {@code throwableSupplier} cannot be {@code null}
+     * </p>
+     * 
+     * <pre>
+     * String object1 = ObjectUtils.requireNonNull("test", Exception::new);
+     * // -&gt; set object
+     * String object2 = ObjectUtils.requireNonNull(null, Exception::new);
+     * // -&gt; throws an exception
+     * String object3 = ObjectUtils.requireNonNull("test", null);
+     * // -&gt; throws a NullPointerException
+     * </pre>
+     * 
+     * @param object
+     *            the object to check
+     * @param throwableSupplier
+     *            the throwable supplier
+     * @param <T>
+     *            the object type
+     * @param <E>
+     *            the throwable type
+     * @return the object if not {@code null}
+     * @throws E
+     *             exception thrown if object is {@code null}
+     * @throws NullPointerException
+     *             if throwable supplier is {@code null}
+     */
+    public static <T, E extends Throwable> T requireNonNull(final T object, final Supplier<E> throwableSupplier) throws E {
+        Objects.requireNonNull(throwableSupplier);
+        if (object == null) {
+            throw throwableSupplier.get();
+        }
+        return object;
+    }
+
+    /**
+     * Check if all objects are not {@code null}.
+     * 
+     * @param objects
+     *            the objects to check
+     * @throws NullPointerException
+     *             if one object is {@code null}
+     */
+    @SafeVarargs
+    public static void requireNonNulls(final Object... objects) {
+        Objects.requireNonNull(objects);
+        for (int i = 0; i < objects.length; i++) {
+            if (objects[i] == null) {
+                throw new NullPointerException(new StringBuilder("Object at index '").append(i).append("' cannot be null").toString());
+            }
+        }
+    }
 }

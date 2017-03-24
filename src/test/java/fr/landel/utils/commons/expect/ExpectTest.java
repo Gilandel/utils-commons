@@ -57,7 +57,7 @@ public class ExpectTest extends AbstractTest {
             }, IOException.class);
             fail();
         } catch (ExpectException e) {
-            assertEquals("The expected exception never came up", e.getMessage());
+            assertEquals("The expected exception never came up (thrown: IllegalArgumentException).", e.getMessage());
         }
 
         try {
@@ -159,9 +159,9 @@ public class ExpectTest extends AbstractTest {
     @Test(expected = AssertionError.class)
     public void testExceptionJUnit() throws IOException {
         // To raise a failure in JUnit tests in place of error
-        Expect.exception(() -> {
+        assertException(() -> {
             throw new IllegalArgumentException("message");
-        }, IllegalArgumentException.class, "message2", JUNIT_ERROR);
+        }, IllegalArgumentException.class, "message2");
     }
 
     /**
@@ -174,18 +174,18 @@ public class ExpectTest extends AbstractTest {
     public void testExceptionJUnit2() throws IOException {
 
         try {
-            Expect.exception(() -> {
+            assertException(() -> {
                 throw new IllegalArgumentException();
-            }, IOException.class, JUNIT_ERROR);
+            }, IOException.class);
             fail();
         } catch (AssertionError e) {
             assertNotNull(e);
         }
         // To raise a failure in JUnit tests in place of error
         Expect.exception(() -> {
-            Expect.exception(() -> {
+            assertException(() -> {
                 throw new IllegalArgumentException("message");
-            }, IllegalArgumentException.class, "message2", JUNIT_ERROR);
+            }, IllegalArgumentException.class, "message2");
         }, ComparisonFailure.class, "The exception message don't match. expected:<message[2]> but was:<message[]>");
     }
 }

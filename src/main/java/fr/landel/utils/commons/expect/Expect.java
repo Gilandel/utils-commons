@@ -29,7 +29,7 @@ public final class Expect {
     private static final String ERROR_CONSUMER_NULL = "Consumer cannot be null";
     private static final String ERROR_EXPECTED_NULL = "Expected exception cannot be null";
     private static final String ERROR_NO_EXCEPTION = "No exception thrown";
-    private static final String ERROR_EXCEPTION_DONT_MATCH = "The expected exception never came up";
+    private static final String ERROR_EXCEPTION_DONT_MATCH = "The expected exception never came up (thrown: {}).";
     private static final String ERROR_MESSAGE_DONT_MATCH = "The exception message isn't as expected.\nExpected (first part) and result (second part):\n{}\n-----\n{}";
 
     /**
@@ -310,7 +310,7 @@ public final class Expect {
             if (exceptionFunction != null) {
                 throw exceptionFunction.apply(!exceptionDontMatch, expectedResult, e.getMessage());
             } else if (exceptionDontMatch) {
-                throw new ExpectException(ERROR_EXCEPTION_DONT_MATCH);
+                throw new ExpectException(StringUtils.inject(ERROR_EXCEPTION_DONT_MATCH, e.getClass().getSimpleName()));
             } else {
                 throw new ExpectException(StringUtils.inject(ERROR_MESSAGE_DONT_MATCH, expectedResult, e.getMessage()));
             }
