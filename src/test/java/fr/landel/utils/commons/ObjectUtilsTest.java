@@ -12,9 +12,11 @@
  */
 package fr.landel.utils.commons;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -25,7 +27,7 @@ import org.junit.Test;
  * @author Gilles
  *
  */
-public class ObjectUtilsTest {
+public class ObjectUtilsTest extends AbstractTest {
 
     /**
      * Test method for {@link ObjectUtils#ObjectUtils()}.
@@ -156,5 +158,42 @@ public class ObjectUtilsTest {
     @Test(expected = NullPointerException.class)
     public void testAnyNotNullKO() {
         ObjectUtils.anyNotNull((Object[]) null);
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#requireNonNull(Object, java.util.function.Supplier)}.
+     */
+    @Test
+    public void testRequireNonNullSupplier() {
+        assertEquals("test", ObjectUtils.requireNonNull("test", IllegalArgumentException::new));
+
+        assertException(() -> {
+            ObjectUtils.requireNonNull(null, IllegalArgumentException::new);
+        }, IllegalArgumentException.class);
+
+        assertException(() -> {
+            ObjectUtils.requireNonNull("test", null);
+        }, NullPointerException.class);
+    }
+
+    /**
+     * Test method for {@link ObjectUtils#requireNonNulls(Object...)}.
+     */
+    @Test
+    public void testRequireNonNulls() {
+        try {
+            ObjectUtils.requireNonNulls("test", 12);
+        } catch (NullPointerException e) {
+            fail(e.getMessage());
+        }
+
+        assertException(() -> {
+            ObjectUtils.requireNonNulls(null, "test");
+        }, NullPointerException.class);
+
+        assertException(() -> {
+            ObjectUtils.requireNonNulls("test", null);
+        }, NullPointerException.class);
     }
 }

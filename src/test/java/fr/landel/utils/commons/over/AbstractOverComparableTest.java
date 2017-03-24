@@ -179,6 +179,7 @@ public class AbstractOverComparableTest {
         }
 
         assertFalse(comparable1.equals(testNull));
+        assertFalse(comparable1.equals("not a comparable"));
         assertFalse(comparable1.equals(comparable2));
         assertTrue(comparable1.equals(comparable1));
     }
