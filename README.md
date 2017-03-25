@@ -5,6 +5,7 @@
 [![Dependency Status](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544)
 [![codecov.io](https://codecov.io/github/Gilandel/utils-commons/coverage.svg?branch=master)](https://codecov.io/github/Gilandel/utils-commons?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-commons/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-commons)
+[![Javadocs](http://www.javadoc.io/badge/fr.landel.utils/utils-commons.svg)](http://www.javadoc.io/doc/fr.landel.utils/utils-commons)
 
 [![Tokei LoC](https://tokei.rs/b1/github/Gilandel/utils-commons)](https://github.com/Aaronepower/tokei)
 [![Tokei NoFiles](https://tokei.rs/b1/github/Gilandel/utils-commons?category=files)](https://github.com/Aaronepower/tokei)
@@ -334,4 +335,4 @@ LOGGER.info("My new color: {}", colorContainer.get());
 ```
 
 ## License
-See [main project license](https://github.com/Gilandel/utils/LICENSE): Apache License, version 2.0
+Apache License, version 2.0
