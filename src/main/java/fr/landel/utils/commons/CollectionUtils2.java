@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Transformer;
@@ -185,6 +186,27 @@ public final class CollectionUtils2 {
     }
 
     /**
+     * Transform an array into an array
+     * 
+     * @param input
+     *            the input array
+     * @param transformer
+     *            The transformer
+     * @param <I>
+     *            The input type
+     * @param <O>
+     *            The output type
+     * @return The converted array
+     */
+    public static <I, O> O[] transformIntoArray(final I[] input, final Function<I, O> transformer) {
+        final List<O> list = new ArrayList<>();
+        for (I in : input) {
+            list.add(transformer.apply(in));
+        }
+        return CollectionUtils2.toArray(list);
+    }
+
+    /**
      * Transform an array into an array of String (null value are kept)
      * 
      * @param input
@@ -237,6 +259,27 @@ public final class CollectionUtils2 {
         final List<O> list = new ArrayList<>();
         for (I in : input) {
             list.add(transformer.transform(in));
+        }
+        return CollectionUtils2.toArray(list);
+    }
+
+    /**
+     * Transform an iterable into an array
+     * 
+     * @param input
+     *            the input iterable
+     * @param transformer
+     *            The transformer
+     * @param <I>
+     *            The input type
+     * @param <O>
+     *            The output type
+     * @return The converted array
+     */
+    public static <I, O> O[] transformIntoArray(final Iterable<I> input, final Function<I, O> transformer) {
+        final List<O> list = new ArrayList<>();
+        for (I in : input) {
+            list.add(transformer.apply(in));
         }
         return CollectionUtils2.toArray(list);
     }
@@ -299,6 +342,27 @@ public final class CollectionUtils2 {
     }
 
     /**
+     * Transform an array into a list
+     * 
+     * @param input
+     *            the input array
+     * @param transformer
+     *            The transformer
+     * @param <I>
+     *            The input type
+     * @param <O>
+     *            The output type
+     * @return The converted list
+     */
+    public static <I, O> List<O> transformIntoList(final I[] input, final Function<I, O> transformer) {
+        final List<O> list = new ArrayList<>();
+        for (I in : input) {
+            list.add(transformer.apply(in));
+        }
+        return list;
+    }
+
+    /**
      * Transform an array into a list of String (null value are kept)
      * 
      * @param input
@@ -347,6 +411,27 @@ public final class CollectionUtils2 {
         final List<O> list = new ArrayList<>();
         for (I in : input) {
             list.add(transformer.transform(in));
+        }
+        return list;
+    }
+
+    /**
+     * Transform an iterable into a list
+     * 
+     * @param input
+     *            the input iterable
+     * @param transformer
+     *            The transformer
+     * @param <I>
+     *            The input type
+     * @param <O>
+     *            The output type
+     * @return The converted list
+     */
+    public static <I, O> List<O> transformIntoList(final Iterable<I> input, final Function<I, O> transformer) {
+        final List<O> list = new ArrayList<>();
+        for (I in : input) {
+            list.add(transformer.apply(in));
         }
         return list;
     }
@@ -405,6 +490,27 @@ public final class CollectionUtils2 {
     }
 
     /**
+     * Transform an array into a set
+     * 
+     * @param input
+     *            the input array
+     * @param transformer
+     *            The transformer
+     * @param <I>
+     *            The input type
+     * @param <O>
+     *            The output type
+     * @return The converted set
+     */
+    public static <I, O> Set<O> transformIntoSet(final I[] input, final Function<I, O> transformer) {
+        final Set<O> list = new HashSet<>();
+        for (I in : input) {
+            list.add(transformer.apply(in));
+        }
+        return list;
+    }
+
+    /**
      * Transform an array into a set of String (null value are kept)
      * 
      * @param input
@@ -453,6 +559,27 @@ public final class CollectionUtils2 {
         final Set<O> list = new HashSet<>();
         for (I in : input) {
             list.add(transformer.transform(in));
+        }
+        return list;
+    }
+
+    /**
+     * Transform an iterable into a set
+     * 
+     * @param input
+     *            the input iterable
+     * @param transformer
+     *            The transformer
+     * @param <I>
+     *            The input type
+     * @param <O>
+     *            The output type
+     * @return The converted set
+     */
+    public static <I, O> Set<O> transformIntoSet(final Iterable<I> input, final Function<I, O> transformer) {
+        final Set<O> list = new HashSet<>();
+        for (I in : input) {
+            list.add(transformer.apply(in));
         }
         return list;
     }

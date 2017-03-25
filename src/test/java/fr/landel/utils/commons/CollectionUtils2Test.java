@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.apache.commons.collections4.Transformer;
 import org.hamcrest.Matchers;
@@ -55,6 +56,8 @@ public class CollectionUtils2Test extends AbstractTest {
         }
     };
 
+    private static final Function<Point, String> FUNCTION = p -> TRANSFORMER.transform(p);
+
     /**
      * Test constructor for {@link CollectionUtils2} .
      */
@@ -65,7 +68,8 @@ public class CollectionUtils2Test extends AbstractTest {
 
     /**
      * Test method for
-     * {@link CollectionUtils2#transformIntoList(java.lang.Iterable, org.apache.commons.collections4.Transformer)}
+     * {@link CollectionUtils2#transformIntoList(java.lang.Iterable, Transformer)}
+     * {@link CollectionUtils2#transformIntoList(java.lang.Iterable, Function)}
      * .
      */
     @Test
@@ -79,6 +83,10 @@ public class CollectionUtils2Test extends AbstractTest {
             List<String> strPoints = CollectionUtils2.transformIntoList(points, TRANSFORMER);
 
             assertThat(strPoints, Matchers.contains("1, 2", "2, 0", null));
+
+            strPoints = CollectionUtils2.transformIntoList(points, FUNCTION);
+
+            assertThat(strPoints, Matchers.contains("1, 2", "2, 0", null));
         } catch (IllegalArgumentException e) {
             fail("The test isn't correct");
         }
@@ -86,8 +94,8 @@ public class CollectionUtils2Test extends AbstractTest {
 
     /**
      * Test method for
-     * {@link CollectionUtils2#transformIntoSet(java.lang.Iterable, org.apache.commons.collections4.Transformer)}
-     * .
+     * {@link CollectionUtils2#transformIntoSet(java.lang.Iterable, Transformer)}
+     * {@link CollectionUtils2#transformIntoSet(java.lang.Iterable, Function)} .
      */
     @Test
     public void testTransformIntoSetIterableOfITransformerOfIO() {
@@ -98,6 +106,10 @@ public class CollectionUtils2Test extends AbstractTest {
             points.add(null);
 
             Set<String> strPoints = CollectionUtils2.transformIntoSet(points, TRANSFORMER);
+
+            assertThat(strPoints, Matchers.containsInAnyOrder("1, 2", "2, 0", null));
+
+            strPoints = CollectionUtils2.transformIntoSet(points, FUNCTION);
 
             assertThat(strPoints, Matchers.containsInAnyOrder("1, 2", "2, 0", null));
         } catch (IllegalArgumentException e) {
@@ -233,8 +245,8 @@ public class CollectionUtils2Test extends AbstractTest {
 
     /**
      * Test method for
-     * {@link CollectionUtils2#transformIntoArray(I[], org.apache.commons.collections4.Transformer)}
-     * .
+     * {@link CollectionUtils2#transformIntoArray(I[], Transformer)} .
+     * {@link CollectionUtils2#transformIntoArray(I[], Function)} .
      */
     @Test
     public void testTransformIntoArrayIArrayTransformerOfIO() {
@@ -244,6 +256,12 @@ public class CollectionUtils2Test extends AbstractTest {
             points[1] = new Point(2, 0);
 
             String[] pointsArray = CollectionUtils2.transformIntoArray(points, TRANSFORMER);
+
+            assertNotNull(pointsArray);
+            assertTrue(pointsArray.length > 0);
+            assertThat(pointsArray, Matchers.arrayContaining("1, 2", "2, 0", null));
+
+            pointsArray = CollectionUtils2.transformIntoArray(points, FUNCTION);
 
             assertNotNull(pointsArray);
             assertTrue(pointsArray.length > 0);
@@ -300,7 +318,8 @@ public class CollectionUtils2Test extends AbstractTest {
 
     /**
      * Test method for
-     * {@link CollectionUtils2#transformIntoArray(java.lang.Iterable, org.apache.commons.collections4.Transformer)}
+     * {@link CollectionUtils2#transformIntoArray(java.lang.Iterable, Transformer)}
+     * {@link CollectionUtils2#transformIntoArray(java.lang.Iterable, Function)}
      * .
      */
     @Test
@@ -312,6 +331,12 @@ public class CollectionUtils2Test extends AbstractTest {
             points.add(null);
 
             String[] pointsArray = CollectionUtils2.transformIntoArray(points, TRANSFORMER);
+
+            assertNotNull(pointsArray);
+            assertTrue(pointsArray.length > 0);
+            assertThat(pointsArray, Matchers.arrayContaining("1, 2", "2, 0", null));
+
+            pointsArray = CollectionUtils2.transformIntoArray(points, FUNCTION);
 
             assertNotNull(pointsArray);
             assertTrue(pointsArray.length > 0);
@@ -371,8 +396,8 @@ public class CollectionUtils2Test extends AbstractTest {
 
     /**
      * Test method for
-     * {@link CollectionUtils2#transformIntoList(I[], org.apache.commons.collections4.Transformer)}
-     * .
+     * {@link CollectionUtils2#transformIntoList(I[], Transformer)} .
+     * {@link CollectionUtils2#transformIntoList(I[], Function)} .
      */
     @Test
     public void testTransformIntoListIArrayTransformerOfIO() {
@@ -382,6 +407,12 @@ public class CollectionUtils2Test extends AbstractTest {
             points[1] = new Point(2, 0);
 
             List<String> pointsList = CollectionUtils2.transformIntoList(points, TRANSFORMER);
+
+            assertNotNull(pointsList);
+            assertTrue(pointsList.size() > 0);
+            assertThat(pointsList, Matchers.contains("1, 2", "2, 0", null));
+
+            pointsList = CollectionUtils2.transformIntoList(points, FUNCTION);
 
             assertNotNull(pointsList);
             assertTrue(pointsList.size() > 0);
@@ -433,8 +464,8 @@ public class CollectionUtils2Test extends AbstractTest {
 
     /**
      * Test method for
-     * {@link CollectionUtils2#transformIntoSet(I[], org.apache.commons.collections4.Transformer)}
-     * .
+     * {@link CollectionUtils2#transformIntoSet(I[], Transformer)}
+     * {@link CollectionUtils2#transformIntoSet(I[], Function)} .
      */
     @Test
     public void testTransformIntoSetIArrayTransformerOfIO() {
@@ -444,6 +475,12 @@ public class CollectionUtils2Test extends AbstractTest {
             points[1] = new Point(2, 0);
 
             Set<String> pointsList = CollectionUtils2.transformIntoSet(points, TRANSFORMER);
+
+            assertNotNull(pointsList);
+            assertTrue(pointsList.size() > 0);
+            assertThat(pointsList, Matchers.containsInAnyOrder("1, 2", "2, 0", null));
+
+            pointsList = CollectionUtils2.transformIntoSet(points, FUNCTION);
 
             assertNotNull(pointsList);
             assertTrue(pointsList.size() > 0);
