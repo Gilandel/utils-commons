@@ -17,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -169,6 +170,7 @@ public class AbstractOverComparableTest {
     public void testOverEquals() {
         final int key1 = 10;
         final int key2 = 9;
+        final Object notComparableImpl = new IOException();
 
         final ComparableImpl comparable1 = new ComparableImpl(key1);
         final ComparableImpl comparable2 = new ComparableImpl(key2);
@@ -179,7 +181,7 @@ public class AbstractOverComparableTest {
         }
 
         assertFalse(comparable1.equals(testNull));
-        assertFalse(comparable1.equals("not a comparable"));
+        assertFalse(comparable1.equals(notComparableImpl));
         assertFalse(comparable1.equals(comparable2));
         assertTrue(comparable1.equals(comparable1));
     }

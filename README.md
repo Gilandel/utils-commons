@@ -48,6 +48,7 @@ Work progress:
 
 ## Commons
 - ArrayUtils: Extends ArrayUtils from Apache project, adds methods to check array,
+- AsciiUtils: Simple class to check if a character is an numeric or an alpha character,
 - CastUtils: To cast map / list / object into typed objects,
 - ClassUtils: To get super classes or to get common super classes,
 - CollectionUtils2: Adds missing transform methods (in complement of CollectionUtils provided by Apache Team),
