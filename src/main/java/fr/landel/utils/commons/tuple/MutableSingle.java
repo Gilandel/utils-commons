@@ -12,6 +12,9 @@
  */
 package fr.landel.utils.commons.tuple;
 
+import java.util.Objects;
+import java.util.function.Function;
+
 /**
  * <p>
  * A mutable single consisting of a single {@code Object} element.
@@ -74,5 +77,14 @@ public class MutableSingle<T> extends Single<T> {
         T previous = this.element;
         this.element = element;
         return previous;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public T update(final Function<T, T> function) {
+        Objects.requireNonNull(this.element, "Cannot update, current element is null");
+        return this.set(function.apply(this.element));
     }
 }

@@ -363,7 +363,7 @@ public class DateUtilsTest extends AbstractTest {
         calendar.set(2017, 2, 4, 16, 59, 20); // mars
         calendar.set(Calendar.MILLISECOND, 0);
 
-        final ZoneOffset offset = OffsetDateTime.now().getOffset();
+        ZoneOffset offset = OffsetDateTime.now().getOffset();
 
         LocalDateTime localDateTime = LocalDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault());
         assertEquals(calendar.getTime(), DateUtils.getDate(localDateTime));
@@ -408,8 +408,11 @@ public class DateUtilsTest extends AbstractTest {
             assertNotEquals(localDateTime, DateUtils.getLocalDateTime(calendar.getTime(), null));
         }
 
-        localDateTime = LocalDateTime.ofInstant(calendar.toInstant(), offset);
-        assertEquals(localDateTime, DateUtils.getLocalDateTime(calendar.getTime()));
+        // calendar.getTime() -> Calendar (UTC) => milliseconds => Date =>
+        // Calendar (current time zone)
+        Calendar calendar2 = Calendar.getInstance();
+        localDateTime = LocalDateTime.ofInstant(calendar2.toInstant(), offset);
+        assertEquals(localDateTime, DateUtils.getLocalDateTime(calendar2.getTime()));
 
         assertEquals(localDate, DateUtils.getLocalDate(calendar));
         assertEquals(localDate, DateUtils.getLocalDate(calendar.getTime()));
@@ -434,10 +437,14 @@ public class DateUtilsTest extends AbstractTest {
             assertNotEquals(offsetDateTime, DateUtils.getOffsetDateTime(calendar.getTime(), null));
         }
 
-        offsetDateTime = OffsetDateTime.ofInstant(offsetDateTime.toInstant(), offset);
-        assertEquals(offsetDateTime, DateUtils.getOffsetDateTime(calendar.getTime()));
+        // calendar.getTime() -> Calendar (UTC) => milliseconds => Date =>
+        // Calendar (current time zone)
+        offsetDateTime = OffsetDateTime.of(localDateTime, offset);
+        assertEquals(offsetDateTime, DateUtils.getOffsetDateTime(calendar2.getTime()));
 
         calendar.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
+        offset = ZoneOffset.ofTotalSeconds(calendar.get(Calendar.ZONE_OFFSET) / (int) DateUtils.MILLIS_PER_SECOND);
+
         calendar.set(2017, 2, 4, 1, 2, 3);
         localTime = LocalTime.of(1, 2, 3, 0);
         offsetTime = OffsetTime.of(localTime, offset);
