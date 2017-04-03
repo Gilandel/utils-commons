@@ -358,7 +358,7 @@ public class DateUtilsTest extends AbstractTest {
      * Check {@link DateUtils#getDate}
      */
     @Test
-    public void testGetTimeDate() {
+    public void testGetLocalTimeDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2017, 2, 4, 16, 59, 20); // mars
         calendar.set(Calendar.MILLISECOND, 0);
@@ -425,6 +425,32 @@ public class DateUtilsTest extends AbstractTest {
         assertEquals(localTime, DateUtils.getLocalTime(calendar.getTime()));
         assertEquals(localTime, DateUtils.getLocalTime(calendar.getTime(), ZoneId.systemDefault()));
         assertEquals(localTime, DateUtils.getLocalTime(calendar.getTime(), null));
+    }
+
+    /**
+     * Check {@link DateUtils#getDate}
+     */
+    @Test
+    public void testGetOffsetTimeDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, 2, 4, 16, 59, 20); // mars
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        ZoneOffset offset = OffsetDateTime.now().getOffset();
+
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(calendar.toInstant(), ZoneId.systemDefault());
+        LocalTime localTime = LocalTime.of(1, 2, 3, 0);
+        OffsetDateTime offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+        OffsetTime offsetTime = OffsetTime.of(localTime, ZoneOffset.UTC);
+        ZonedDateTime zonedDateTime = ZonedDateTime.of(localDateTime, ZoneOffset.UTC);
+        calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
+        calendar.set(2017, 2, 4, 16, 59, 20);
+        localDateTime = LocalDateTime.ofInstant(calendar.toInstant(), ZoneOffset.UTC);
+
+        // calendar.getTime() -> Calendar (UTC) => milliseconds => Date =>
+        // Calendar (current time zone)
+        Calendar calendar2 = Calendar.getInstance();
+        localDateTime = LocalDateTime.ofInstant(calendar2.toInstant(), offset);
 
         calendar.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
         calendar.set(2017, 2, 4, 16, 59, 20);
