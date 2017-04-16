@@ -16,8 +16,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import org.junit.Test;
 
+import fr.landel.utils.commons.AbstractTest;
 import fr.landel.utils.commons.exception.FunctionException;
 
 /**
@@ -27,7 +31,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  * @author Gilles
  *
  */
-public class ConsumerThrowableTest {
+public class ConsumerThrowableTest extends AbstractTest {
 
     private static final String ERROR = "The parameter is null";
     private static final ConsumerThrowable<String, IllegalArgumentException> C = (s1) -> {
@@ -50,9 +54,9 @@ public class ConsumerThrowableTest {
         try {
             C.accept(null);
             fail("Consumer has to fail");
-        } catch (FunctionException e) {
+        } catch (IllegalArgumentException e) {
             assertNotNull(e);
-            assertEquals("java.lang.IllegalArgumentException: " + ERROR, e.getMessage());
+            assertEquals(ERROR, e.getMessage());
         }
     }
 
@@ -117,6 +121,21 @@ public class ConsumerThrowableTest {
         } catch (IllegalArgumentException e) {
             assertNotNull(e);
             assertEquals(error2, e.getMessage());
+        }
+    }
+
+    @Test
+    public void testInnerException() {
+        assertException(() -> {
+            Arrays.asList("titi", "toto").stream().forEach((ConsumerThrowable<String, IOException>) s -> {
+                thrower(s);
+            });
+        }, IOException.class, "toto");
+    }
+
+    private void thrower(final String string) throws IOException {
+        if ("toto".equals(string)) {
+            throw new IOException(string);
         }
     }
 }

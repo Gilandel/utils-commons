@@ -32,7 +32,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *
  */
 @FunctionalInterface
-public interface BiPredicateThrowable<T, U, E extends Throwable> extends BiPredicate<T, U> {
+public interface BiPredicateThrowable<T, U, E extends Throwable> extends BiPredicate<T, U>, Rethrower {
 
     /**
      * Evaluates this predicate on the given arguments.
@@ -43,12 +43,15 @@ public interface BiPredicateThrowable<T, U, E extends Throwable> extends BiPredi
      *            the second argument
      * @return {@code true} if the input argument matches the predicate,
      *         otherwise {@code false}
+     * @throws E
+     *             On error exception
      */
     default boolean test(final T t, final U u) {
         try {
             return testThrows(t, u);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never used
         }
     }
 

@@ -41,7 +41,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            the exception type
  */
 @FunctionalInterface
-public interface QuadPredicateThrowable<T, U, V, W, E extends Throwable> extends QuadPredicate<T, U, V, W> {
+public interface QuadPredicateThrowable<T, U, V, W, E extends Throwable> extends QuadPredicate<T, U, V, W>, Rethrower {
 
     /**
      * Evaluates this predicate on the given arguments.
@@ -61,7 +61,8 @@ public interface QuadPredicateThrowable<T, U, V, W, E extends Throwable> extends
         try {
             return testThrows(t, u, v, w);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never used
         }
     }
 

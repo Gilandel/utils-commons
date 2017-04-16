@@ -57,9 +57,10 @@ public class BiSupplierThrowableTest {
         try {
             s2.get();
             fail("Supplier has to fail");
-        } catch (FunctionException e) {
+            throw new IOException(); // just for the compiler
+        } catch (IOException e) {
             assertNotNull(e);
-            assertEquals("java.io.IOException: " + error, e.getMessage());
+            assertEquals(error, e.getMessage());
         }
     }
 

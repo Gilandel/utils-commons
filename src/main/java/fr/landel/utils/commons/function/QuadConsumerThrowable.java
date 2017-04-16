@@ -15,8 +15,6 @@ package fr.landel.utils.commons.function;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import fr.landel.utils.commons.exception.FunctionException;
-
 /**
  * Represents a throwable operation that accepts four input arguments and
  * returns no result. This is the four-arity/exception specialization of
@@ -42,7 +40,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface QuadConsumerThrowable<T, U, V, W, E extends Throwable> extends QuadConsumer<T, U, V, W> {
+public interface QuadConsumerThrowable<T, U, V, W, E extends Throwable> extends QuadConsumer<T, U, V, W>, Rethrower {
 
     /**
      * Performs this operation on the given arguments.
@@ -55,7 +53,7 @@ public interface QuadConsumerThrowable<T, U, V, W, E extends Throwable> extends 
      *            the third argument
      * @param w
      *            the fourth argument
-     * @throws FunctionException
+     * @throws E
      *             On error exception
      */
     @Override
@@ -63,7 +61,7 @@ public interface QuadConsumerThrowable<T, U, V, W, E extends Throwable> extends 
         try {
             acceptThrows(t, u, v, w);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
         }
     }
 

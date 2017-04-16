@@ -40,7 +40,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface TriConsumerThrowable<T, U, V, E extends Throwable> extends TriConsumer<T, U, V> {
+public interface TriConsumerThrowable<T, U, V, E extends Throwable> extends TriConsumer<T, U, V>, Rethrower {
 
     /**
      * Performs this operation on the given arguments.
@@ -51,7 +51,7 @@ public interface TriConsumerThrowable<T, U, V, E extends Throwable> extends TriC
      *            the second argument
      * @param v
      *            the third argument
-     * @throws FunctionException
+     * @throws E
      *             On error exception
      */
     @Override
@@ -59,7 +59,8 @@ public interface TriConsumerThrowable<T, U, V, E extends Throwable> extends TriC
         try {
             acceptThrows(t, u, v);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never used
         }
     }
 
