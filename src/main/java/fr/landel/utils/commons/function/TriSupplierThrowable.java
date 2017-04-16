@@ -42,21 +42,20 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface TriSupplierThrowable<L, M, R, E extends Throwable> extends TriSupplier<L, M, R> {
+public interface TriSupplierThrowable<L, M, R, E extends Throwable> extends TriSupplier<L, M, R>, Rethrower {
 
     /**
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default Triple<L, M, R> get() {
         try {
             return getThrows();
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

@@ -14,6 +14,7 @@ package fr.landel.utils.commons.tuple;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -68,6 +69,19 @@ public abstract class Single<T> implements Comparable<Single<T>>, Serializable {
      * @return the previous element, may be null
      */
     protected abstract T set(T element);
+
+    /**
+     * <p>
+     * Updates the element into this single.
+     * </p>
+     * 
+     * @param function
+     *            the update function
+     * @return the previous element, may be null
+     * @throws NullPointerException
+     *             if current element or function are {@code null}
+     */
+    protected abstract T update(Function<T, T> function);
 
     /**
      * <p>

@@ -39,21 +39,20 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface BooleanSupplierThrowable<E extends Throwable> extends BooleanSupplier {
+public interface BooleanSupplierThrowable<E extends Throwable> extends BooleanSupplier, Rethrower {
 
     /**
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default boolean getAsBoolean() {
         try {
             return getAsBooleanThrows();
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

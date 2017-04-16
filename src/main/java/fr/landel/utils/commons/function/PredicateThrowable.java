@@ -29,7 +29,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *
  */
 @FunctionalInterface
-public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T> {
+public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T>, Rethrower {
 
     /**
      * Evaluates this predicate on the given argument.
@@ -43,7 +43,8 @@ public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T>
         try {
             return testThrows(t);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

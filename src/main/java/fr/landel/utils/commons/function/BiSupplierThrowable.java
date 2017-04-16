@@ -40,21 +40,20 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface BiSupplierThrowable<L, R, E extends Throwable> extends BiSupplier<L, R> {
+public interface BiSupplierThrowable<L, R, E extends Throwable> extends BiSupplier<L, R>, Rethrower {
 
     /**
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default Pair<L, R> get() {
         try {
             return getThrows();
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

@@ -77,9 +77,9 @@ public class QuadPredicateThrowableTest {
         try {
             P1.test(null, "v2", 1, "turbo");
             fail("Predicate has to fail");
-        } catch (FunctionException e) {
+        } catch (IllegalArgumentException e) {
             assertNotNull(e);
-            assertEquals("java.lang.IllegalArgumentException: " + ERROR1, e.getMessage());
+            assertEquals(ERROR1, e.getMessage());
         }
     }
 

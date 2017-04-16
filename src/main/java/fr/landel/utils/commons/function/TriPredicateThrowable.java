@@ -40,7 +40,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            the exception type
  */
 @FunctionalInterface
-public interface TriPredicateThrowable<T, U, V, E extends Throwable> extends TriPredicate<T, U, V> {
+public interface TriPredicateThrowable<T, U, V, E extends Throwable> extends TriPredicate<T, U, V>, Rethrower {
 
     /**
      * Evaluates this predicate on the given arguments.
@@ -58,7 +58,8 @@ public interface TriPredicateThrowable<T, U, V, E extends Throwable> extends Tri
         try {
             return testThrows(t, u, v);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

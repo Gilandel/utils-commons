@@ -38,21 +38,20 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface SupplierThrowable<T, E extends Throwable> extends Supplier<T> {
+public interface SupplierThrowable<T, E extends Throwable> extends Supplier<T>, Rethrower {
 
     /**
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default T get() {
         try {
             return getThrows();
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

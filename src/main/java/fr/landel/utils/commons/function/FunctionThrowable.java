@@ -38,7 +38,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface FunctionThrowable<T, R, E extends Throwable> extends Function<T, R> {
+public interface FunctionThrowable<T, R, E extends Throwable> extends Function<T, R>, Rethrower {
 
     /**
      * Performs this operation on the given argument.
@@ -46,15 +46,14 @@ public interface FunctionThrowable<T, R, E extends Throwable> extends Function<T
      * @param t
      *            the input argument
      * @return The output result
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default R apply(final T t) {
         try {
             return applyThrows(t);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

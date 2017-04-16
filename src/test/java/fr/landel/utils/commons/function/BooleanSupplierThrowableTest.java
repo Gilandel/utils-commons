@@ -54,9 +54,9 @@ public class BooleanSupplierThrowableTest {
         try {
             s2.getAsBoolean();
             fail("Supplier has to fail");
-        } catch (FunctionException e) {
+        } catch (IllegalArgumentException e) {
             assertNotNull(e);
-            assertEquals("java.lang.IllegalArgumentException: " + error, e.getMessage());
+            assertEquals(error, e.getMessage());
         }
     }
 

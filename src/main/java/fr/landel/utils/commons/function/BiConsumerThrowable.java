@@ -16,8 +16,6 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import fr.landel.utils.commons.exception.FunctionException;
-
 /**
  * Represents an operation that accepts two input arguments and returns no
  * result. This is the two-arity specialization of {@link Consumer}. Unlike most
@@ -39,7 +37,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface BiConsumerThrowable<T, U, E extends Throwable> extends BiConsumer<T, U> {
+public interface BiConsumerThrowable<T, U, E extends Throwable> extends BiConsumer<T, U>, Rethrower {
 
     /**
      * Performs this operation on the given arguments.
@@ -48,15 +46,13 @@ public interface BiConsumerThrowable<T, U, E extends Throwable> extends BiConsum
      *            the first argument
      * @param u
      *            the second argument
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default void accept(final T t, final U u) {
         try {
             acceptThrows(t, u);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
         }
     }
 

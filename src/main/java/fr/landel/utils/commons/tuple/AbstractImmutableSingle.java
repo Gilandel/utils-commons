@@ -12,6 +12,8 @@
  */
 package fr.landel.utils.commons.tuple;
 
+import java.util.function.Function;
+
 /**
  * <p>
  * Abstract version for overriding purpose, don't forgot to keep it immutable.
@@ -86,6 +88,26 @@ public abstract class AbstractImmutableSingle<T> extends Single<T> {
      */
     @Override
     public T set(final T element) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * <p>
+     * Throws {@code UnsupportedOperationException}.
+     * </p>
+     * 
+     * <p>
+     * This single is immutable, so this operation is not supported.
+     * </p>
+     *
+     * @param function
+     *            the update function
+     * @return never
+     * @throws UnsupportedOperationException
+     *             as this operation is not supported
+     */
+    @Override
+    public T update(final Function<T, T> function) {
         throw new UnsupportedOperationException();
     }
 }

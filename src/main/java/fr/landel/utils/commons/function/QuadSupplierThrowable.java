@@ -41,21 +41,20 @@ import fr.landel.utils.commons.tuple.Quad;
  *            The fourth type result
  */
 @FunctionalInterface
-public interface QuadSupplierThrowable<A, B, C, D, E extends Throwable> extends QuadSupplier<A, B, C, D> {
+public interface QuadSupplierThrowable<A, B, C, D, E extends Throwable> extends QuadSupplier<A, B, C, D>, Rethrower {
 
     /**
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default Quad<A, B, C, D> get() {
         try {
             return getThrows();
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

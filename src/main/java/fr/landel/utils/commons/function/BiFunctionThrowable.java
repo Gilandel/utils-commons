@@ -41,7 +41,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface BiFunctionThrowable<T, U, R, E extends Throwable> extends BiFunction<T, U, R> {
+public interface BiFunctionThrowable<T, U, R, E extends Throwable> extends BiFunction<T, U, R>, Rethrower {
 
     /**
      * Performs this operation on the given arguments.
@@ -51,15 +51,14 @@ public interface BiFunctionThrowable<T, U, R, E extends Throwable> extends BiFun
      * @param u
      *            The second argument
      * @return The output result
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default R apply(final T t, final U u) {
         try {
             return applyThrows(t, u);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

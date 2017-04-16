@@ -17,9 +17,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
+
+import fr.landel.utils.commons.AbstractTest;
 
 /**
  * Check {@link Single}
@@ -28,7 +29,7 @@ import org.junit.Test;
  * @author Gilles
  *
  */
-public class SingleTest {
+public class SingleTest extends AbstractTest {
 
     /**
      * Test method for {@link Single#get()}.
@@ -127,12 +128,21 @@ public class SingleTest {
         mono.set(null);
         assertNull(mono.get());
 
+        assertException(() -> {
+            mono.update(o -> o.substring(0, 1));
+        }, NullPointerException.class, "Cannot update, current element is null");
+
+        mono.set("test");
+        mono.update(o -> o.substring(0, 1));
+        assertEquals("t", mono.get());
+
+        assertException(() -> {
+            mono.update(null);
+        }, NullPointerException.class, (String) null);
+
         Single<String> monoImm = Single.of(element1);
-        try {
+        assertException(() -> {
             monoImm.set("test");
-            fail();
-        } catch (UnsupportedOperationException e) {
-            assertNotNull(e);
-        }
+        }, UnsupportedOperationException.class);
     }
 }

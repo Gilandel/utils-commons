@@ -51,9 +51,9 @@ public class TriConsumerThrowableTest {
         try {
             C.accept("v1", null, "v3");
             fail("Consumer has to fail");
-        } catch (FunctionException e) {
+        } catch (IllegalArgumentException e) {
             assertNotNull(e);
-            assertEquals("java.lang.IllegalArgumentException: " + ERROR, e.getMessage());
+            assertEquals(ERROR, e.getMessage());
         }
     }
 

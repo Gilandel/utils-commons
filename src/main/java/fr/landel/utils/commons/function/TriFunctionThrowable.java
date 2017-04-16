@@ -42,7 +42,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface TriFunctionThrowable<T, U, V, R, E extends Throwable> extends TriFunction<T, U, V, R> {
+public interface TriFunctionThrowable<T, U, V, R, E extends Throwable> extends TriFunction<T, U, V, R>, Rethrower {
 
     /**
      * Performs this operation on the given arguments.
@@ -54,15 +54,14 @@ public interface TriFunctionThrowable<T, U, V, R, E extends Throwable> extends T
      * @param v
      *            the third argument
      * @return The output result
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default R apply(final T t, final U u, final V v) {
         try {
             return applyThrows(t, u, v);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 

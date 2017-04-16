@@ -67,9 +67,9 @@ public class BiFunctionThrowableTest {
         try {
             FN1.apply(null, "v2");
             fail("Function has to fail");
-        } catch (FunctionException e) {
+        } catch (IllegalArgumentException e) {
             assertNotNull(e);
-            assertEquals("java.lang.IllegalArgumentException: " + ERROR1, e.getMessage());
+            assertEquals(ERROR1, e.getMessage());
         }
     }
 

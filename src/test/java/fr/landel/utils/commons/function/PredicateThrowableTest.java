@@ -63,9 +63,9 @@ public class PredicateThrowableTest {
         try {
             P1.test(null);
             fail("Predicate has to fail");
-        } catch (FunctionException e) {
+        } catch (IllegalArgumentException e) {
             assertNotNull(e);
-            assertEquals("java.lang.IllegalArgumentException: " + ERROR1, e.getMessage());
+            assertEquals(ERROR1, e.getMessage());
         }
     }
 

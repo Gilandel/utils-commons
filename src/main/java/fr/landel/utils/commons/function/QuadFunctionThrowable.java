@@ -43,7 +43,7 @@ import fr.landel.utils.commons.exception.FunctionException;
  *            The exception type
  */
 @FunctionalInterface
-public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> extends QuadFunction<T, U, V, W, R> {
+public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> extends QuadFunction<T, U, V, W, R>, Rethrower {
 
     /**
      * Performs this operation on the given arguments.
@@ -57,15 +57,14 @@ public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> exten
      * @param w
      *            the fourth function argument
      * @return The output result
-     * @throws FunctionException
-     *             On error exception
      */
     @Override
     default R apply(final T t, final U u, final V v, final W w) {
         try {
             return applyThrows(t, u, v, w);
         } catch (final Throwable e) {
-            throw new FunctionException(e);
+            rethrowUnchecked(e);
+            throw new FunctionException(e); // never reached normally
         }
     }
 
