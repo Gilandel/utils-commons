@@ -54,8 +54,6 @@ public interface TriFunctionThrowable<T, U, V, R, E extends Throwable> extends T
      * @param v
      *            the third argument
      * @return The output result
-     * @throws E
-     *             On error exception
      */
     @Override
     default R apply(final T t, final U u, final V v) {
@@ -63,7 +61,7 @@ public interface TriFunctionThrowable<T, U, V, R, E extends Throwable> extends T
             return applyThrows(t, u, v);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

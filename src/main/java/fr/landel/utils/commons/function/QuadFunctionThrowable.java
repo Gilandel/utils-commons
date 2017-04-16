@@ -57,8 +57,6 @@ public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> exten
      * @param w
      *            the fourth function argument
      * @return The output result
-     * @throws E
-     *             On error exception
      */
     @Override
     default R apply(final T t, final U u, final V v, final W w) {
@@ -66,7 +64,7 @@ public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> exten
             return applyThrows(t, u, v, w);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

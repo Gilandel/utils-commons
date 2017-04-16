@@ -51,8 +51,6 @@ public interface TriConsumerThrowable<T, U, V, E extends Throwable> extends TriC
      *            the second argument
      * @param v
      *            the third argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default void accept(final T t, final U u, final V v) {
@@ -60,7 +58,7 @@ public interface TriConsumerThrowable<T, U, V, E extends Throwable> extends TriC
             acceptThrows(t, u, v);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

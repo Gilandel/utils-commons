@@ -62,7 +62,7 @@ public interface QuadPredicateThrowable<T, U, V, W, E extends Throwable> extends
             return testThrows(t, u, v, w);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

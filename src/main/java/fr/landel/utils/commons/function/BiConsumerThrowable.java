@@ -46,8 +46,6 @@ public interface BiConsumerThrowable<T, U, E extends Throwable> extends BiConsum
      *            the first argument
      * @param u
      *            the second argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default void accept(final T t, final U u) {

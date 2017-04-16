@@ -38,15 +38,13 @@ public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T>
      *            the input argument
      * @return {@code true} if the input argument matches the predicate,
      *         otherwise {@code false}
-     * @throws E
-     *             On error exception
      */
     default boolean test(T t) {
         try {
             return testThrows(t);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

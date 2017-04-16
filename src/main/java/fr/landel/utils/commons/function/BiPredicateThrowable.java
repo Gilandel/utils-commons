@@ -43,15 +43,13 @@ public interface BiPredicateThrowable<T, U, E extends Throwable> extends BiPredi
      *            the second argument
      * @return {@code true} if the input argument matches the predicate,
      *         otherwise {@code false}
-     * @throws E
-     *             On error exception
      */
     default boolean test(final T t, final U u) {
         try {
             return testThrows(t, u);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

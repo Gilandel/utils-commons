@@ -124,18 +124,18 @@ public class ConsumerThrowableTest extends AbstractTest {
         }
     }
 
+    /**
+     * Check that the thrown exception is correctly raised and thrown outer the
+     * functional method
+     */
     @Test
     public void testInnerException() {
         assertException(() -> {
             Arrays.asList("titi", "toto").stream().forEach((ConsumerThrowable<String, IOException>) s -> {
-                thrower(s);
+                if ("toto".equals(s)) {
+                    throw new IOException(s);
+                }
             });
         }, IOException.class, "toto");
-    }
-
-    private void thrower(final String string) throws IOException {
-        if ("toto".equals(string)) {
-            throw new IOException(string);
-        }
     }
 }

@@ -40,8 +40,6 @@ public interface ConsumerThrowable<T, E extends Throwable> extends Consumer<T>, 
      *
      * @param t
      *            the input argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default void accept(final T t) {

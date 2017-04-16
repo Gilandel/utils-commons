@@ -45,8 +45,6 @@ public interface BooleanSupplierThrowable<E extends Throwable> extends BooleanSu
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default boolean getAsBoolean() {
@@ -54,7 +52,7 @@ public interface BooleanSupplierThrowable<E extends Throwable> extends BooleanSu
             return getAsBooleanThrows();
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

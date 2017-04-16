@@ -46,8 +46,6 @@ public interface BiSupplierThrowable<L, R, E extends Throwable> extends BiSuppli
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default Pair<L, R> get() {
@@ -55,7 +53,7 @@ public interface BiSupplierThrowable<L, R, E extends Throwable> extends BiSuppli
             return getThrows();
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

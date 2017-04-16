@@ -59,7 +59,7 @@ public interface TriPredicateThrowable<T, U, V, E extends Throwable> extends Tri
             return testThrows(t, u, v);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

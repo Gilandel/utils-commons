@@ -46,8 +46,6 @@ public interface FunctionThrowable<T, R, E extends Throwable> extends Function<T
      * @param t
      *            the input argument
      * @return The output result
-     * @throws E
-     *             On error exception
      */
     @Override
     default R apply(final T t) {
@@ -55,7 +53,7 @@ public interface FunctionThrowable<T, R, E extends Throwable> extends Function<T
             return applyThrows(t);
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

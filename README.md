@@ -24,7 +24,7 @@ Work progress:
 <dependency>
 	<groupId>fr.landel.utils</groupId>
 	<artifactId>utils-commons</artifactId>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 </dependency>
 ```
 
@@ -286,7 +286,7 @@ Functional interfaces that support to throw exception:
 
 Also, missing standard functional interfaces are provided to manage 2, 3 and 4 parameters.
 
-The catched exceptions (for *Throwable interfaces) are mapped into FunctionException (an extend of RuntimeException).
+The catched exceptions (for *Throwable interfaces) are re-mapped into the original exception (but without warning) or by default into FunctionException (an extend of RuntimeException).
 
 ```java
 // definition

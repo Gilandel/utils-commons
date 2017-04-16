@@ -48,8 +48,6 @@ public interface TriSupplierThrowable<L, M, R, E extends Throwable> extends TriS
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default Triple<L, M, R> get() {
@@ -57,7 +55,7 @@ public interface TriSupplierThrowable<L, M, R, E extends Throwable> extends TriS
             return getThrows();
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

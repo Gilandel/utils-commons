@@ -44,8 +44,6 @@ public interface SupplierThrowable<T, E extends Throwable> extends Supplier<T>, 
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default T get() {
@@ -53,7 +51,7 @@ public interface SupplierThrowable<T, E extends Throwable> extends Supplier<T>, 
             return getThrows();
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 

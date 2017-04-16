@@ -53,8 +53,6 @@ public interface QuadConsumerThrowable<T, U, V, W, E extends Throwable> extends 
      *            the third argument
      * @param w
      *            the fourth argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default void accept(final T t, final U u, final V v, final W w) {

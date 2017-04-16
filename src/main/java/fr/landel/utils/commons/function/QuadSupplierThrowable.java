@@ -47,8 +47,6 @@ public interface QuadSupplierThrowable<A, B, C, D, E extends Throwable> extends 
      * Performs this operation on the given argument.
      *
      * @return the output argument
-     * @throws E
-     *             On error exception
      */
     @Override
     default Quad<A, B, C, D> get() {
@@ -56,7 +54,7 @@ public interface QuadSupplierThrowable<A, B, C, D, E extends Throwable> extends 
             return getThrows();
         } catch (final Throwable e) {
             rethrowUnchecked(e);
-            throw new FunctionException(e); // never used
+            throw new FunctionException(e); // never reached normally
         }
     }
 
