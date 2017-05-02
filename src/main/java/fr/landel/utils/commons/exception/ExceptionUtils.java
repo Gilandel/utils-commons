@@ -79,6 +79,11 @@ public final class ExceptionUtils extends org.apache.commons.lang3.exception.Exc
     /**
      * Creates a supplier of the exception and injects the message
      * 
+     * <pre>
+     * Optional.of(value).orElseThrow(ExceptionUtils.suppliesException(IllegalArgumentException::new, Locale.FRENCH,
+     *         "La valeur n'est pas comprise entre %,.3f et %,.3f", min, max));
+     * </pre>
+     * 
      * @param supplier
      *            the exception supplier (required)
      * @param locale
@@ -131,8 +136,16 @@ public final class ExceptionUtils extends org.apache.commons.lang3.exception.Exc
      * Returns the original cause. Checks recursively until the root cause was
      * found.
      * 
+     * <pre>
+     * ExceptionUtils.getCauseOrigin(new IllegalArgumentException("param error"));
+     * // -&gt; the instance of IllegalArgumentException
+     * 
+     * ExceptionUtils.getCauseOrigin(new IllegalArgumentException(new IOException("access error")));
+     * // -&gt; the instance of IOException
+     * </pre>
+     * 
      * @param exception
-     *            the exception
+     *            the exception (required, not {@code null})
      * @return the cause, if no cause was found, returns the exception
      */
     public static Throwable getCauseOrigin(final Throwable exception) {
