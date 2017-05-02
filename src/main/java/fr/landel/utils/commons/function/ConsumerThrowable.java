@@ -77,7 +77,7 @@ public interface ConsumerThrowable<T, E extends Throwable> extends Consumer<T>, 
      *             On error exception
      */
     default ConsumerThrowable<T, E> andThen(final ConsumerThrowable<T, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
         return (T t) -> {
             acceptThrows(t);
             after.acceptThrows(t);

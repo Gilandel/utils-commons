@@ -23,7 +23,7 @@ import java.util.Objects;
  * @author Gilles Landel
  *
  */
-public final class StringUtils extends org.apache.commons.lang3.StringUtils {
+public final class StringUtils extends StringFormatUtils {
 
     /**
      * The comma separator to join (for readability)

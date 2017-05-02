@@ -68,8 +68,8 @@ public interface QuadConsumer<T, U, V, W> {
      * @throws NullPointerException
      *             if {@code after} is null
      */
-    default QuadConsumer<T, U, V, W> andThen(QuadConsumer<? super T, ? super U, ? super V, ? super W> after) {
-        Objects.requireNonNull(after);
+    default QuadConsumer<T, U, V, W> andThen(final QuadConsumer<? super T, ? super U, ? super V, ? super W> after) {
+        Objects.requireNonNull(after, "after");
 
         return (t, u, v, w) -> {
             accept(t, u, v, w);

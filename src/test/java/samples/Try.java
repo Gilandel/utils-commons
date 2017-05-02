@@ -15,6 +15,7 @@ package samples;
 import java.util.Objects;
 import java.util.Optional;
 
+import fr.landel.utils.commons.CastUtils;
 import fr.landel.utils.commons.ClassUtils;
 import fr.landel.utils.commons.function.ThrowableSupplier;
 
@@ -32,14 +33,13 @@ import fr.landel.utils.commons.function.ThrowableSupplier;
  */
 public class Try {
 
-    @SuppressWarnings("unchecked")
     public static <E extends Throwable> Optional<Catch<E>> that(final ThrowableSupplier<E> exceptionSupplier) {
-        Objects.requireNonNull(exceptionSupplier);
+        Objects.requireNonNull(exceptionSupplier, "exceptionSupplier");
 
         try {
             exceptionSupplier.throwException();
-        } catch (Throwable e) {
-            return Optional.of(new Catch<>((E) e));
+        } catch (final Throwable e) {
+            return Optional.of(new Catch<E>(CastUtils.cast(e)));
         }
         return Optional.empty();
     }
@@ -54,16 +54,11 @@ public class Try {
         }
 
         public boolean is(final Class<?> clazz) {
-            Objects.requireNonNull(clazz);
-
-            return clazz.isAssignableFrom(this.clazz);
+            return Objects.requireNonNull(clazz, "clazz").isAssignableFrom(this.clazz);
         }
 
         public boolean has(final String message) {
-            if (message != null) {
-                return message.equals(this.exception.getMessage());
-            }
-            return this.exception.getMessage() == null;
+            return Objects.equals(this.exception.getMessage(), message);
         }
 
         public E get() {

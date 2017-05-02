@@ -99,7 +99,8 @@ public interface TriFunctionThrowable<T, U, V, R, E extends Throwable> extends T
      *             On error exception
      */
     default <O> TriFunctionThrowable<T, U, V, O, E> andThen(final FunctionThrowable<R, O, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
+
         return (t, u, v) -> after.applyThrows(applyThrows(t, u, v));
     }
 }

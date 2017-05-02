@@ -100,7 +100,8 @@ public interface TriPredicateThrowable<T, U, V, E extends Throwable> extends Tri
      *             On error exception
      */
     default TriPredicateThrowable<T, U, V, E> and(final TriPredicateThrowable<T, U, V, E> other) throws E {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "other");
+
         return (t, u, v) -> testThrows(t, u, v) && other.testThrows(t, u, v);
     }
 
@@ -138,7 +139,8 @@ public interface TriPredicateThrowable<T, U, V, E extends Throwable> extends Tri
      *             On error exception
      */
     default TriPredicateThrowable<T, U, V, E> or(final TriPredicateThrowable<T, U, V, E> other) throws E {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "other");
+
         return (t, u, v) -> testThrows(t, u, v) || other.testThrows(t, u, v);
     }
 }

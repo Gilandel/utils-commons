@@ -89,7 +89,7 @@ public interface FunctionThrowable<T, R, E extends Throwable> extends Function<T
      * @see #andThen(Function)
      */
     default <V> FunctionThrowable<V, R, E> composeThrows(final FunctionThrowable<V, T, E> before) throws E {
-        Objects.requireNonNull(before);
+        Objects.requireNonNull(before, "before");
         return (v) -> applyThrows(before.applyThrows(v));
     }
 
@@ -114,7 +114,7 @@ public interface FunctionThrowable<T, R, E extends Throwable> extends Function<T
      * @see #composeThrows(FunctionThrowable)
      */
     default <O> FunctionThrowable<T, O, E> andThen(final FunctionThrowable<R, O, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
         return (t) -> after.applyThrows(applyThrows(t));
     }
 }

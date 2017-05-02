@@ -85,7 +85,7 @@ public interface BiConsumerThrowable<T, U, E extends Throwable> extends BiConsum
      *             On error exception
      */
     default BiConsumerThrowable<T, U, E> andThen(final BiConsumerThrowable<T, U, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
         return (t, u) -> {
             acceptThrows(t, u);
             after.acceptThrows(t, u);

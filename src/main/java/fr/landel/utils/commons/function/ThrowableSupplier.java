@@ -20,7 +20,7 @@ package fr.landel.utils.commons.function;
  * 
  * <p>
  * This class can be used for example to prepare an exception or to assert the
- * good exception is thrown, see: fr.landel.utils.assertor.expect.Expect.
+ * good exception is thrown, see: {@link fr.landel.utils.commons.expect.Expect}.
  * </p>
  *
  * <p>

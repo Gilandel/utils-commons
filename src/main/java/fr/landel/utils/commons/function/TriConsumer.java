@@ -64,8 +64,8 @@ public interface TriConsumer<T, U, V> {
      * @throws NullPointerException
      *             if {@code after} is null
      */
-    default TriConsumer<T, U, V> andThen(TriConsumer<? super T, ? super U, ? super V> after) {
-        Objects.requireNonNull(after);
+    default TriConsumer<T, U, V> andThen(final TriConsumer<? super T, ? super U, ? super V> after) {
+        Objects.requireNonNull(after, "after");
 
         return (t, u, v) -> {
             accept(t, u, v);

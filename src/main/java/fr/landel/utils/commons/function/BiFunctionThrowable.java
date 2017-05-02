@@ -94,7 +94,7 @@ public interface BiFunctionThrowable<T, U, R, E extends Throwable> extends BiFun
      *             On error exception
      */
     default <O> BiFunctionThrowable<T, U, O, E> andThen(final FunctionThrowable<R, O, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
         return (t, u) -> after.applyThrows(applyThrows(t, u));
     }
 }

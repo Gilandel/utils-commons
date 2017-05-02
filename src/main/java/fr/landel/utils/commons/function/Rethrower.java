@@ -17,7 +17,7 @@ import java.util.Objects;
 import fr.landel.utils.commons.CastUtils;
 
 /**
- * Interface utility to rethrow an exception
+ * Interface utility to rethrow an unchecked exception
  *
  * @since Apr 17, 2017
  * @author Gilles
