@@ -25,6 +25,8 @@ import java.time.chrono.ChronoZonedDateTime;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Comparators list (byte, short, integer, long, float, double, big integer, big
@@ -155,6 +157,30 @@ public class Comparators {
      *            The first value
      * @param o2
      *            The second value
+     * @param mapper
+     *            the mapper that gets the comparable element (the mapper is
+     *            only called if value is not {@code null})
+     * @param <T>
+     *            the type of object
+     * @param <X>
+     *            The comparable type
+     * @return The comparison, if o1 is {@code null}, returns
+     *         {@link Integer#MIN_VALUE} and if o2 is {@code null}, returns
+     *         {@link Integer#MAX_VALUE}
+     * @throws NullPointerException
+     *             if {@code mapper} is {@code null}
+     */
+    public static <T, X extends Comparable<X>> int compare(final T o1, final T o2, final Function<T, X> mapper) {
+        return compare(map(o1, mapper), map(o2, mapper));
+    }
+
+    /**
+     * Compare two comparables
+     * 
+     * @param o1
+     *            The first value
+     * @param o2
+     *            The second value
      * @param <T>
      *            The comparable type
      * @return The comparison, if o1 is {@code null}, returns
@@ -176,7 +202,31 @@ public class Comparators {
     }
 
     /**
-     * Compare two comparables (in reverse mode)
+     * Compares two comparables (in reverse mode)
+     * 
+     * @param o1
+     *            The first value
+     * @param o2
+     *            The second value
+     * @param mapper
+     *            the mapper that gets the comparable element (the mapper is
+     *            only called if value is not {@code null})
+     * @param <T>
+     *            the type of object
+     * @param <X>
+     *            The comparable type
+     * @return The reverse comparison, if o1 is {@code null}, returns
+     *         {@link Integer#MAX_VALUE} and if o2 is {@code null}, returns
+     *         {@link Integer#MIN_VALUE}
+     * @throws NullPointerException
+     *             if {@code mapper} is {@code null}
+     */
+    public static <T, X extends Comparable<X>> int compareReverse(final T o1, final T o2, final Function<T, X> mapper) {
+        return compareReverse(map(o1, mapper), map(o2, mapper));
+    }
+
+    /**
+     * Compares two comparables (in reverse mode)
      * 
      * @param o1
      *            The first value
@@ -200,6 +250,27 @@ public class Comparators {
             result = o2.compareTo(o1);
         }
         return result;
+    }
+
+    /**
+     * Applies the mapper on the value only if the object is NOT {@code null}
+     * 
+     * @param o
+     *            the value
+     * @param mapper
+     *            the mapper function
+     * @return the mapped value
+     * @throws NullPointerException
+     *             if {@code mapper} is {@code null}
+     */
+    private static final <T, X extends Comparable<X>> X map(final T o, final Function<T, X> mapper) {
+        Objects.requireNonNull(mapper, "mapper");
+
+        if (o == null) {
+            return null;
+        } else {
+            return mapper.apply(o);
+        }
     }
 
     /**

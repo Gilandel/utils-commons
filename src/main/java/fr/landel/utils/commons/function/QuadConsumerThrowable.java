@@ -96,7 +96,7 @@ public interface QuadConsumerThrowable<T, U, V, W, E extends Throwable> extends 
      *             On error exception
      */
     default QuadConsumerThrowable<T, U, V, W, E> andThen(final QuadConsumerThrowable<T, U, V, W, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
         return (t, u, v, w) -> {
             acceptThrows(t, u, v, w);
             after.acceptThrows(t, u, v, w);

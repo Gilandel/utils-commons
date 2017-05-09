@@ -18,17 +18,21 @@ import java.util.function.Predicate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.landel.utils.commons.ArrayUtils;
 
 /**
- * (Description)
+ * A collection of predicates
  *
  * @since Mar 7, 2017
  * @author Gilles
  *
  */
 public class ObjectPredicator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectPredicator.class.getName());
 
     public static <T> Predicate<T> isNull() {
         return Objects::isNull;
@@ -95,12 +99,12 @@ public class ObjectPredicator {
     }
 
     public static void main(String... strings) {
-        System.out.println(isEmpty().or(isNotBlank()).test("toto"));
-        System.out.println(isEmpty().or(isNotBlank()).test(""));
-        System.out.println(isEmpty().or(isNotBlank()).test("   "));
-        System.out.println(isEmpty().or(contains("test")).test("  test "));
-        System.out.println(isEmpty().or(contains("test")).test(""));
-        System.out.println(isEmpty().or(contains("test")).test("tesot"));
-        System.out.println(isEmpty().or(contains("test")).or(equalsIgnoreCase("TeSoT")).test("tesot"));
+        LOGGER.info("Result: {}, expected: {}", isEmpty().or(isNotBlank()).test("toto"), true);
+        LOGGER.info("Result: {}, expected: {}", isEmpty().or(isNotBlank()).test(""), true);
+        LOGGER.info("Result: {}, expected: {}", isEmpty().or(isNotBlank()).test("   "), false);
+        LOGGER.info("Result: {}, expected: {}", isEmpty().or(contains("test")).test("  test "), true);
+        LOGGER.info("Result: {}, expected: {}", isEmpty().or(contains("test")).test(""), true);
+        LOGGER.info("Result: {}, expected: {}", isEmpty().or(contains("test")).test("tesot"), false);
+        LOGGER.info("Result: {}, expected: {}", isEmpty().or(contains("test")).or(equalsIgnoreCase("TeSoT")).test("tesot"), true);
     }
 }

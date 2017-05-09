@@ -105,7 +105,7 @@ public interface QuadPredicateThrowable<T, U, V, W, E extends Throwable> extends
      *             On error exception
      */
     default QuadPredicateThrowable<T, U, V, W, E> and(final QuadPredicateThrowable<T, U, V, W, E> other) throws E {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "other");
         return (t, u, v, w) -> testThrows(t, u, v, w) && other.testThrows(t, u, v, w);
     }
 
@@ -143,7 +143,7 @@ public interface QuadPredicateThrowable<T, U, V, W, E extends Throwable> extends
      *             On error exception
      */
     default QuadPredicateThrowable<T, U, V, W, E> or(final QuadPredicateThrowable<T, U, V, W, E> other) throws E {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "other");
         return (t, u, v, w) -> testThrows(t, u, v, w) || other.testThrows(t, u, v, w);
     }
 }

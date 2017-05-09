@@ -69,8 +69,9 @@ public interface TriPredicate<T, U, V> {
      * @throws NullPointerException
      *             if other is null
      */
-    default TriPredicate<T, U, V> and(TriPredicate<? super T, ? super U, ? super V> other) {
-        Objects.requireNonNull(other);
+    default TriPredicate<T, U, V> and(final TriPredicate<? super T, ? super U, ? super V> other) {
+        Objects.requireNonNull(other, "other");
+
         return (T t, U u, V v) -> test(t, u, v) && other.test(t, u, v);
     }
 
@@ -103,8 +104,9 @@ public interface TriPredicate<T, U, V> {
      * @throws NullPointerException
      *             if other is null
      */
-    default TriPredicate<T, U, V> or(TriPredicate<? super T, ? super U, ? super V> other) {
-        Objects.requireNonNull(other);
+    default TriPredicate<T, U, V> or(final TriPredicate<? super T, ? super U, ? super V> other) {
+        Objects.requireNonNull(other, "other");
+
         return (T t, U u, V v) -> test(t, u, v) || other.test(t, u, v);
     }
 }

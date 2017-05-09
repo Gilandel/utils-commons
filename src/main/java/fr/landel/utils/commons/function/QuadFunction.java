@@ -72,8 +72,8 @@ public interface QuadFunction<T, U, V, W, R> {
      * @throws NullPointerException
      *             if after is null
      */
-    default <Z> QuadFunction<T, U, V, W, Z> andThen(Function<? super R, ? extends Z> after) {
-        Objects.requireNonNull(after);
+    default <Z> QuadFunction<T, U, V, W, Z> andThen(final Function<? super R, ? extends Z> after) {
+        Objects.requireNonNull(after, "after");
         return (T t, U u, V v, W w) -> after.apply(apply(t, u, v, w));
     }
 }

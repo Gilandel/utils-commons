@@ -13,6 +13,7 @@
 package fr.landel.utils.commons;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -20,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 
 import org.junit.Test;
 
@@ -401,6 +403,63 @@ public class StringUtilsTest extends AbstractTest {
             fail("An exception is expected");
         } catch (IllegalArgumentException e) {
             assertNotNull(e);
+        }
+    }
+
+    /**
+     * Test method for {@link StringUtils#format} .
+     */
+    @Test
+    public void testFormat() {
+        final Locale defaultLocale = Locale.getDefault();
+        Locale.setDefault(Locale.US);
+
+        Object[] parameters = new Object[] {"param1", "param2"};
+        Object[] arguments = new Object[] {1.025f, "arg2", "arg3"};
+
+        assertEquals("1.025 'param1' 'param2' '1.02' 'param1' 'arg2' 'arg3'",
+                StringUtils.format("%s '%s*' '%s*' '%1$.2f' '%1$s*' '%s' '%s'", parameters, arguments));
+
+        assertEquals("1.025 'param1' 'param2' '1,02' 'param1' 'arg2' 'arg3'",
+                StringUtils.format(Locale.FRENCH, "%s '%s*' '%s*' '%1$.2f' '%1$s*' '%s' '%s'", parameters, arguments));
+
+        Locale.setDefault(defaultLocale);
+    }
+
+    /**
+     * Test method for {@link StringUtils#prepareFormat} .
+     */
+    @Test
+    public void testPrepareFormat() {
+        assertEquals("e = %2$+10.4f %3$11d %1$2d", StringUtils.prepareFormat("e = %+10.4f %11d %2d*", 1, 2).toString());
+
+        assertEquals("e = %2$+10.4f %3$11d%1$2d %4$d", StringUtils.prepareFormat("e = %+10.4f %11d%2d* %$d", 1, 3).toString());
+
+        assertEquals("e = %1$+10.4f   1$s", StringUtils.prepareFormat("e = %+10.4f %s %s* %s1$s", 0, 1).toString());
+
+        assertEquals("e = %2$+10.4f %2$s %1$s %3$s1$s", StringUtils.prepareFormat("e = %1$+10.4f %s %s* %s1$s", 1, 2).toString());
+
+        assertEquals("e = %1$+10.4f  ", StringUtils.prepareFormat("e = %+10.4f %11222d %2d*", 0, 1).toString());
+
+        assertEquals("e = %1$+10.4f  ", StringUtils.prepareFormat("e = %+10.4f %2$11d %1$2d*", 0, 1).toString());
+
+        assertEquals("e = %1$+10.4f  %1$* ", StringUtils.prepareFormat("e = %+10.4f %2$11d %1$* ", 0, 1).toString());
+
+        assertEquals("Duke's Birthday: %2$tb %2$te, %2$tY",
+                StringUtils.prepareFormat("Duke's Birthday: %1$tb %1$te, %1$tY", 1, 3).toString());
+        assertEquals("Duke's Birthday: %2$tm %2$<te,%3$<TY",
+                StringUtils.prepareFormat("Duke's Birthday: %1$tm %<te,%<TY", 1, 3).toString());
+
+        byte[] authorized = new byte[] {32, 35};
+
+        for (int i = AsciiUtils.MIN; i <= AsciiUtils.MAX; i++) {
+            String ch = String.valueOf((char) i);
+            String format = StringUtils.prepareFormat("%" + ch, 0, 1).toString();
+            if (AsciiUtils.IS_ALPHA.test(i) || i == '%') {
+                assertEquals("%1$" + ch, format);
+            } else if (Arrays.binarySearch(authorized, (byte) i) == -1) {
+                assertNotEquals("%1$" + ch, format);
+            }
         }
     }
 }

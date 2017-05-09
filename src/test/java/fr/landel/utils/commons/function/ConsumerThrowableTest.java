@@ -130,6 +130,12 @@ public class ConsumerThrowableTest extends AbstractTest {
      */
     @Test
     public void testInnerException() {
+        Arrays.asList("titi", "tata").stream().forEach((ConsumerThrowable<String, AssertionError>) s -> {
+            if ("toto".equals(s)) {
+                fail();
+            }
+        });
+
         assertException(() -> {
             Arrays.asList("titi", "toto").stream().forEach((ConsumerThrowable<String, IOException>) s -> {
                 if ("toto".equals(s)) {

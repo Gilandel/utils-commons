@@ -26,7 +26,10 @@ import fr.landel.utils.commons.exception.FunctionException;
  *
  * @since May 30, 2016
  * @author Gilles
- *
+ * @param <T>
+ *            the type of the object to check
+ * @param <E>
+ *            the exception type thrown by the predicate
  */
 @FunctionalInterface
 public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T>, Rethrower {
@@ -39,7 +42,7 @@ public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T>
      * @return {@code true} if the input argument matches the predicate,
      *         otherwise {@code false}
      */
-    default boolean test(T t) {
+    default boolean test(final T t) {
         try {
             return testThrows(t);
         } catch (final Throwable e) {
@@ -80,8 +83,8 @@ public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T>
      * @throws E
      *             On error exception
      */
-    default PredicateThrowable<T, E> and(PredicateThrowable<T, E> other) throws E {
-        Objects.requireNonNull(other);
+    default PredicateThrowable<T, E> and(final PredicateThrowable<T, E> other) throws E {
+        Objects.requireNonNull(other, "other");
         return (t) -> testThrows(t) && other.testThrows(t);
     }
 
@@ -118,8 +121,8 @@ public interface PredicateThrowable<T, E extends Throwable> extends Predicate<T>
      * @throws E
      *             On error exception
      */
-    default PredicateThrowable<T, E> or(PredicateThrowable<T, E> other) throws E {
-        Objects.requireNonNull(other);
+    default PredicateThrowable<T, E> or(final PredicateThrowable<T, E> other) throws E {
+        Objects.requireNonNull(other, "other");
         return (t) -> testThrows(t) || other.testThrows(t);
     }
 }

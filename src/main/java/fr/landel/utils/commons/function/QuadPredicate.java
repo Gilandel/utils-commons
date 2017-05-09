@@ -73,8 +73,8 @@ public interface QuadPredicate<T, U, V, W> {
      * @throws NullPointerException
      *             if other is null
      */
-    default QuadPredicate<T, U, V, W> and(QuadPredicate<? super T, ? super U, ? super V, ? super W> other) {
-        Objects.requireNonNull(other);
+    default QuadPredicate<T, U, V, W> and(final QuadPredicate<? super T, ? super U, ? super V, ? super W> other) {
+        Objects.requireNonNull(other, "other");
         return (T t, U u, V v, W w) -> test(t, u, v, w) && other.test(t, u, v, w);
     }
 
@@ -107,8 +107,8 @@ public interface QuadPredicate<T, U, V, W> {
      * @throws NullPointerException
      *             if other is null
      */
-    default QuadPredicate<T, U, V, W> or(QuadPredicate<? super T, ? super U, ? super V, ? super W> other) {
-        Objects.requireNonNull(other);
+    default QuadPredicate<T, U, V, W> or(final QuadPredicate<? super T, ? super U, ? super V, ? super W> other) {
+        Objects.requireNonNull(other, "other");
         return (T t, U u, V v, W w) -> test(t, u, v, w) || other.test(t, u, v, w);
     }
 }

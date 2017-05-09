@@ -104,7 +104,7 @@ public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> exten
      *             On error exception
      */
     default <O> QuadFunctionThrowable<T, U, V, W, O, E> andThen(final FunctionThrowable<R, O, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
         return (t, u, v, w) -> after.applyThrows(applyThrows(t, u, v, w));
     }
 }

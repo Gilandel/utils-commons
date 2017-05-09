@@ -93,7 +93,8 @@ public interface TriConsumerThrowable<T, U, V, E extends Throwable> extends TriC
      *             On error exception
      */
     default TriConsumerThrowable<T, U, V, E> andThen(final TriConsumerThrowable<T, U, V, E> after) throws E {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after");
+
         return (t, u, v) -> {
             acceptThrows(t, u, v);
             after.acceptThrows(t, u, v);

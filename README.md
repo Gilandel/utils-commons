@@ -63,7 +63,7 @@ Work progress:
 - NumberUtils: Extends NumberUtils from Apache project, adds methods to check number equality,
 - ObjectUtils: Extends ObjectUtils from Apache project, adds features for Object,
 - Result: A class like Optional, but if a null value is set (not empty), this method returns 'present', the aim is to differentiate an empty value and a null,
-- StringUtils: Extend StringUtils from Apache project, add methods to get default string if empty or null.
+- StringUtils: Extends StringUtils from Apache project, add methods to get default string if empty or null.
 
 ### Default
 
@@ -274,7 +274,8 @@ Expect.exception(() -> {
 - AbstractException: Base class for Exception (add constructors to directly create message with arguments),
 - AbstractException: Base class for RuntimeException (add constructors to directly create message with arguments),
 - FunctionException: Runtime Exception thrown on error with throwable functional interfaces,
-- IllegalOperationException: Specific Runtime Exception used by functional interface in case of unauthorized operation (mainly in QueryBuilder).
+- IllegalOperationException: Specific Runtime Exception used by functional interface in case of unauthorized operation (mainly in QueryBuilder)
+- ExceptionUtils: Extends ExceptionUtils from Apache project, add functions like exception supplier builder or get origin cause.
 
 ## Function
 Functional interfaces that support to throw exception:

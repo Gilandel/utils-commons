@@ -19,9 +19,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
+
+import fr.landel.utils.commons.tuple.Single;
 
 /**
  * Check comparators
@@ -392,6 +395,48 @@ public class ComparatorsTest extends AbstractTest {
     @Test(expected = NullPointerException.class)
     public void testVersionNull() {
         new Version(null);
+    }
+
+    /**
+     * Check {@link Comparators#compare}
+     */
+    @Test
+    public void testCompareMapper() {
+        final Single<Integer> object = Single.of(12);
+        final Single<Integer> object2 = Single.of(13);
+        final Function<Single<Integer>, Integer> mapper = o -> o.get();
+
+        assertEquals(0, Comparators.compare(object, object, mapper));
+        assertEquals(0, Comparators.compare(null, null, mapper));
+        assertEquals(Integer.MAX_VALUE, Comparators.compare(object, null, mapper));
+        assertEquals(Integer.MIN_VALUE, Comparators.compare(null, object, mapper));
+        assertEquals(-1, Comparators.compare(object, object2, mapper));
+        assertEquals(1, Comparators.compare(object2, object, mapper));
+
+        assertException(() -> {
+            Comparators.compare(object, object, null);
+        }, NullPointerException.class, "mapper");
+    }
+
+    /**
+     * Check {@link Comparators#compareReverse}
+     */
+    @Test
+    public void testCompareReverseMapper() {
+        final Single<Integer> object = Single.of(12);
+        final Single<Integer> object2 = Single.of(13);
+        final Function<Single<Integer>, Integer> mapper = o -> o.get();
+
+        assertEquals(0, Comparators.compareReverse(object, object, mapper));
+        assertEquals(0, Comparators.compareReverse(null, null, mapper));
+        assertEquals(Integer.MIN_VALUE, Comparators.compareReverse(object, null, mapper));
+        assertEquals(Integer.MAX_VALUE, Comparators.compareReverse(null, object, mapper));
+        assertEquals(1, Comparators.compareReverse(object, object2, mapper));
+        assertEquals(-1, Comparators.compareReverse(object2, object, mapper));
+
+        assertException(() -> {
+            Comparators.compareReverse(object, object, null);
+        }, NullPointerException.class, "mapper");
     }
 
     /**

@@ -88,7 +88,7 @@ public interface BiPredicateThrowable<T, U, E extends Throwable> extends BiPredi
      *             On error exception
      */
     default BiPredicateThrowable<T, U, E> and(final BiPredicateThrowable<T, U, E> other) throws E {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "other");
         return (t, u) -> testThrows(t, u) && other.testThrows(t, u);
     }
 
@@ -126,7 +126,7 @@ public interface BiPredicateThrowable<T, U, E extends Throwable> extends BiPredi
      *             On error exception
      */
     default BiPredicateThrowable<T, U, E> or(final BiPredicateThrowable<T, U, E> other) throws E {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "other");
         return (t, u) -> testThrows(t, u) || other.testThrows(t, u);
     }
 }
