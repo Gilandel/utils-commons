@@ -1,3 +1,15 @@
+/*-
+ * #%L
+ * utils-commons
+ * %%
+ * Copyright (C) 2016 - 2017 Gilandel
+ * %%
+ * Authors: Gilles Landel
+ * URL: https://github.com/Gilandel
+ * 
+ * This file is under Apache License, version 2.0 (2004).
+ * #L%
+ */
 package samples.builder;
 
 import java.lang.annotation.Annotation;
@@ -16,7 +28,7 @@ public interface EqualsBuilderAnnotation<T extends EqualsBuilderAnnotation<T>> {
     ConcurrentMap<Class<?>, List<Function<EqualsBuilderAnnotation<?>, Object>>> EQUALS_FUNCTIONS = new ConcurrentHashMap<>();
     String EQUALS_ERROR_FIELD = "equals_error_field";
 
-    default void prepare() {
+    default void prepareEqualsBuilder() {
         final Class<?> clazz = this.getClass();
         if (!EQUALS_FUNCTIONS.containsKey(clazz)) {
             final Field[] fields = this.getClass().getDeclaredFields();
@@ -25,9 +37,9 @@ public interface EqualsBuilderAnnotation<T extends EqualsBuilderAnnotation<T>> {
             EQUALS_FUNCTIONS.put(clazz, list);
 
             for (Field field : fields) {
-                Annotation[] annotations = field.getDeclaredAnnotations();
+                final boolean accessible = field.isAccessible();
                 field.setAccessible(true);
-                for (Annotation annotation : annotations) {
+                for (Annotation annotation : field.getDeclaredAnnotations()) {
                     if (EqualsProperty.class.equals(annotation.annotationType())) {
                         list.add(o -> {
                             try {
@@ -38,6 +50,7 @@ public interface EqualsBuilderAnnotation<T extends EqualsBuilderAnnotation<T>> {
                         });
                     }
                 }
+                field.setAccessible(accessible);
             }
         }
     }

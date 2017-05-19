@@ -1,3 +1,15 @@
+/*-
+ * #%L
+ * utils-commons
+ * %%
+ * Copyright (C) 2016 - 2017 Gilandel
+ * %%
+ * Authors: Gilles Landel
+ * URL: https://github.com/Gilandel
+ * 
+ * This file is under Apache License, version 2.0 (2004).
+ * #L%
+ */
 package samples.builder;
 
 public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
@@ -11,7 +23,7 @@ public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
     private String description;
 
     public Entity1() {
-        prepare();
+        this.prepareEqualsBuilder();
     }
 
     /**
@@ -61,11 +73,11 @@ public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
 
     @Override
     public boolean equals(Object obj) {
-        return buildEquals(obj);
+        return this.buildEquals(obj);
     }
 
     @Override
     public int hashCode() {
-        return buildHashCode();
+        return this.buildHashCode();
     }
 }

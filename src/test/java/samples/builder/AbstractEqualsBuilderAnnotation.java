@@ -1,3 +1,15 @@
+/*-
+ * #%L
+ * utils-commons
+ * %%
+ * Copyright (C) 2016 - 2017 Gilandel
+ * %%
+ * Authors: Gilles Landel
+ * URL: https://github.com/Gilandel
+ * 
+ * This file is under Apache License, version 2.0 (2004).
+ * #L%
+ */
 package samples.builder;
 
 import java.lang.annotation.Annotation;
@@ -11,27 +23,30 @@ import fr.landel.utils.commons.builder.HashCodeBuilder2;
 
 public abstract class AbstractEqualsBuilderAnnotation<T extends AbstractEqualsBuilderAnnotation<T>> {
 
-    private static boolean analyzed = false;
+    private static final String EQUALS_ERROR_FIELD = "equals_error_field";
     private static final List<Function<AbstractEqualsBuilderAnnotation<?>, Object>> EQUALS_FUNCTIONS = new ArrayList<>();
+
+    private static boolean analyzed = false;
 
     protected AbstractEqualsBuilderAnnotation() {
         if (!analyzed) {
             Field[] fields = this.getClass().getDeclaredFields();
 
             for (Field field : fields) {
-                Annotation[] annotations = field.getDeclaredAnnotations();
+                final boolean accessible = field.isAccessible();
                 field.setAccessible(true);
-                for (Annotation annotation : annotations) {
+                for (Annotation annotation : field.getDeclaredAnnotations()) {
                     if (EqualsProperty.class.equals(annotation.annotationType())) {
                         EQUALS_FUNCTIONS.add(o -> {
                             try {
                                 return field.get(o);
                             } catch (final IllegalArgumentException | IllegalAccessException e) {
-                                return null;
+                                return EQUALS_ERROR_FIELD;
                             }
                         });
                     }
                 }
+                field.setAccessible(accessible);
             }
 
             analyzed = true;
