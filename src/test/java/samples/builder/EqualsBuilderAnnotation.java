@@ -37,7 +37,6 @@ public interface EqualsBuilderAnnotation<T extends EqualsBuilderAnnotation<T>> {
             EQUALS_FUNCTIONS.put(clazz, list);
 
             for (Field field : fields) {
-                final boolean accessible = field.isAccessible();
                 field.setAccessible(true);
                 for (Annotation annotation : field.getDeclaredAnnotations()) {
                     if (EqualsProperty.class.equals(annotation.annotationType())) {
@@ -50,7 +49,6 @@ public interface EqualsBuilderAnnotation<T extends EqualsBuilderAnnotation<T>> {
                         });
                     }
                 }
-                field.setAccessible(accessible);
             }
         }
     }

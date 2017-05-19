@@ -33,7 +33,6 @@ public abstract class AbstractEqualsBuilderAnnotation<T extends AbstractEqualsBu
             Field[] fields = this.getClass().getDeclaredFields();
 
             for (Field field : fields) {
-                final boolean accessible = field.isAccessible();
                 field.setAccessible(true);
                 for (Annotation annotation : field.getDeclaredAnnotations()) {
                     if (EqualsProperty.class.equals(annotation.annotationType())) {
@@ -46,7 +45,6 @@ public abstract class AbstractEqualsBuilderAnnotation<T extends AbstractEqualsBu
                         });
                     }
                 }
-                field.setAccessible(accessible);
             }
 
             analyzed = true;
