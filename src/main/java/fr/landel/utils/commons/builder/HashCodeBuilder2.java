@@ -18,33 +18,37 @@ import java.util.function.Function;
 /**
  * {@link org.apache.commons.lang3.builder.HashCodeBuilder}
  * 
- * @since Nov 15, 2016
+ * @since May 19, 2017
  * @author Gilles
  *
  */
-public class HashCodeBuilder extends org.apache.commons.lang3.builder.HashCodeBuilder {
+public class HashCodeBuilder2<T> extends HashCodeBuilder {
+
+    private T object;
+
+    public HashCodeBuilder2(final T object) {
+        super();
+
+        this.object = object;
+    }
 
     /**
      * Append the {@code hashCode} returned by the {@code getter} function. The
      * {@code getter} method is only applied if the {@code object} is not
      * {@code null}.
      * 
-     * @param object
-     *            the first object
      * @param getter
      *            the function to apply if both objects are not {@code null}
      *            (required, throws a {@link NullPointerException} if
      *            {@code null})
-     * @param <O>
-     *            the check object type
      * @param <X>
      *            the sub type
      * @return the current builder
      */
-    public <O, X> HashCodeBuilder append(final O object, final Function<O, X> getter) {
+    public <X> HashCodeBuilder2<T> append(final Function<T, X> getter) {
         Objects.requireNonNull(getter, "getter");
-        if (object != null) {
-            this.append(getter.apply(object));
+        if (this.object != null) {
+            this.append(getter.apply(this.object));
         }
         return this;
     }

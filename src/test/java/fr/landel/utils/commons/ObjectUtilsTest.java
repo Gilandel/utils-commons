@@ -18,6 +18,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Objects;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import org.junit.Test;
 
 /**
@@ -28,6 +32,8 @@ import org.junit.Test;
  *
  */
 public class ObjectUtilsTest extends AbstractTest {
+
+    private static final Predicate<Boolean> PREDICATE = Objects::nonNull;
 
     /**
      * Test method for {@link ObjectUtils#ObjectUtils()}.
@@ -82,6 +88,68 @@ public class ObjectUtilsTest extends AbstractTest {
     @Test(expected = NullPointerException.class)
     public void testDefaultIfNullTSupplierOfTNull() {
         ObjectUtils.defaultIfNull(true, null);
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#defaultIf(java.lang.Object, java.lang.Object)}.
+     */
+    @Test
+    public void testDefaultIfTOfT() {
+        assertTrue(ObjectUtils.defaultIf(PREDICATE, true, false));
+        assertFalse(ObjectUtils.defaultIf(PREDICATE, null, false));
+
+        assertException(() -> ObjectUtils.defaultIf(null, true, false), NullPointerException.class,
+                "The parameter predicate cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#defaultIf(java.lang.Object, java.util.function.Supplier)}.
+     */
+    @Test
+    public void testDefaultIfTOfSupplyT() {
+        final Supplier<Boolean> supFalse = () -> false;
+
+        assertTrue(ObjectUtils.defaultIf(PREDICATE, true, supFalse));
+        assertFalse(ObjectUtils.defaultIf(PREDICATE, null, supFalse));
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#defaultIf(Object, Object, java.util.function.Function)}.
+     */
+    @Test
+    public void testDefaultIfTOfT2() {
+        assertTrue(ObjectUtils.defaultIf(PREDICATE, false, false, b -> !b));
+        assertFalse(ObjectUtils.defaultIf(PREDICATE, (Boolean) null, false, b -> !b));
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#defaultIf(java.util.function.Supplier, Object)}.
+     */
+    @Test(expected = NullPointerException.class)
+    public void testDefaultIfSupplierNull() {
+        ObjectUtils.defaultIf(PREDICATE, null, true, null);
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#defaultIf(java.util.function.Supplier, java.util.function.Supplier)}.
+     */
+    @Test(expected = NullPointerException.class)
+    public void testDefaultIfDefaultNull1() {
+        ObjectUtils.defaultIf(PREDICATE, null, (Supplier<Boolean>) null);
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#defaultIf(java.lang.Object, java.util.function.Supplier)}.
+     */
+    @Test(expected = NullPointerException.class)
+    public void testDefaultIfTSupplierOfTNull() {
+        ObjectUtils.defaultIf(PREDICATE, true, (Supplier<Boolean>) null);
     }
 
     /**

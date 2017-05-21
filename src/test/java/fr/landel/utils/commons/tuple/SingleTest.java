@@ -144,5 +144,9 @@ public class SingleTest extends AbstractTest {
         assertException(() -> {
             monoImm.set("test");
         }, UnsupportedOperationException.class);
+
+        assertException(() -> {
+            monoImm.update(t -> t.toUpperCase());
+        }, UnsupportedOperationException.class);
     }
 }

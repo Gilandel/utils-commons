@@ -14,6 +14,7 @@ package fr.landel.utils.commons;
 
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -77,7 +78,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      * ObjectUtils.defaultIfNull(null, () -&gt; "")            = ""
      * ObjectUtils.defaultIfNull(null, () -&gt; "zz")          = "zz"
      * ObjectUtils.defaultIfNull("abc", () -&gt; *)            = "abc"
-     * ObjectUtils.defaultIfNull(Boolean.TRUE, () -&gt;  *)    = Boolean.TRUE
+     * ObjectUtils.defaultIfNull(Boolean.TRUE, () -&gt; *)     = Boolean.TRUE
      * </pre>
      *
      * @param object
@@ -95,6 +96,105 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
         Objects.requireNonNull(defaultValueSupplier, "The parameter defaultValueSupplier cannot be null");
 
         return object != null ? object : defaultValueSupplier.get();
+    }
+
+    /**
+     * Returns a default value if the object doesn't match the predicate.
+     * 
+     * <pre>
+     * ObjectUtils.defaultIf(Objects::nonNull, null, () -&gt; null)          = null
+     * ObjectUtils.defaultIf(Objects::nonNull, null, () -&gt; "")            = ""
+     * ObjectUtils.defaultIf(Objects::nonNull, null, () -&gt; "zz")          = "zz"
+     * ObjectUtils.defaultIf(Objects::nonNull, "abc", () -&gt; *)            = "abc"
+     * ObjectUtils.defaultIf(Objects::nonNull, Boolean.TRUE, () -&gt; *)     = Boolean.TRUE
+     * </pre>
+     * 
+     * @param predicate
+     *            the predicate (cannot be {@code null})
+     * @param object
+     *            the {@code Object} to test, may be {@code null}
+     * @param defaultValueSupplier
+     *            the default value supplier, cannot be {@code null}, may supply
+     *            {@code null}
+     * @param <T>
+     *            the type of the object
+     * @return {@code object} if it matches the predicate, defaultValue
+     *         otherwise
+     * @throws NullPointerException
+     *             if {@code predicate} or {@code defaultValueSupplier} are
+     *             {@code null}
+     */
+    public static <T> T defaultIf(final Predicate<T> predicate, final T object, final Supplier<? extends T> defaultValueSupplier) {
+        Objects.requireNonNull(predicate, "The parameter predicate cannot be null");
+        Objects.requireNonNull(defaultValueSupplier, "The parameter defaultValueSupplier cannot be null");
+
+        return predicate.test(object) ? object : defaultValueSupplier.get();
+    }
+
+    /**
+     * Returns a default value if the object doesn't match the predicate.
+     * 
+     * <pre>
+     * ObjectUtils.defaultIf(Objects::nonNull, null, null)          = null
+     * ObjectUtils.defaultIf(Objects::nonNull, null, "")            = ""
+     * ObjectUtils.defaultIf(Objects::nonNull, null, "zz")          = "zz"
+     * ObjectUtils.defaultIf(Objects::nonNull, "abc", *)            = "abc"
+     * ObjectUtils.defaultIf(Objects::nonNull, Boolean.TRUE, *)     = Boolean.TRUE
+     * </pre>
+     * 
+     * @param predicate
+     *            the predicate (cannot be {@code null})
+     * @param object
+     *            the {@code Object} to test, may be {@code null}
+     * @param defaultValue
+     *            the default value, may be {@code null}
+     * @param <T>
+     *            the type of the object
+     * @return {@code object} if it matches the predicate, defaultValue
+     *         otherwise
+     * @throws NullPointerException
+     *             if {@code predicate} is {@code null}
+     */
+    public static <T> T defaultIf(final Predicate<T> predicate, final T object, final T defaultValue) {
+        Objects.requireNonNull(predicate, "The parameter predicate cannot be null");
+
+        return predicate.test(object) ? object : defaultValue;
+    }
+
+    /**
+     * Returns a default value if the object doesn't match the predicate.
+     *
+     * <pre>
+     * ObjectUtils.defaultIf(Objects::nonNull, null, null, o -&gt; o.getTitle())              = null
+     * ObjectUtils.defaultIf(Objects::nonNull, null, "",  o -&gt; o.getTitle())               = ""
+     * ObjectUtils.defaultIf(Objects::nonNull, null, "zz", o -&gt; o.getTitle())              = "zz"
+     * ObjectUtils.defaultIf(Objects::nonNull, "abc", "NO_TEXT", o -&gt; o.toUpperCase())     = "ABC"
+     * ObjectUtils.defaultIf(Objects::nonNull, "false", Boolean.TRUE, Boolean::parseBoolean)  = Boolean.TRUE
+     * </pre>
+     * 
+     * @param predicate
+     *            the predicate (cannot be {@code null})
+     * @param object
+     *            the {@code Object} to test, may be {@code null}
+     * @param defaultObject
+     *            the default value
+     * @param transformer
+     *            the object mapper
+     * @param <T>
+     *            the type of the object
+     * @param <X>
+     *            the type of output
+     * @return {@code object} if it matches the predicate, defaultValue
+     *         otherwise
+     * @throws NullPointerException
+     *             if {@code predicate} or {@code transformer} are {@code null}
+     */
+    public static <T, X> X defaultIf(final Predicate<T> predicate, final T object, final X defaultObject,
+            final Function<T, X> transformer) {
+        Objects.requireNonNull(predicate, "The parameter predicate cannot be null");
+        Objects.requireNonNull(transformer, "The parameter transformer cannot be null");
+
+        return predicate.test(object) ? transformer.apply(object) : defaultObject;
     }
 
     /**
