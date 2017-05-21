@@ -24,7 +24,7 @@ Work progress:
 <dependency>
 	<groupId>fr.landel.utils</groupId>
 	<artifactId>utils-commons</artifactId>
-	<version>1.0.5</version>
+	<version>1.0.7</version>
 </dependency>
 ```
 
@@ -38,6 +38,7 @@ Work progress:
    1. [EqualsBuilder](#equalsbuilder)
    1. [EqualsBuilder2](#equalsbuilder2)
    1. [HashCodeBuilder](#hashcodebuilder)
+   1. [HashCodeBuilder2](#hashcodebuilder2)
    1. [ToStringBuilder](#tostringbuilder)
 1. [Expect](#expect)
 1. [Exception](#exception)
@@ -170,6 +171,14 @@ builder.isEqual(); // the equality will take account of the dto1 new name.
 ```java
 new HashCodeBuilder()
 	.append(dto, dto -> dto.getId() * 37)
+	.isEqual();
+```
+
+### HashCodeBuilder2
+
+```java
+new HashCodeBuilder2<>(this)
+	.append(dto -> dto.getId() * 37)
 	.isEqual();
 ```
 
