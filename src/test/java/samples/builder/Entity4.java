@@ -12,16 +12,12 @@
  */
 package samples.builder;
 
-public class Entity2 extends AbstractBuilderAnnotation<Entity2> {
+import java.util.Objects;
 
-    @ToStringProperty
+public class Entity4 {
+
     private String name;
-
-    @ToStringProperty
-    @EqualsProperty
     private long value;
-
-    @EqualsProperty
     private String description;
 
     /**
@@ -67,5 +63,26 @@ public class Entity2 extends AbstractBuilderAnnotation<Entity2> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (!this.getClass().equals(obj.getClass())) {
+            return false;
+        } else if (!Objects.equals(this.getValue(), ((Entity4) obj).getValue())) {
+            return false;
+        } else if (!Objects.equals(this.getDescription(), ((Entity4) obj).getDescription())) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getValue(), this.getDescription());
     }
 }

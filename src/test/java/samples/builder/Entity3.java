@@ -12,16 +12,13 @@
  */
 package samples.builder;
 
-public class Entity2 extends AbstractBuilderAnnotation<Entity2> {
+import fr.landel.utils.commons.builder.EqualsBuilder2;
+import fr.landel.utils.commons.builder.HashCodeBuilder2;
 
-    @ToStringProperty
+public class Entity3 {
+
     private String name;
-
-    @ToStringProperty
-    @EqualsProperty
     private long value;
-
-    @EqualsProperty
     private String description;
 
     /**
@@ -67,5 +64,25 @@ public class Entity2 extends AbstractBuilderAnnotation<Entity2> {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        EqualsBuilder2<Entity3> builder = new EqualsBuilder2<>(this, obj);
+
+        builder.append(o -> o.getValue());
+        builder.append(o -> o.getDescription());
+
+        return builder.isEqual();
+    }
+
+    @Override
+    public int hashCode() {
+        HashCodeBuilder2<Entity3> builder = new HashCodeBuilder2<>(this);
+
+        builder.append(o -> o.getValue());
+        builder.append(o -> o.getDescription());
+
+        return builder.toHashCode();
     }
 }

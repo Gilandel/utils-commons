@@ -24,10 +24,6 @@ import java.util.function.Function;
  */
 public class HashCodeBuilder extends org.apache.commons.lang3.builder.HashCodeBuilder {
 
-    public HashCodeBuilder() {
-        super();
-    }
-
     /**
      * Append the {@code hashCode} returned by the {@code getter} function. The
      * {@code getter} method is only applied if the {@code object} is not

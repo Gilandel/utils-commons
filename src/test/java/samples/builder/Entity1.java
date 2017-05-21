@@ -12,10 +12,12 @@
  */
 package samples.builder;
 
-public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
+public class Entity1 implements BuilderAnnotation<Entity1> {
 
+    @ToStringProperty
     private String name;
 
+    @ToStringProperty
     @EqualsProperty
     private long value;
 
@@ -23,13 +25,13 @@ public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
     private String description;
 
     public Entity1() {
-        this.prepareEqualsBuilder();
+        this.prepareBuilders();
     }
 
     /**
      * @return the name
      */
-    protected String getName() {
+    public String getName() {
         return this.name;
     }
 
@@ -37,14 +39,14 @@ public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
      * @param name
      *            the name to set
      */
-    protected void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     /**
      * @return the value
      */
-    protected long getValue() {
+    public long getValue() {
         return this.value;
     }
 
@@ -52,14 +54,14 @@ public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
      * @param value
      *            the value to set
      */
-    protected void setValue(long value) {
+    public void setValue(long value) {
         this.value = value;
     }
 
     /**
      * @return the description
      */
-    protected String getDescription() {
+    public String getDescription() {
         return this.description;
     }
 
@@ -67,7 +69,7 @@ public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
      * @param description
      *            the description to set
      */
-    protected void setDescription(String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -79,5 +81,10 @@ public class Entity1 implements EqualsBuilderAnnotation<Entity1> {
     @Override
     public int hashCode() {
         return this.buildHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return this.buildToString();
     }
 }
