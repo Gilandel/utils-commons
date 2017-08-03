@@ -146,7 +146,7 @@ public abstract class Single<T> implements Comparable<Single<T>>, Serializable {
      */
     @Override
     public String toString() {
-        return new StringBuilder().append('(').append(get()).append(')').toString();
+        return new StringBuilder("(").append(this.get()).append(')').toString();
     }
 
     /**
@@ -166,7 +166,7 @@ public abstract class Single<T> implements Comparable<Single<T>>, Serializable {
      * @return the formatted string, not null
      */
     public String toString(final String format) {
-        return String.format(format, get());
+        return String.format(format, this.get());
     }
 
     /**

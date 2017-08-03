@@ -29,6 +29,11 @@ import java.util.TreeSet;
  */
 public abstract class StringFormatUtils extends org.apache.commons.lang3.StringUtils {
 
+    /**
+     * Empty string
+     */
+    public static final String EMPTY = "";
+
     // The regular expression from String#format
     // (just for info, the original regular expression, it's replaced here cause
     // of performance issues)
@@ -44,8 +49,6 @@ public abstract class StringFormatUtils extends org.apache.commons.lang3.StringU
      * Flags in regular expression (sorted for binarySearch)
      */
     private static final char[] FLAGS = StringUtils.toChars(" #(+,-0<\\");
-
-    private static final String EMPTY = "";
 
     private static final char PERCENT = '%';
     private static final char PREFIX = PERCENT;
