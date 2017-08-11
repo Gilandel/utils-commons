@@ -3,7 +3,9 @@ package fr.landel.utils.commons;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.util.Collections;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
@@ -37,6 +39,19 @@ public class StringUtilsPerf extends AbstractMicrobenchmark {
         StringUtils.inject("I'll go to {} {3} {} {2}");
         StringUtils.inject("I'll go to {} {3} {} {2}", "the", "this", "afternoon", "beach");
         StringUtils.inject("I'll go to {{}}{3} {} {2}{{0}} {4} {text}", "the", "this", "afternoon", "beach");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#injectKeys(CharSequence, java.util.Map.Entry...)}.
+     */
+    @Benchmark
+    public void testInjectKeys() {
+        StringUtils.injectKeys("I'll go to {where} this {when}", Pair.of("where", "beach"), Pair.of("when", "afternoon"));
+        StringUtils.injectKeys("I'll go to {where} this {when} {{when}}", Pair.of("where", "beach"), Pair.of("when", "afternoon"));
+        StringUtils.injectKeys("I'll go to {where} this {when}",
+                MapUtils2.newHashMap(Pair.of("where", "beach"), Pair.of("when", "afternoon")));
+        StringUtils.injectKeys("I'll go to {where}", Collections.singletonMap("where", "beach"));
     }
 
     /**
