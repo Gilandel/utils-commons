@@ -22,7 +22,9 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 
 /**
@@ -404,6 +406,61 @@ public class StringUtilsTest extends AbstractTest {
         } catch (IllegalArgumentException e) {
             assertNotNull(e);
         }
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#injectKeys(CharSequence, org.apache.commons.lang3.tuple.Pair...)}
+     * .
+     */
+    @Test
+    public void testInjectKeys() {
+        assertEquals("", StringUtils.injectKeys("", Pair.of("key", "test")));
+        assertEquals("test", StringUtils.injectKeys("test", Pair.of("key", "test")));
+        assertEquals("test1 {key0} test2 test1 {key1}",
+                StringUtils.injectKeys("{key1} {key0} {key2} {key1} {{key1}}", Pair.of("key1", "test1"), Pair.of("key2", "test2")));
+        assertEquals("Test null", StringUtils.injectKeys("Test {key}", Pair.of("key", null)));
+        assertEquals("Test null", StringUtils.injectKeys("Test {null}", Pair.of(null, null)));
+        assertEquals("Test test", StringUtils.injectKeys("Test {null}", Pair.of(null, "test")));
+
+        assertEquals("Test", StringUtils.injectKeys("Test"));
+        assertEquals("Test", StringUtils.injectKeys("Test", Pair.of("key", null)));
+        assertEquals("Test", StringUtils.injectKeys("Test", (Pair<String, Object>) null));
+        assertEquals("Test", StringUtils.injectKeys("Test", (Pair<String, Object>[]) null));
+
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}"));
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", Pair.of("key1", null)));
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", (Pair<String, Object>) null));
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", (Pair<String, Object>[]) null));
+
+        assertException(() -> StringUtils.injectKeys(null, Pair.of("key", "test")), IllegalArgumentException.class,
+                "The input char sequence cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#injectKeys(CharSequence, java.util.Map.Entry...)} .
+     */
+    @Test
+    public void testInjectKeysMap() {
+        assertEquals("", StringUtils.injectKeys("", Collections.singletonMap("key", "test")));
+        assertEquals("test", StringUtils.injectKeys("test", Collections.singletonMap("key", "test")));
+        assertEquals("test1 {key0} test2 test1 {key1}", StringUtils.injectKeys("{key1} {key0} {key2} {key1} {{key1}}",
+                MapUtils2.newHashMap(Pair.of("key1", "test1"), Pair.of("key2", "test2"))));
+        assertEquals("Test null", StringUtils.injectKeys("Test {key}", Collections.singletonMap("key", null)));
+        assertEquals("Test null", StringUtils.injectKeys("Test {null}", Collections.singletonMap(null, null)));
+        assertEquals("Test test", StringUtils.injectKeys("Test {null}", Collections.singletonMap(null, "test")));
+
+        assertEquals("Test", StringUtils.injectKeys("Test", Collections.emptyMap()));
+        assertEquals("Test", StringUtils.injectKeys("Test", Collections.singletonMap("key", null)));
+        assertEquals("Test", StringUtils.injectKeys("Test", (Map<String, Object>) null));
+
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", Collections.emptyMap()));
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", Collections.singletonMap("key1", null)));
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", (Map<String, Object>) null));
+
+        assertException(() -> StringUtils.injectKeys(null, Collections.singletonMap("key", "test")), IllegalArgumentException.class,
+                "The input char sequence cannot be null");
     }
 
     /**

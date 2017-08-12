@@ -24,7 +24,7 @@ Work progress:
 <dependency>
 	<groupId>fr.landel.utils</groupId>
 	<artifactId>utils-commons</artifactId>
-	<version>1.0.7</version>
+	<version>1.0.9</version>
 </dependency>
 ```
 
@@ -64,7 +64,8 @@ Work progress:
 - NumberUtils: Extends NumberUtils from Apache project, adds methods to check number equality,
 - ObjectUtils: Extends ObjectUtils from Apache project, adds features for Object,
 - Result: A class like Optional, but if a null value is set (not empty), this method returns 'present', the aim is to differentiate an empty value and a null,
-- StringUtils: Extends StringUtils from Apache project, add methods to get default string if empty or null.
+- StreamUtils: Provides function to manage composed Java 8 functions
+- StringUtils: Extends StringUtils from Apache project, add methods to get default string if empty or null and add methods like 'inject' to insert arguments into a string.
 
 ### Default
 
