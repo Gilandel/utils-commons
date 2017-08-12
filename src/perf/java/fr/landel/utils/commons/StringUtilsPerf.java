@@ -26,7 +26,7 @@ public class StringUtilsPerf extends AbstractMicrobenchmark {
 
     @Override
     protected double getExpectedMinNbOpsPerSeconds() {
-        return 200_000d;
+        return 150_000d;
     }
 
     /**
