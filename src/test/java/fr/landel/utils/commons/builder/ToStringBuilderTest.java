@@ -17,7 +17,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.awt.Color;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.junit.Test;
 
@@ -184,6 +188,17 @@ public class ToStringBuilderTest {
         builder.appendAndFormatIfPresentIf("result", Result.<String> empty(), v -> v.isEmpty(), text -> text.toUpperCase());
 
         assertEquals(expected.toString(), builder.build());
+
+        builder = new ToStringBuilder();
+        builder.append("id", 1);
+        builder.append("name", "\"test\":test");
+        builder.append("list", Arrays.asList(new ToStringBuilder().append("id", 2).append("name", "julies").build(),
+                new ToStringBuilder().append("id", 3).append("name", "kelig").build()));
+        builder.append("array", new String[] {"test", "test"});
+        builder.append("map", Collections.singletonMap("key", "value"));
+
+        assertEquals("[id=1,name=\"test\":test,list=[[id=2,name=julies],[id=3,name=kelig]],array=[test,test],map=[key=value]]",
+                builder.build());
     }
 
     /**
@@ -223,6 +238,17 @@ public class ToStringBuilderTest {
         builder.appendAndFormatIfPresent("optional", Optional.of("optional"), text -> text.toUpperCase());
 
         assertEquals(expected.toString(), builder.build());
+
+        builder = new ToStringBuilder(ToStringStyles.JSON);
+        builder.append("id", 1);
+        builder.append("name", "\"test\":test");
+        builder.append("list", Arrays.asList(new ToStringBuilder(ToStringStyles.JSON).append("id", 2).append("name", "julies").build(),
+                new ToStringBuilder(ToStringStyles.JSON).append("id", 3).append("name", "kelig").build()));
+        builder.append("array", new String[] {"test", "test"});
+        builder.append("map", Collections.singletonMap("key", "value"));
+
+        assertEquals("{id:1,name:test:test,list:[{id:2,name:julies},{id:3,name:kelig}],array:[test,test],map:[key:value]}",
+                builder.build());
     }
 
     /**
@@ -262,6 +288,18 @@ public class ToStringBuilderTest {
         builder.appendAndFormatIfPresent("optional", Optional.of("optional"), text -> text.toUpperCase());
 
         assertEquals(expected.toString(), builder.build());
+
+        builder = new ToStringBuilder(ToStringStyles.JSON_SPACED);
+        builder.append("id", 1);
+        builder.append("name", "\"test\":test");
+        builder.append("list",
+                Arrays.asList(new ToStringBuilder(ToStringStyles.JSON_SPACED).append("id", 2).append("name", "julies").build(),
+                        new ToStringBuilder(ToStringStyles.JSON_SPACED).append("id", 3).append("name", "kelig").build()));
+        builder.append("array", new String[] {"test", "test"});
+        builder.append("map", Collections.singletonMap("key", "value"));
+
+        assertEquals("{id: 1, name: test:test, list: [{id: 2, name: julies}, {id: 3, name: kelig}], "
+                + "array: [test, test], map: [key: value]}", builder.build());
     }
 
     /**
@@ -301,6 +339,18 @@ public class ToStringBuilderTest {
         builder.appendAndFormatIfPresent("optional", Optional.of("optional"), text -> text.toUpperCase());
 
         assertEquals(expected.toString(), builder.build());
+
+        builder = new ToStringBuilder(ToStringStyles.JSON_QUOTED);
+        builder.append("id", 1);
+        builder.append("name", "\"test\":test");
+        builder.append("list",
+                Arrays.asList(new ToStringBuilder(ToStringStyles.JSON_QUOTED).append("id", 2).append("name", "julies").build(),
+                        new ToStringBuilder(ToStringStyles.JSON_QUOTED).append("id", 3).append("name", "kelig").build()));
+        builder.append("array", new String[] {"test", "test"});
+        builder.append("map", Collections.singletonMap("key", "value"));
+
+        assertEquals("{\"id\":\"1\",\"name\":\"\\\"test\\\":test\",\"list\":[{\"id\":\"2\",\"name\":\"julies\"},"
+                + "{\"id\":\"3\",\"name\":\"kelig\"}],\"array\":[\"test\",\"test\"],\"map\":[\"key\":\"value\"]}", builder.build());
     }
 
     /**
@@ -341,6 +391,18 @@ public class ToStringBuilderTest {
 
         assertEquals(expected.toString(), builder.build());
         assertEquals(expected.toString(), builder.toString());
+
+        builder = new ToStringBuilder(ToStringStyles.READABLE);
+        builder.append("id", 1);
+        builder.append("name", "\"test\":test");
+        builder.append("list", Arrays.asList(new ToStringBuilder(ToStringStyles.READABLE).append("id", 2).append("name", "julies").build(),
+                new ToStringBuilder(ToStringStyles.READABLE).append("id", 3).append("name", "kelig").build()));
+        builder.append("array", new String[] {"test", "test"});
+        builder.append("map", Collections.singletonMap("key", "value"));
+
+        assertEquals(
+                "\n['id' = '1',\n'name' = '\"test\":test',\n'list' = [['id' = '2',\n'name' = 'julies'],\n['id' = '3',\n'name' = 'kelig']],\n'array' = ['test',\n'test'],\n'map' = ['key' = 'value']]",
+                builder.build());
     }
 
     /**
@@ -381,6 +443,18 @@ public class ToStringBuilderTest {
 
         assertEquals(expected.toString(), builder.build());
         assertEquals(expected.toString(), builder.toString());
+
+        builder = new ToStringBuilder(ToStringStyles.PARENTHESIS);
+        builder.append("id", 1);
+        builder.append("name", "\"test\":test");
+        builder.append("list",
+                Arrays.asList(new ToStringBuilder(ToStringStyles.PARENTHESIS).append("id", 2).append("name", "julies").build(),
+                        new ToStringBuilder(ToStringStyles.PARENTHESIS).append("id", 3).append("name", "kelig").build()));
+        builder.append("array", new String[] {"test", "test"});
+        builder.append("map", Collections.singletonMap("key", "value"));
+
+        assertEquals("(id:1,name:\"test\":test,list:[(id:2,name:julies),(id:3,name:kelig)],array:[test,test],map:[key:value])",
+                builder.build());
     }
 
     /**
@@ -448,6 +522,11 @@ public class ToStringBuilderTest {
         }
 
         @Override
+        protected Function<CharSequence, CharSequence> getTitleFormatter() {
+            return FORMATTER_NOTHING;
+        }
+
+        @Override
         protected String getTitleStart() {
             return EMPTY;
         }
@@ -468,6 +547,11 @@ public class ToStringBuilderTest {
         }
 
         @Override
+        protected Function<CharSequence, CharSequence> getKeyFormatter() {
+            return FORMATTER_NOTHING;
+        }
+
+        @Override
         protected String getKeyStart() {
             return EMPTY;
         }
@@ -480,6 +564,16 @@ public class ToStringBuilderTest {
         @Override
         protected String getPropertySeparator() {
             return EMPTY;
+        }
+
+        @Override
+        protected Function<CharSequence, CharSequence> getValueFormatter() {
+            return FORMATTER_NOTHING;
+        }
+
+        @Override
+        protected Predicate<CharSequence> applyValueFormatter() {
+            return PREDICATE_TRUE;
         }
 
         @Override
@@ -505,6 +599,16 @@ public class ToStringBuilderTest {
         @Override
         protected String getEnd() {
             return EMPTY;
+        }
+
+        @Override
+        protected String getContainerStart() {
+            return BRACKET_OPEN;
+        }
+
+        @Override
+        protected String getContainerEnd() {
+            return BRACKET_CLOSE;
         }
     }
 }

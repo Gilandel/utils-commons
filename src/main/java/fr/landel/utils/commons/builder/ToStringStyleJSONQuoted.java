@@ -12,6 +12,9 @@
  */
 package fr.landel.utils.commons.builder;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 /**
  * ToString JSON style
  *
@@ -29,6 +32,11 @@ public class ToStringStyleJSONQuoted extends AbstractToStringStyle {
     @Override
     protected String getStart() {
         return BRACE_OPEN;
+    }
+
+    @Override
+    protected Function<CharSequence, CharSequence> getTitleFormatter() {
+        return FORMATTER_ESCAPE_QUOTES;
     }
 
     @Override
@@ -52,6 +60,11 @@ public class ToStringStyleJSONQuoted extends AbstractToStringStyle {
     }
 
     @Override
+    protected Function<CharSequence, CharSequence> getKeyFormatter() {
+        return FORMATTER_ESCAPE_QUOTES;
+    }
+
+    @Override
     protected String getKeyStart() {
         return QUOTE;
     }
@@ -64,6 +77,16 @@ public class ToStringStyleJSONQuoted extends AbstractToStringStyle {
     @Override
     protected String getPropertySeparator() {
         return COLON;
+    }
+
+    @Override
+    protected Predicate<CharSequence> applyValueFormatter() {
+        return PREDICATE_BRACE_NOT_SURRONDED;
+    }
+
+    @Override
+    protected Function<CharSequence, CharSequence> getValueFormatter() {
+        return FORMATTER_ESCAPE_QUOTES;
     }
 
     @Override
@@ -89,5 +112,15 @@ public class ToStringStyleJSONQuoted extends AbstractToStringStyle {
     @Override
     protected String getEnd() {
         return BRACE_CLOSE;
+    }
+
+    @Override
+    protected String getContainerStart() {
+        return BRACKET_OPEN;
+    }
+
+    @Override
+    protected String getContainerEnd() {
+        return BRACKET_CLOSE;
     }
 }

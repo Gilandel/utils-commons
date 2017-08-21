@@ -12,6 +12,9 @@
  */
 package fr.landel.utils.commons.builder;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 /**
  * ToString default style
  *
@@ -29,6 +32,11 @@ public class ToStringStyleDefault extends AbstractToStringStyle {
     @Override
     protected String getStart() {
         return EMPTY;
+    }
+
+    @Override
+    protected Function<CharSequence, CharSequence> getTitleFormatter() {
+        return FORMATTER_NOTHING;
     }
 
     @Override
@@ -52,6 +60,11 @@ public class ToStringStyleDefault extends AbstractToStringStyle {
     }
 
     @Override
+    protected Function<CharSequence, CharSequence> getKeyFormatter() {
+        return FORMATTER_NOTHING;
+    }
+
+    @Override
     protected String getKeyStart() {
         return EMPTY;
     }
@@ -64,6 +77,16 @@ public class ToStringStyleDefault extends AbstractToStringStyle {
     @Override
     protected String getPropertySeparator() {
         return EQUALS;
+    }
+
+    @Override
+    protected Predicate<CharSequence> applyValueFormatter() {
+        return PREDICATE_TRUE;
+    }
+
+    @Override
+    protected Function<CharSequence, CharSequence> getValueFormatter() {
+        return FORMATTER_NOTHING;
     }
 
     @Override
@@ -89,5 +112,15 @@ public class ToStringStyleDefault extends AbstractToStringStyle {
     @Override
     protected String getEnd() {
         return EMPTY;
+    }
+
+    @Override
+    protected String getContainerStart() {
+        return BRACKET_OPEN;
+    }
+
+    @Override
+    protected String getContainerEnd() {
+        return BRACKET_CLOSE;
     }
 }

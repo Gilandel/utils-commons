@@ -12,6 +12,9 @@
  */
 package fr.landel.utils.commons.builder;
 
+import java.util.function.Function;
+import java.util.function.Predicate;
+
 /**
  * ToString readable style
  *
@@ -38,6 +41,11 @@ public class ToStringStyleReadable extends AbstractToStringStyle {
     }
 
     @Override
+    protected Function<CharSequence, CharSequence> getTitleFormatter() {
+        return FORMATTER_NOTHING;
+    }
+
+    @Override
     protected String getTitleStart() {
         return EMPTY;
     }
@@ -58,6 +66,11 @@ public class ToStringStyleReadable extends AbstractToStringStyle {
     }
 
     @Override
+    protected Function<CharSequence, CharSequence> getKeyFormatter() {
+        return FORMATTER_NOTHING;
+    }
+
+    @Override
     protected String getKeyStart() {
         return QUOTE;
     }
@@ -70,6 +83,16 @@ public class ToStringStyleReadable extends AbstractToStringStyle {
     @Override
     protected String getPropertySeparator() {
         return EQUALS;
+    }
+
+    @Override
+    protected Predicate<CharSequence> applyValueFormatter() {
+        return PREDICATE_BRACKET_NOT_SURROUNDED;
+    }
+
+    @Override
+    protected Function<CharSequence, CharSequence> getValueFormatter() {
+        return FORMATTER_NOTHING;
     }
 
     @Override
@@ -95,5 +118,15 @@ public class ToStringStyleReadable extends AbstractToStringStyle {
     @Override
     protected String getEnd() {
         return EMPTY;
+    }
+
+    @Override
+    protected String getContainerStart() {
+        return BRACKET_OPEN;
+    }
+
+    @Override
+    protected String getContainerEnd() {
+        return BRACKET_CLOSE;
     }
 }

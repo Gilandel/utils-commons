@@ -13,9 +13,12 @@
 package fr.landel.utils.commons;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.apache.commons.collections4.MapUtils;
 
@@ -38,6 +41,11 @@ public final class StringUtils extends StringFormatUtils {
      */
     public static final String SEPARATOR_SEMICOLON = "; ";
 
+    /**
+     * The equal separator to join (for readability)
+     */
+    public static final String SEPARATOR_EQUAL = " = ";
+
     private static final String BRACE_OPEN = "{";
     private static final String BRACE_CLOSE = "}";
     private static final String BRACE_OPEN_EXCLUDE = "{{";
@@ -45,6 +53,8 @@ public final class StringUtils extends StringFormatUtils {
     private static final String BRACE_OPEN_TMP = "[#TMP#[";
     private static final String BRACE_CLOSE_TMP = "]#TMP#]";
     private static final String BRACES = "{}";
+
+    private static final int ENSURE_CAPACITY = 16;
 
     /**
      * Hidden constructor.
@@ -320,6 +330,267 @@ public final class StringUtils extends StringFormatUtils {
 
     /**
      * <p>
+     * Joins the elements of the provided iterable into a single String
+     * containing the provided list of elements.
+     * </p>
+     *
+     * <p>
+     * No delimiter is added before or after the list. A {@code null} separator
+     * is the same as an empty String (""). The formatter if provided should
+     * support {@code null} value. By default the formatter used the function
+     * {@link String#valueOf}.
+     * </p>
+     *
+     * <pre>
+     * StringUtils.join(null, *, *)                = null
+     * StringUtils.join([], *, *)                  = ""
+     * StringUtils.join([null], *, null)           = "null"
+     * StringUtils.join(["a", "b", "c"], "--", null)  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], null, StringUtils::upperCase)  = "ABC"
+     * StringUtils.join(["a", "b", "c"], "", StringUtils::upperCase)    = "ABC"
+     * StringUtils.join([null, "", "a"], ",", StringUtils::upperCase)   = ",,A"
+     * </pre>
+     * 
+     * @param iterator
+     *            the {@link Iterable} providing the values to join together,
+     *            may be null
+     * @param separator
+     *            the separator character to use, null treated as ""
+     * @param formatter
+     *            the formatter to stringify each element, null treated as
+     *            {@link String#valueOf}
+     * @return the joined String, {@code null} if null array input.
+     */
+    public static <T> String join(final Iterable<T> iterable, final String separator, final Function<T, String> formatter) {
+        if (iterable == null) {
+            return null;
+        }
+
+        return join(iterable.iterator(), separator, formatter);
+    }
+
+    /**
+     * <p>
+     * Joins the elements of the provided iterator into a single String
+     * containing the provided list of elements.
+     * </p>
+     *
+     * <p>
+     * No delimiter is added before or after the list. A {@code null} separator
+     * is the same as an empty String (""). The formatter if provided should
+     * support {@code null} value. By default the formatter used the function
+     * {@link String#valueOf}.
+     * </p>
+     *
+     * <pre>
+     * StringUtils.join(null, *, *)                = null
+     * StringUtils.join([], *, *)                  = ""
+     * StringUtils.join([null], *, null)           = "null"
+     * StringUtils.join(["a", "b", "c"], "--", null)  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], null, StringUtils::upperCase)  = "ABC"
+     * StringUtils.join(["a", "b", "c"], "", StringUtils::upperCase)    = "ABC"
+     * StringUtils.join([null, "", "a"], ",", StringUtils::upperCase)   = ",,A"
+     * </pre>
+     * 
+     * @param iterator
+     *            the {@link Iterator} providing the values to join together,
+     *            may be null
+     * @param separator
+     *            the separator character to use, null treated as ""
+     * @param formatter
+     *            the formatter to stringify each element, null treated as
+     *            {@link String#valueOf}
+     * @return the joined String, {@code null} if null array input.
+     */
+    public static <T> String join(final Iterator<T> iterator, final String separator, final Function<T, String> formatter) {
+        if (iterator == null) {
+            return null;
+        }
+
+        final String sep = ObjectUtils.defaultIfNull(separator, EMPTY);
+        final Function<T, String> frmt = ObjectUtils.defaultIfNull(formatter, String::valueOf);
+
+        final StringBuilder buf = new StringBuilder();
+
+        while (iterator.hasNext()) {
+            if (buf.length() > 0) {
+                buf.append(sep);
+            }
+            buf.append(frmt.apply(iterator.next()));
+        }
+        return buf.toString();
+    }
+
+    /**
+     * <p>
+     * Joins the elements of the provided array into a single String containing
+     * the provided list of elements.
+     * </p>
+     *
+     * <p>
+     * No delimiter is added before or after the list. A {@code null} separator
+     * is the same as an empty String (""). The formatter if provided should
+     * support {@code null} value. By default the formatter used the function
+     * {@link String#valueOf}.
+     * </p>
+     *
+     * <pre>
+     * StringUtils.join(null, *, *)                = null
+     * StringUtils.join([], *, *)                  = ""
+     * StringUtils.join([null], *, null)           = "null"
+     * StringUtils.join(["a", "b", "c"], "--", null)  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], null, StringUtils::upperCase)  = "ABC"
+     * StringUtils.join(["a", "b", "c"], "", StringUtils::upperCase)    = "ABC"
+     * StringUtils.join([null, "", "a"], ",", StringUtils::upperCase)   = ",,A"
+     * </pre>
+     *
+     * @param array
+     *            the array of values to join together, may be null
+     * @param separator
+     *            the separator character to use, null treated as ""
+     * @param formatter
+     *            the formatter to stringify each element, null treated as
+     *            {@link String#valueOf}
+     * @return the joined String, {@code null} if null array input.
+     */
+    public static <T> String join(final T[] array, final String separator, final Function<T, String> formatter) {
+        return join(array, separator, 0, array == null ? 0 : array.length, formatter);
+    }
+
+    /**
+     * <p>
+     * Joins the elements of the provided array into a single String containing
+     * the provided list of elements.
+     * </p>
+     *
+     * <p>
+     * No delimiter is added before or after the list. A {@code null} separator
+     * is the same as an empty String (""). The formatter if provided should
+     * support {@code null} value. By default the formatter used the function
+     * {@link String#valueOf}.
+     * </p>
+     *
+     * <pre>
+     * StringUtils.join(null, *, *, *, *)                = null
+     * StringUtils.join([], *, *, *, *)                  = ""
+     * StringUtils.join([null], *, *, *, null)           = "null"
+     * StringUtils.join(["a", "b", "c"], "--", 0, 3, null)  = "a--b--c"
+     * StringUtils.join(["a", "b", "c"], "--", 1, 3, null)  = "b--c"
+     * StringUtils.join(["a", "b", "c"], "--", 2, 3, StringUtils::upperCase)  = "C"
+     * StringUtils.join(["a", "b", "c"], "--", 2, 2, StringUtils::upperCase)  = ""
+     * StringUtils.join(["a", "b", "c"], null, 0, 3, StringUtils::upperCase)  = "ABC"
+     * StringUtils.join(["a", "b", "c"], "", 0, 3, StringUtils::upperCase)    = "ABC"
+     * StringUtils.join([null, "", "a"], ",", 0, 3, StringUtils::upperCase)   = "null,,A"
+     * </pre>
+     *
+     * @param array
+     *            the array of values to join together, may be null
+     * @param separator
+     *            the separator character to use, null treated as ""
+     * @param startIndex
+     *            the first index to start joining from.
+     * @param endIndex
+     *            the index to stop joining from (exclusive).
+     * @param formatter
+     *            the formatter to stringify each element, null treated as
+     *            {@link String#valueOf}
+     * @return the joined String, {@code null} if null array input; or the empty
+     *         string if {@code endIndex - startIndex <= 0}. The number of
+     *         joined entries is given by {@code endIndex - startIndex}
+     * @throws ArrayIndexOutOfBoundsException
+     *             if<br/>
+     *             {@code startIndex < 0} or <br/>
+     *             {@code startIndex >= array.length()} or <br/>
+     *             {@code endIndex < 0} or <br/>
+     *             {@code endIndex > array.length()}
+     */
+    public static <T> String join(final T[] array, final String separator, final int startIndex, final int endIndex,
+            final Function<T, String> formatter) {
+        if (array == null) {
+            return null;
+        }
+
+        final String sep = ObjectUtils.defaultIfNull(separator, EMPTY);
+        final Function<T, String> frmt = ObjectUtils.defaultIfNull(formatter, String::valueOf);
+
+        // endIndex - startIndex > 0: Len = NofStrings *(len(firstString) +
+        // len(separator))
+        // (Assuming that all Strings are roughly equally long)
+        final int noOfItems = endIndex - startIndex;
+        if (noOfItems <= 0) {
+            return EMPTY;
+        }
+
+        final StringBuilder buf = new StringBuilder(noOfItems * ENSURE_CAPACITY);
+
+        for (int i = startIndex; i < endIndex; i++) {
+            if (i > startIndex) {
+                buf.append(sep);
+            }
+            if (array[i] != null) {
+                buf.append(frmt.apply(array[i]));
+            }
+        }
+        return buf.toString();
+    }
+
+    /**
+     * <p>
+     * Joins the elements of the provided map into a single String containing
+     * the provided list of elements. On each map entry, the formatter is
+     * applied.
+     * </p>
+     *
+     * <p>
+     * No delimiter is added before or after the list. A {@code null} separator
+     * is the same as an empty String (""). If no formatter is specified, the
+     * format used is the following "key = value". Null key or value within the
+     * map are represented by the word "null".
+     * </p>
+     *
+     * <pre>
+     * StringUtils.join(null, ",", null) = null
+     * StringUtils.join(Collections.emptyMap(), ",", null) = ""
+     * StringUtils.join(Collections.singletonMap("key", "value"), ",", null) = "key = value"
+     * StringUtils.join(Collections.singletonMap("key", "value"), ",", e -&gt; e.getKey()) = "key"
+     * StringUtils.join(MapUtils2.newHashMap(Pair.of("k1", 1), Pair.of("k2", 2)), ", ", null) = "k1 = 1, k2 = 2"
+     * </pre>
+     *
+     * @param map
+     *            the map of entries to join together, may be null
+     * @param separator
+     *            the separator character to use, null treated as ""
+     * @param formatter
+     *            the formatter to stringify each entry, null treated as
+     *            {@code "key = value"}
+     * @param <K>
+     *            the type of each key
+     * @param <V>
+     *            the type of each value
+     * @return the joined String, {@code null} if null map input
+     */
+    public static <K, V> String join(final Map<K, V> map, final String separator, final Function<Entry<K, V>, String> formatter) {
+        if (map == null) {
+            return null;
+        }
+
+        final String sep = ObjectUtils.defaultIfNull(separator, EMPTY);
+        final Function<Entry<K, V>, String> frmt = ObjectUtils.defaultIfNull(formatter,
+                e -> new StringBuilder().append(e.getKey()).append(SEPARATOR_EQUAL).append(e.getValue()).toString());
+
+        final StringBuilder buf = new StringBuilder(map.size() * ENSURE_CAPACITY);
+
+        for (Entry<K, V> entry : map.entrySet()) {
+            if (buf.length() > 0) {
+                buf.append(sep);
+            }
+            buf.append(frmt.apply(entry));
+        }
+        return buf.toString();
+    }
+
+    /**
+     * <p>
      * Joins the elements of the provided array into a single String containing
      * the provided list of elements. Each element is separated by a comma
      * followed by a space.
@@ -362,7 +633,7 @@ public final class StringUtils extends StringFormatUtils {
      * </p>
      *
      * <p>
-     * See the examples here: {@link #join(Object[],String)}.
+     * See the examples here: {@link #join(Iterable, String)}.
      * </p>
      *
      * @param iterable
@@ -376,7 +647,33 @@ public final class StringUtils extends StringFormatUtils {
         if (iterable == null) {
             return null;
         }
-        return join(iterable.iterator(), SEPARATOR_COMMA);
+        return joinComma(iterable.iterator());
+    }
+
+    /**
+     * <p>
+     * Joins the elements of the provided {@code Iterator} into a single String
+     * containing the provided elements.
+     * </p>
+     *
+     * <p>
+     * No delimiter is added before or after the list. The comma followed by a
+     * space is used as separator (", ").
+     * </p>
+     *
+     * <p>
+     * See the examples here: {@link #join(Iterator, String)}.
+     * </p>
+     *
+     * @param iterable
+     *            the {@link Iterator} providing the values to join together,
+     *            may be null
+     * @param <T>
+     *            the type of each element
+     * @return the joined String, {@code null} if null iterator input
+     */
+    public static <T> String joinComma(final Iterator<T> iterator) {
+        return join(iterator, SEPARATOR_COMMA);
     }
 
     /**
