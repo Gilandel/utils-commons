@@ -39,9 +39,7 @@ public class ToStringBuilder implements Builder<String> {
     /**
      * A formatter for numbers (ex: 126123.1246 =&gt; "126 123.125")
      */
-    public static final Function<? super Number, CharSequence> NUMBER_FORMATTER = number -> {
-        return FORMATTER.format(number);
-    };
+    public static final Function<? super Number, CharSequence> NUMBER_FORMATTER = FORMATTER::format;
 
     private final ToStringStyle style;
 

@@ -21,8 +21,11 @@ import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
@@ -351,6 +354,65 @@ public class StringUtilsTest extends AbstractTest {
     }
 
     /**
+     * Test method for {@link StringUtils#join(Iterable, String, Function)}
+     * {@link StringUtils#join(Iterator, String, Function)} .
+     */
+    @Test
+    public void testJoin() {
+        Function<Object, String> fKey = e -> "x" + String.valueOf(e);
+
+        assertNull(StringUtils.join((Iterable<?>) null, null, null));
+        assertEquals("", StringUtils.join(Collections.emptyList(), null, null));
+        assertEquals("v", StringUtils.join(Arrays.asList("v"), null, null));
+        assertEquals("xv", StringUtils.join(Arrays.asList("v"), null, fKey));
+        assertEquals("12", StringUtils.join(Arrays.asList(1, 2), null, null));
+        assertEquals("x1,x2", StringUtils.join(Arrays.asList(1, 2), ",", fKey));
+
+        Function<String, String> fKeyStr = e -> "x" + String.valueOf(e);
+        Function<Integer, String> fKeyInt = e -> "x" + String.valueOf(e);
+
+        assertNull(StringUtils.join((Iterator<?>) null, null, null));
+        assertEquals("", StringUtils.join(Collections.emptyIterator(), null, null));
+        assertEquals("v", StringUtils.join(Arrays.asList("v").iterator(), null, null));
+        assertEquals("xv", StringUtils.join(Arrays.asList("v").iterator(), null, fKeyStr));
+        assertEquals("12", StringUtils.join(Arrays.asList(1, 2).iterator(), null, null));
+        assertEquals("x1,x2", StringUtils.join(Arrays.asList(1, 2).iterator(), ",", fKeyInt));
+
+        assertNull(StringUtils.join((Object[]) null, null, 0, 0, null));
+        assertEquals("", StringUtils.join(new Object[0], null, 0, 0, null));
+        assertEquals("v", StringUtils.join(new Object[] {"v"}, null, 0, 1, null));
+        assertEquals("", StringUtils.join(new Object[] {"v"}, null, 1, 1, null));
+        assertEquals("xv", StringUtils.join(new Object[] {"v"}, null, 0, 1, fKey));
+        assertEquals("12", StringUtils.join(new Object[] {1, 2}, null, 0, 2, null));
+        assertEquals("1", StringUtils.join(new Object[] {1, 2}, null, 0, 1, null));
+        assertEquals("x1,x2", StringUtils.join(new Object[] {1, 2}, ",", 0, 2, fKey));
+        assertEquals("x2", StringUtils.join(new Object[] {1, 2}, ",", 1, 2, fKey));
+
+        assertNull(StringUtils.join((Object[]) null, null, null));
+        assertEquals("", StringUtils.join(new Object[0], null, null));
+        assertEquals("v", StringUtils.join(new Object[] {"v"}, null, null));
+        assertEquals("xv", StringUtils.join(new Object[] {"v"}, null, fKey));
+        assertEquals("12", StringUtils.join(new Object[] {1, 2}, null, null));
+        assertEquals("x1,x2", StringUtils.join(new Object[] {1, 2}, ",", fKey));
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#join(Map, String, java.util.function.Function)} .
+     */
+    @Test
+    public void testJoinMap() {
+        Function<Entry<String, Object>, String> fKey = e -> e.getKey();
+
+        assertNull(StringUtils.join((Map<?, ?>) null, null, null));
+        assertEquals("", StringUtils.join(Collections.emptyMap(), null, null));
+        assertEquals("k = v", StringUtils.join(Collections.singletonMap("k", "v"), null, null));
+        assertEquals("k", StringUtils.join(Collections.singletonMap("k", "v"), null, fKey));
+        assertEquals("k1 = 1k2 = 2", StringUtils.join(MapUtils2.newHashMap(Pair.of("k1", 1), Pair.of("k2", 2)), null, null));
+        assertEquals("k1,k2", StringUtils.join(MapUtils2.newHashMap(Pair.of("k1", 1), Pair.of("k2", 2)), ",", fKey));
+    }
+
+    /**
      * Test method for {@link StringUtils#joinComma} .
      */
     @Test
@@ -366,6 +428,12 @@ public class StringUtilsTest extends AbstractTest {
         assertEquals("test", StringUtils.joinComma(Arrays.asList("test")));
         assertEquals("t1, t2", StringUtils.joinComma(Arrays.asList("t1", "t2")));
         assertEquals("t1, ", StringUtils.joinComma(Arrays.asList("t1", null)));
+
+        assertNull(StringUtils.joinComma((Iterator<?>) null));
+        assertEquals("", StringUtils.joinComma(Collections.emptyIterator()));
+        assertEquals("test", StringUtils.joinComma(Arrays.asList("test").iterator()));
+        assertEquals("t1, t2", StringUtils.joinComma(Arrays.asList("t1", "t2").iterator()));
+        assertEquals("t1, ", StringUtils.joinComma(Arrays.asList("t1", null).iterator()));
     }
 
     /**

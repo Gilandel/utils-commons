@@ -13,6 +13,7 @@
 package fr.landel.utils.commons.builder;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -44,6 +45,17 @@ public abstract class AbstractToStringStyle extends ArrayList<CharSequence> impl
     protected static final String BRACKET_CLOSE = EnumChar.BRACKET_CLOSE.getUnicode();
     protected static final String PARENTHESIS_OPEN = EnumChar.PARENTHESIS_OPEN.getUnicode();
     protected static final String PARENTHESIS_CLOSE = EnumChar.PARENTHESIS_CLOSE.getUnicode();
+
+    protected static final Function<CharSequence, CharSequence> FORMATTER_NOTHING = s -> s;
+    protected static final Function<CharSequence, CharSequence> FORMATTER_ESCAPE_QUOTES = s -> String.valueOf(s).replace(QUOTE, "\\\"");
+    protected static final Function<CharSequence, CharSequence> FORMATTER_REMOVE_QUOTES = s -> String.valueOf(s).replace(QUOTE, EMPTY)
+            .replace(SINGLE_QUOTE, EMPTY);
+
+    protected static final Predicate<CharSequence> PREDICATE_TRUE = v -> true;
+    protected static final Predicate<CharSequence> PREDICATE_BRACE_NOT_SURRONDED = v -> !(v.charAt(0) == '{'
+            && v.charAt(v.length() - 1) == '}');
+    protected static final Predicate<CharSequence> PREDICATE_BRACKET_NOT_SURROUNDED = v -> !(v.charAt(0) == '['
+            && v.charAt(v.length() - 1) == ']');
 
     /**
      * serialVersionUID
@@ -99,27 +111,76 @@ public abstract class AbstractToStringStyle extends ArrayList<CharSequence> impl
     @Override
     public <T> void append(final T object, final Predicate<T> predicate, final Function<T, CharSequence> formatter) {
         if (predicate == null || predicate.test(object)) {
-            final StringBuilder builder = new StringBuilder(this.getValueStart());
-            if (formatter != null) {
-                builder.append(formatter.apply(object));
-            } else {
-                builder.append(object);
-            }
-            this.add(builder.append(this.getValueEnd()));
+            final StringBuilder builder = new StringBuilder();
+            this.applyValueFormatter(builder, object, formatter);
+            this.add(builder);
         }
     }
 
     @Override
     public <T> void append(final CharSequence key, final T value, final Predicate<T> predicate, final Function<T, CharSequence> formatter) {
         if (predicate == null || predicate.test(value)) {
-            final StringBuilder builder = new StringBuilder(this.getKeyStart()).append(key).append(this.getKeyEnd())
-                    .append(this.getPropertySeparator()).append(this.getValueStart());
-            if (formatter != null) {
-                builder.append(formatter.apply(value));
+            final StringBuilder builder = new StringBuilder(this.getKeyStart()).append(this.getKeyFormatter().apply(key))
+                    .append(this.getKeyEnd()).append(this.getPropertySeparator());
+            this.applyValueFormatter(builder, value, formatter);
+            this.add(builder);
+        }
+    }
+
+    private <T> void applyValueFormatter(final StringBuilder builder, final T value, final Function<T, CharSequence> formatter) {
+
+        final boolean isContainer = value != null && (value instanceof Iterable || value instanceof Map || value.getClass().isArray());
+
+        if (isContainer) {
+            builder.append(this.getContainerStart());
+            if (value instanceof Map) {
+                final Function<CharSequence, CharSequence> keyFormatter = this.getKeyFormatter();
+                final String keyStart = this.getKeyStart();
+                final String keyEnd = this.getKeyEnd();
+                final String propertySeparator = this.getPropertySeparator();
+                builder.append(StringUtils.join((Map<?, ?>) value, this.getPropertiesSeparator(), entry -> {
+                    final StringBuilder localBuilder = new StringBuilder(keyStart)
+                            .append(keyFormatter.apply(String.valueOf(entry.getKey()))).append(keyEnd).append(propertySeparator);
+                    applyValueFormatter(localBuilder, entry.getValue(), null);
+                    return localBuilder.toString();
+                }));
+            } else if (value instanceof Iterable) {
+                builder.append(StringUtils.join((Iterable<?>) value, this.getPropertiesSeparator(), t -> {
+                    final StringBuilder localBuilder = new StringBuilder();
+                    applyValueFormatter(localBuilder, t, null);
+                    return localBuilder.toString();
+                }));
             } else {
-                builder.append(value);
+                builder.append(StringUtils.join((Object[]) value, this.getPropertiesSeparator(), t -> {
+                    final StringBuilder localBuilder = new StringBuilder();
+                    applyValueFormatter(localBuilder, t, null);
+                    return localBuilder.toString();
+                }));
             }
-            this.add(builder.append(this.getValueEnd()));
+            builder.append(this.getContainerEnd());
+        } else {
+            CharSequence formattedValue;
+            boolean surround = true;
+
+            if (formatter != null) {
+                formattedValue = formatter.apply(value);
+            } else {
+                formattedValue = String.valueOf(value).trim();
+                surround = this.applyValueFormatter().test(formattedValue);
+                if (surround) {
+                    formattedValue = this.getValueFormatter().apply(formattedValue);
+                }
+            }
+
+            if (surround) {
+                builder.append(this.getValueStart());
+            }
+
+            builder.append(formattedValue);
+
+            if (surround) {
+                builder.append(this.getValueEnd());
+            }
         }
     }
 
@@ -349,7 +410,7 @@ public abstract class AbstractToStringStyle extends ArrayList<CharSequence> impl
         if (StringUtils.isNotEmpty(title)) {
             builder.append(this.getStart());
             builder.append(this.getTitleStart());
-            builder.append(title);
+            builder.append(this.getTitleFormatter().apply(title));
             builder.append(this.getTitleEnd());
             builder.append(this.getTitleSeparator());
             appendEnd = true;
@@ -380,6 +441,11 @@ public abstract class AbstractToStringStyle extends ArrayList<CharSequence> impl
     protected abstract String getStart();
 
     /**
+     * @return the title formatter
+     */
+    protected abstract Function<CharSequence, CharSequence> getTitleFormatter();
+
+    /**
      * @return the title start tag
      */
     protected abstract String getTitleStart();
@@ -400,6 +466,11 @@ public abstract class AbstractToStringStyle extends ArrayList<CharSequence> impl
     protected abstract String getPropertiesStart();
 
     /**
+     * @return the key formatter
+     */
+    protected abstract Function<CharSequence, CharSequence> getKeyFormatter();
+
+    /**
      * @return the key start tag
      */
     protected abstract String getKeyStart();
@@ -413,6 +484,17 @@ public abstract class AbstractToStringStyle extends ArrayList<CharSequence> impl
      * @return the property separator (ex: '=')
      */
     protected abstract String getPropertySeparator();
+
+    /**
+     * @return a predicate that validates if the value formatter has to be
+     *         applied on the value
+     */
+    protected abstract Predicate<CharSequence> applyValueFormatter();
+
+    /**
+     * @return the value formatter
+     */
+    protected abstract Function<CharSequence, CharSequence> getValueFormatter();
 
     /**
      * @return the value start tag
@@ -438,4 +520,14 @@ public abstract class AbstractToStringStyle extends ArrayList<CharSequence> impl
      * @return the end tag
      */
     protected abstract String getEnd();
+
+    /**
+     * @return the start tag container (for list, array, map...)
+     */
+    protected abstract String getContainerStart();
+
+    /**
+     * @return the end tag container (for list, array, map...)
+     */
+    protected abstract String getContainerEnd();
 }
