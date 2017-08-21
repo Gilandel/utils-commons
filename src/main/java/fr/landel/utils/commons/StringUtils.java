@@ -351,7 +351,7 @@ public final class StringUtils extends StringFormatUtils {
      * StringUtils.join([null, "", "a"], ",", StringUtils::upperCase)   = ",,A"
      * </pre>
      * 
-     * @param iterator
+     * @param iterable
      *            the {@link Iterable} providing the values to join together,
      *            may be null
      * @param separator
@@ -359,6 +359,8 @@ public final class StringUtils extends StringFormatUtils {
      * @param formatter
      *            the formatter to stringify each element, null treated as
      *            {@link String#valueOf}
+     * @param <T>
+     *            the type of iterable element
      * @return the joined String, {@code null} if null array input.
      */
     public static <T> String join(final Iterable<T> iterable, final String separator, final Function<T, String> formatter) {
@@ -400,6 +402,8 @@ public final class StringUtils extends StringFormatUtils {
      * @param formatter
      *            the formatter to stringify each element, null treated as
      *            {@link String#valueOf}
+     * @param <T>
+     *            the type of iterator element
      * @return the joined String, {@code null} if null array input.
      */
     public static <T> String join(final Iterator<T> iterator, final String separator, final Function<T, String> formatter) {
@@ -451,6 +455,8 @@ public final class StringUtils extends StringFormatUtils {
      * @param formatter
      *            the formatter to stringify each element, null treated as
      *            {@link String#valueOf}
+     * @param <T>
+     *            the type of array element
      * @return the joined String, {@code null} if null array input.
      */
     public static <T> String join(final T[] array, final String separator, final Function<T, String> formatter) {
@@ -494,14 +500,16 @@ public final class StringUtils extends StringFormatUtils {
      * @param formatter
      *            the formatter to stringify each element, null treated as
      *            {@link String#valueOf}
+     * @param <T>
+     *            the type of array element
      * @return the joined String, {@code null} if null array input; or the empty
      *         string if {@code endIndex - startIndex <= 0}. The number of
      *         joined entries is given by {@code endIndex - startIndex}
      * @throws ArrayIndexOutOfBoundsException
-     *             if<br/>
-     *             {@code startIndex < 0} or <br/>
-     *             {@code startIndex >= array.length()} or <br/>
-     *             {@code endIndex < 0} or <br/>
+     *             if<br>
+     *             {@code startIndex < 0} or <br>
+     *             {@code startIndex >= array.length()} or <br>
+     *             {@code endIndex < 0} or <br>
      *             {@code endIndex > array.length()}
      */
     public static <T> String join(final T[] array, final String separator, final int startIndex, final int endIndex,
@@ -665,7 +673,7 @@ public final class StringUtils extends StringFormatUtils {
      * See the examples here: {@link #join(Iterator, String)}.
      * </p>
      *
-     * @param iterable
+     * @param iterator
      *            the {@link Iterator} providing the values to join together,
      *            may be null
      * @param <T>
