@@ -399,10 +399,29 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      *            the type of the object to check
      * @param <X>
      *            the type of the output
+     * @return the transformed value or {@code null}
+     */
+    public static <T, X> X ifNotNull(final T object, final Function<T, X> transformer) {
+        Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
+
+        return object != null ? transformer.apply(object) : null;
+    }
+
+    /**
+     * Get the transformed value if not {@code null}
+     * 
+     * @param object
+     *            the object to transform
+     * @param transformer
+     *            the transformer function (cannot be {@code null})
+     * @param <T>
+     *            the type of the object to check
+     * @param <X>
+     *            the type of the output
      * @return an {@link Optional} of the transformed value or
      *         {@link Optional#empty()}
      */
-    public static <T, X> Optional<X> ifNotNull(final T object, final Function<T, X> transformer) {
+    public static <T, X> Optional<X> ifNotNullOptional(final T object, final Function<T, X> transformer) {
         Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
 
         return object != null ? Optional.ofNullable(transformer.apply(object)) : Optional.empty();
@@ -421,10 +440,32 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      *            the type of the object to check
      * @param <X>
      *            the type of the output
+     * @return the transformed value or {@code null}
+     */
+    public static <T, X> X ifPredicate(final Predicate<T> predicate, final T object, final Function<T, X> transformer) {
+        Objects.requireNonNull(predicate, PREDICATE_ERROR);
+        Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
+
+        return predicate.test(object) ? transformer.apply(object) : null;
+    }
+
+    /**
+     * Get the transformed value if not {@code null}
+     * 
+     * @param predicate
+     *            the predicate (cannot be {@code null})
+     * @param object
+     *            the object to transform
+     * @param transformer
+     *            the transformer function (cannot be {@code null})
+     * @param <T>
+     *            the type of the object to check
+     * @param <X>
+     *            the type of the output
      * @return an {@link Optional} of the transformed value or
      *         {@link Optional#empty()}
      */
-    public static <T, X> Optional<X> ifPredicate(final Predicate<T> predicate, final T object, final Function<T, X> transformer) {
+    public static <T, X> Optional<X> ifPredicateOptional(final Predicate<T> predicate, final T object, final Function<T, X> transformer) {
         Objects.requireNonNull(predicate, PREDICATE_ERROR);
         Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
 

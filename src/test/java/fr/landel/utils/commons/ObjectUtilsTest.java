@@ -15,6 +15,7 @@ package fr.landel.utils.commons;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -271,8 +272,18 @@ public class ObjectUtilsTest extends AbstractTest {
      */
     @Test
     public void testIfNotNull() {
-        assertEquals("true", ObjectUtils.ifNotNull(true, b -> b.toString()).get());
-        assertFalse(ObjectUtils.ifNotNull(null, b -> b.toString()).isPresent());
+        assertEquals("true", ObjectUtils.ifNotNull(true, b -> b.toString()));
+        assertNull(ObjectUtils.ifNotNull(null, b -> b.toString()));
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#ifNotNullOptional(Object, java.util.function.Function)}.
+     */
+    @Test
+    public void testIfNotNullOptional() {
+        assertEquals("true", ObjectUtils.ifNotNullOptional(true, b -> b.toString()).get());
+        assertFalse(ObjectUtils.ifNotNullOptional(null, b -> b.toString()).isPresent());
     }
 
     /**
@@ -281,7 +292,17 @@ public class ObjectUtilsTest extends AbstractTest {
      */
     @Test
     public void testIfPredicate() {
-        assertEquals("true", ObjectUtils.ifPredicate(PREDICATE, true, b -> b.toString()).get());
-        assertFalse(ObjectUtils.ifPredicate(PREDICATE, null, b -> b.toString()).isPresent());
+        assertEquals("true", ObjectUtils.ifPredicate(PREDICATE, true, b -> b.toString()));
+        assertNull(ObjectUtils.ifPredicate(PREDICATE, null, b -> b.toString()));
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#ifPredicateOptional(Predicate, Object, java.util.function.Function)}.
+     */
+    @Test
+    public void testIfPredicateOptional() {
+        assertEquals("true", ObjectUtils.ifPredicateOptional(PREDICATE, true, b -> b.toString()).get());
+        assertFalse(ObjectUtils.ifPredicateOptional(PREDICATE, null, b -> b.toString()).isPresent());
     }
 }
