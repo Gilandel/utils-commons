@@ -264,4 +264,24 @@ public class ObjectUtilsTest extends AbstractTest {
             ObjectUtils.requireNonNulls("test", null);
         }, NullPointerException.class);
     }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#ifNotNull(Object, java.util.function.Function)}.
+     */
+    @Test
+    public void testIfNotNull() {
+        assertEquals("true", ObjectUtils.ifNotNull(true, b -> b.toString()).get());
+        assertFalse(ObjectUtils.ifNotNull(null, b -> b.toString()).isPresent());
+    }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#ifPredicate(Predicate, Object, java.util.function.Function)}.
+     */
+    @Test
+    public void testIfPredicate() {
+        assertEquals("true", ObjectUtils.ifPredicate(PREDICATE, true, b -> b.toString()).get());
+        assertFalse(ObjectUtils.ifPredicate(PREDICATE, null, b -> b.toString()).isPresent());
+    }
 }

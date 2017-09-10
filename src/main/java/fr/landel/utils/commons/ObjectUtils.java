@@ -13,6 +13,7 @@
 package fr.landel.utils.commons;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -37,6 +38,14 @@ import java.util.function.Supplier;
  *
  */
 public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
+
+    private static final String ERROR = "The parameter '{}' cannot be null";
+
+    private static final String OBJECTS_ERROR = StringUtils.inject(ERROR, "objects");
+    private static final String PREDICATE_ERROR = StringUtils.inject(ERROR, "predicate");
+    private static final String TRANSFORMER_ERROR = StringUtils.inject(ERROR, "transformer");
+    private static final String SUPPLIER_ERROR = StringUtils.inject(ERROR, "defaultValueSupplier");
+    private static final String THROWABLE_SUPPLIER_ERROR = StringUtils.inject(ERROR, "throwableSupplier");
 
     /**
      * Returns a default value if the object passed is {@code null}.
@@ -65,7 +74,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      *             if {@code transformer} is {@code null}
      */
     public static <T, X> X defaultIfNull(final T object, final X defaultObject, final Function<T, X> transformer) {
-        Objects.requireNonNull(transformer, "The parameter transformer cannot be null");
+        Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
 
         return object != null ? transformer.apply(object) : defaultObject;
     }
@@ -125,8 +134,8 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      *             {@code null}
      */
     public static <T> T defaultIf(final Predicate<T> predicate, final T object, final Supplier<? extends T> defaultValueSupplier) {
-        Objects.requireNonNull(predicate, "The parameter predicate cannot be null");
-        Objects.requireNonNull(defaultValueSupplier, "The parameter defaultValueSupplier cannot be null");
+        Objects.requireNonNull(predicate, PREDICATE_ERROR);
+        Objects.requireNonNull(defaultValueSupplier, SUPPLIER_ERROR);
 
         return predicate.test(object) ? object : defaultValueSupplier.get();
     }
@@ -156,7 +165,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      *             if {@code predicate} is {@code null}
      */
     public static <T> T defaultIf(final Predicate<T> predicate, final T object, final T defaultValue) {
-        Objects.requireNonNull(predicate, "The parameter predicate cannot be null");
+        Objects.requireNonNull(predicate, PREDICATE_ERROR);
 
         return predicate.test(object) ? object : defaultValue;
     }
@@ -191,8 +200,8 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      */
     public static <T, X> X defaultIf(final Predicate<T> predicate, final T object, final X defaultObject,
             final Function<T, X> transformer) {
-        Objects.requireNonNull(predicate, "The parameter predicate cannot be null");
-        Objects.requireNonNull(transformer, "The parameter transformer cannot be null");
+        Objects.requireNonNull(predicate, PREDICATE_ERROR);
+        Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
 
         return predicate.test(object) ? transformer.apply(object) : defaultObject;
     }
@@ -218,7 +227,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      * @return true, if all are {@code null}
      */
     public static boolean allNull(final Object... objects) {
-        Objects.requireNonNull(objects, "The parameter objects cannot be null");
+        Objects.requireNonNull(objects, OBJECTS_ERROR);
 
         boolean notNull = false;
         for (Object object : objects) {
@@ -248,7 +257,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      * @return true, if any are {@code null}
      */
     public static boolean anyNull(final Object... objects) {
-        Objects.requireNonNull(objects, "The parameter objects cannot be null");
+        Objects.requireNonNull(objects, OBJECTS_ERROR);
 
         for (Object object : objects) {
             if (object == null) {
@@ -271,8 +280,8 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      * ObjectUtils.allNotNull(null, null); // =&gt; false
      * ObjectUtils.allNotNull((Object) null); // =&gt; false
      * 
-     * ObjectUtils.allNotNull((Object[]) null); // =&gt; throw a
-     *                                          // NullPointerException
+     * ObjectUtils.allNotNull((Object[]) null);
+     * // =&gt; throw a NullPointerException
      * </pre>
      * 
      * @param objects
@@ -280,7 +289,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      * @return true, if all are {@code null}
      */
     public static boolean allNotNull(final Object... objects) {
-        Objects.requireNonNull(objects, "The parameter objects cannot be null");
+        Objects.requireNonNull(objects, OBJECTS_ERROR);
 
         boolean areNull = false;
         for (Object object : objects) {
@@ -302,8 +311,8 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      * ObjectUtils.anyNotNull(null, null); // =&gt; false
      * ObjectUtils.anyNotNull((Object) null); // =&gt; false
      * 
-     * ObjectUtils.anyNotNull((Object[]) null); // =&gt; throw a
-     *                                          // NullPointerException
+     * ObjectUtils.anyNotNull((Object[]) null);
+     * // =&gt; throw a NullPointerException
      * </pre>
      * 
      * @param objects
@@ -311,7 +320,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      * @return true, if any are {@code null}
      */
     public static boolean anyNotNull(final Object... objects) {
-        Objects.requireNonNull(objects, "The parameter objects cannot be null");
+        Objects.requireNonNull(objects, OBJECTS_ERROR);
 
         for (Object object : objects) {
             if (object != null) {
@@ -353,7 +362,7 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      *             if throwable supplier is {@code null}
      */
     public static <T, E extends Throwable> T requireNonNull(final T object, final Supplier<E> throwableSupplier) throws E {
-        Objects.requireNonNull(throwableSupplier);
+        Objects.requireNonNull(throwableSupplier, THROWABLE_SUPPLIER_ERROR);
         if (object == null) {
             throw throwableSupplier.get();
         }
@@ -370,11 +379,55 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
      */
     @SafeVarargs
     public static void requireNonNulls(final Object... objects) {
-        Objects.requireNonNull(objects);
+        Objects.requireNonNull(objects, OBJECTS_ERROR);
+
         for (int i = 0; i < objects.length; i++) {
             if (objects[i] == null) {
                 throw new NullPointerException(new StringBuilder("Object at index '").append(i).append("' cannot be null").toString());
             }
         }
+    }
+
+    /**
+     * Get the transformed value if not {@code null}
+     * 
+     * @param object
+     *            the object to transform
+     * @param transformer
+     *            the transformer function (cannot be {@code null})
+     * @param <T>
+     *            the type of the object to check
+     * @param <X>
+     *            the type of the output
+     * @return an {@link Optional} of the transformed value or
+     *         {@link Optional#empty()}
+     */
+    public static <T, X> Optional<X> ifNotNull(final T object, final Function<T, X> transformer) {
+        Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
+
+        return object != null ? Optional.ofNullable(transformer.apply(object)) : Optional.empty();
+    }
+
+    /**
+     * Get the transformed value if not {@code null}
+     * 
+     * @param predicate
+     *            the predicate (cannot be {@code null})
+     * @param object
+     *            the object to transform
+     * @param transformer
+     *            the transformer function (cannot be {@code null})
+     * @param <T>
+     *            the type of the object to check
+     * @param <X>
+     *            the type of the output
+     * @return an {@link Optional} of the transformed value or
+     *         {@link Optional#empty()}
+     */
+    public static <T, X> Optional<X> ifPredicate(final Predicate<T> predicate, final T object, final Function<T, X> transformer) {
+        Objects.requireNonNull(predicate, PREDICATE_ERROR);
+        Objects.requireNonNull(transformer, TRANSFORMER_ERROR);
+
+        return predicate.test(object) ? Optional.ofNullable(transformer.apply(object)) : Optional.empty();
     }
 }
