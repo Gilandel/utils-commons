@@ -101,7 +101,7 @@ public class ObjectUtilsTest extends AbstractTest {
         assertFalse(ObjectUtils.defaultIf(PREDICATE, null, false));
 
         assertException(() -> ObjectUtils.defaultIf(null, true, false), NullPointerException.class,
-                "The parameter predicate cannot be null");
+                "The parameter 'predicate' cannot be null");
     }
 
     /**
