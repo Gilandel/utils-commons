@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -507,7 +508,49 @@ public class StringUtilsTest extends AbstractTest {
 
     /**
      * Test method for
-     * {@link StringUtils#injectKeys(CharSequence, java.util.Map.Entry...)} .
+     * {@link StringUtils#injectKeys(Pair, Pair, CharSequence, Entry...)} .
+     */
+    @Test
+    public void testInjectKeysIncludeExclude() {
+        assertEquals("", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "",
+                Pair.of("key", "test")));
+        assertEquals("test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "test", Pair.of("key", "test")));
+        assertEquals("test1 ${key0} test2 test1 ${key1}",
+                StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                        "${key1} ${key0} ${key2} ${key1} ${{key1}}", Pair.of("key1", "test1"), Pair.of("key2", "test2")));
+        assertEquals("Test null", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", Pair.of("key", null)));
+        assertEquals("Test null", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${null}", Pair.of(null, null)));
+        assertEquals("Test test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${null}", Pair.of(null, "test")));
+
+        assertEquals("Test",
+                StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "Test"));
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", Pair.of("key", null)));
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", (Pair<String, Object>) null));
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", (Pair<String, Object>[]) null));
+
+        assertEquals("Test ${key}",
+                StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "Test ${key}"));
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", Pair.of("key1", null)));
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", (Pair<String, Object>) null));
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", (Pair<String, Object>[]) null));
+
+        assertException(() -> StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, null,
+                Pair.of("key", "test")), IllegalArgumentException.class, "The input char sequence cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#injectKeys(Pair, Pair, CharSequence, Map)} .
      */
     @Test
     public void testInjectKeysMap() {
@@ -529,6 +572,116 @@ public class StringUtilsTest extends AbstractTest {
 
         assertException(() -> StringUtils.injectKeys(null, Collections.singletonMap("key", "test")), IllegalArgumentException.class,
                 "The input char sequence cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#injectKeys(Pair, Pair, CharSequence, Entry...)} .
+     */
+    @Test
+    public void testInjectKeysMapIncludeExclude() {
+        assertEquals("", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "",
+                Collections.singletonMap("key", "test")));
+        assertEquals("test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "test", Collections.singletonMap("key", "test")));
+        assertEquals("test1 ${key0} test2 test1 ${key1}",
+                StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                        "${key1} ${key0} ${key2} ${key1} ${{key1}}",
+                        MapUtils2.newHashMap(Pair.of("key1", "test1"), Pair.of("key2", "test2"))));
+        assertEquals("Test null", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", Collections.singletonMap("key", null)));
+        assertEquals("Test null", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${null}", Collections.singletonMap(null, null)));
+        assertEquals("Test test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${null}", Collections.singletonMap(null, "test")));
+
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", Collections.emptyMap()));
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", Collections.singletonMap("key", null)));
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", (Map<String, Object>) null));
+
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", Collections.emptyMap()));
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", Collections.singletonMap("key1", null)));
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", (Map<String, Object>) null));
+
+        assertException(() -> StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, null,
+                Collections.singletonMap("key", "test")), IllegalArgumentException.class, "The input char sequence cannot be null");
+        assertException(
+                () -> StringUtils.injectKeys(null, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "test",
+                        Collections.singletonMap("key", "test")),
+                IllegalArgumentException.class, "The include and exclude parameters cannot be null");
+        assertException(
+                () -> StringUtils.injectKeys(Pair.of(null, "}"), StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "test",
+                        Collections.singletonMap("key", "test")),
+                IllegalArgumentException.class, "The include and exclude values cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#injectKeys(CharSequence, java.util.Properties)} .
+     */
+    @Test
+    public void testInjectKeysProperties() {
+        Properties properties1 = new Properties();
+        properties1.setProperty("key", "test");
+
+        assertEquals("", StringUtils.injectKeys("", properties1));
+        assertEquals("test", StringUtils.injectKeys("test", properties1));
+
+        Properties properties2 = new Properties();
+        properties2.setProperty("key1", "test1");
+        properties2.setProperty("key2", "test2");
+
+        assertEquals("test1 {key0} test2 test1 {key1}", StringUtils.injectKeys("{key1} {key0} {key2} {key1} {{key1}}", properties2));
+
+        assertEquals("Test", StringUtils.injectKeys("Test", new Properties()));
+        assertEquals("Test", StringUtils.injectKeys("Test", (Properties) null));
+
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", new Properties()));
+        assertEquals("Test {key}", StringUtils.injectKeys("Test {key}", (Properties) null));
+
+        assertException(() -> StringUtils.injectKeys(null, properties1), IllegalArgumentException.class,
+                "The input char sequence cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#injectKeys(Pair, Pair, CharSequence, Properties)} .
+     */
+    @Test
+    public void testInjectKeysPropertiesIncludeExclude() {
+        Properties properties1 = new Properties();
+        properties1.setProperty("key", "test");
+
+        assertEquals("",
+                StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "", properties1));
+        assertEquals("test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "test", properties1));
+
+        Properties properties2 = new Properties();
+        properties2.setProperty("key1", "test1");
+        properties2.setProperty("key2", "test2");
+
+        assertEquals("test1 ${key0} test2 test1 ${key1}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES,
+                StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, "${key1} ${key0} ${key2} ${key1} ${{key1}}", properties2));
+
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", new Properties()));
+        assertEquals("Test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test", (Properties) null));
+
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", new Properties()));
+        assertEquals("Test ${key}", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
+                "Test ${key}", (Properties) null));
+
+        assertException(() -> StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, null,
+                properties1), IllegalArgumentException.class, "The input char sequence cannot be null");
     }
 
     /**
