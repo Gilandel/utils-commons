@@ -18,9 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.function.Function;
 
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * Utility class to manage strings.
@@ -48,11 +50,19 @@ public final class StringUtils extends StringFormatUtils {
 
     private static final String BRACE_OPEN = "{";
     private static final String BRACE_CLOSE = "}";
+    private static final String DOLLAR_BRACE_OPEN = "${";
     private static final String BRACE_OPEN_EXCLUDE = "{{";
     private static final String BRACE_CLOSE_EXCLUDE = "}}";
-    private static final String BRACE_OPEN_TMP = "[#TMP#[";
-    private static final String BRACE_CLOSE_TMP = "]#TMP#]";
+    private static final String DOLLAR_BRACE_OPEN_EXCLUDE = "${{";
+    private static final String BRACE_OPEN_TMP = "[#STR_UT_TMP#[";
+    private static final String BRACE_CLOSE_TMP = "]#STR_UT_TMP#]";
     private static final String BRACES = "{}";
+
+    public static final Pair<String, String> INCLUDE_CURLY_BRACES = Pair.of(BRACE_OPEN, BRACE_CLOSE);
+    public static final Pair<String, String> EXCLUDE_CURLY_BRACES = Pair.of(BRACE_OPEN_EXCLUDE, BRACE_CLOSE_EXCLUDE);
+
+    public static final Pair<String, String> INCLUDE_DOLLAR_CURLY_BRACES = Pair.of(DOLLAR_BRACE_OPEN, BRACE_CLOSE);
+    public static final Pair<String, String> EXCLUDE_DOLLAR_CURLY_BRACES = Pair.of(DOLLAR_BRACE_OPEN_EXCLUDE, BRACE_CLOSE_EXCLUDE);
 
     private static final int ENSURE_CAPACITY = 16;
 
@@ -778,6 +788,83 @@ public final class StringUtils extends StringFormatUtils {
      * </p>
      * 
      * <pre>
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "", Pair.of("key", "test")); // =&gt;
+     *                                                                                               // ""
+     * 
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to the {where} this {when}", Pair.of("where", "beach"),
+     *         Pair.of("when", "afternoon"));
+     * // =&gt; "I'll go to the beach this afternoon"
+     * 
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to {key}{{key}}{key}", Pair.of("key", "beach"));
+     * // =&gt; "I'll go to beach{key}beach"
+     * </pre>
+     * 
+     * @param include
+     *            the characters that surround the property key to replace
+     * @param exclude
+     *            the characters that surround the property key to exclude of
+     *            replacement
+     * @param charSequence
+     *            the input char sequence
+     * @param arguments
+     *            the pairs to inject
+     * @param <T>
+     *            the type arguments
+     * @return the result with replacements
+     */
+    @SafeVarargs
+    public static <T extends Map.Entry<String, Object>> String injectKeys(final Pair<String, String> include,
+            final Pair<String, String> exclude, final CharSequence charSequence, final T... arguments) {
+        if (charSequence == null) {
+            throw new IllegalArgumentException("The input char sequence cannot be null");
+        } else if (ObjectUtils.anyNull(include, exclude)) {
+            throw new IllegalArgumentException("The include and exclude parameters cannot be null");
+        } else if (ObjectUtils.anyNull(include.getLeft(), include.getRight(), exclude.getLeft(), exclude.getRight())) {
+            throw new IllegalArgumentException("The include and exclude values cannot be null");
+        } else if (isEmpty(charSequence) || arguments == null || arguments.length == 0) {
+            return charSequence.toString();
+        }
+
+        final StringBuilder output = new StringBuilder(charSequence);
+
+        // if no brace, just returns the string
+        if (output.indexOf(include.getLeft()) < 0) {
+            return output.toString();
+        }
+
+        // replace the excluded braces by a temporary string
+        replaceBrace(output, exclude.getLeft(), BRACE_OPEN_TMP);
+        replaceBrace(output, exclude.getRight(), BRACE_CLOSE_TMP);
+
+        // replace braces with key by the arguments
+        for (T argument : arguments) {
+            if (argument != null) {
+                int index = 0;
+                final String key = new StringBuilder(include.getLeft()).append(argument.getKey()).append(include.getRight()).toString();
+                while ((index = output.indexOf(key, index)) > -1) {
+                    output.replace(index, index + key.length(), String.valueOf(argument.getValue()));
+                }
+            }
+        }
+
+        // replace the temporary brace by the simple brace
+        replaceBrace(output, BRACE_OPEN_TMP, include.getLeft());
+        replaceBrace(output, BRACE_CLOSE_TMP, include.getRight());
+
+        return output.toString();
+    }
+
+    /**
+     * Injects all arguments in the specified char sequence. The arguments are
+     * injected by replacement of keys between braces. To exclude keys, just
+     * double braces (like {{key}} will return {key}). If some keys aren't
+     * found, they are ignored.
+     * 
+     * <p>
+     * precondition: {@code charSequence} cannot be {@code null}
+     * </p>
+     * 
+     * <pre>
      * StringUtils.injectKeys("", Pair.of("key", "test")); // =&gt; ""
      * 
      * StringUtils.injectKeys("I'll go to the {where} this {when}", Pair.of("where", "beach"), Pair.of("when", "afternoon"));
@@ -797,39 +884,52 @@ public final class StringUtils extends StringFormatUtils {
      */
     @SafeVarargs
     public static <T extends Map.Entry<String, Object>> String injectKeys(final CharSequence charSequence, final T... arguments) {
+        return injectKeys(INCLUDE_CURLY_BRACES, EXCLUDE_CURLY_BRACES, charSequence, arguments);
+    }
+
+    /**
+     * Injects all arguments in the specified char sequence. The arguments are
+     * injected by replacement of keys between braces. To exclude keys, just
+     * double braces (like {{key}} will return {key}). If some keys aren't
+     * found, they are ignored.
+     * 
+     * <p>
+     * precondition: {@code charSequence} cannot be {@code null}
+     * </p>
+     * 
+     * <pre>
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "", Collections.singletonMap("key", "test"));
+     * // =&gt; ""
+     * 
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to the ${where} this {when}",
+     *         MapUtils2.newHashMap(Pair.of("where", "beach"), Pair.of("when", "afternoon")));
+     * // =&gt; "I'll go to the beach this afternoon"
+     * 
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to ${key}${{key}}${key}",
+     *         Collections.singletonMap("key", "beach"));
+     * // =&gt; "I'll go to beach${key}beach"
+     * </pre>
+     * 
+     * @param include
+     *            the characters that surround the property key to replace
+     * @param exclude
+     *            the characters that surround the property key to exclude of
+     *            replacement
+     * @param charSequence
+     *            the input char sequence
+     * @param arguments
+     *            the map of pairs to inject
+     * @return the result with replacements
+     */
+    public static String injectKeys(final Pair<String, String> include, final Pair<String, String> exclude, final CharSequence charSequence,
+            final Map<String, Object> arguments) {
         if (charSequence == null) {
             throw new IllegalArgumentException("The input char sequence cannot be null");
-        } else if (isEmpty(charSequence) || arguments == null || arguments.length == 0) {
+        } else if (isEmpty(charSequence) || MapUtils.isEmpty(arguments)) {
             return charSequence.toString();
         }
 
-        final StringBuilder output = new StringBuilder(charSequence);
-
-        // if no brace, just returns the string
-        if (output.indexOf(BRACE_OPEN) < 0) {
-            return output.toString();
-        }
-
-        // replace the excluded braces by a temporary string
-        replaceBrace(output, BRACE_OPEN_EXCLUDE, BRACE_OPEN_TMP);
-        replaceBrace(output, BRACE_CLOSE_EXCLUDE, BRACE_CLOSE_TMP);
-
-        // replace braces with key by the arguments
-        for (T argument : arguments) {
-            if (argument != null) {
-                int index = 0;
-                final String key = new StringBuilder(BRACE_OPEN).append(argument.getKey()).append(BRACE_CLOSE).toString();
-                while ((index = output.indexOf(key, index)) > -1) {
-                    output.replace(index, index + key.length(), String.valueOf(argument.getValue()));
-                }
-            }
-        }
-
-        // replace the temporary brace by the simple brace
-        replaceBrace(output, BRACE_OPEN_TMP, BRACE_OPEN);
-        replaceBrace(output, BRACE_CLOSE_TMP, BRACE_CLOSE);
-
-        return output.toString();
+        return injectKeys(include, exclude, charSequence, arguments.entrySet().toArray(CastUtils.cast(new Map.Entry[arguments.size()])));
     }
 
     /**
@@ -861,13 +961,89 @@ public final class StringUtils extends StringFormatUtils {
      * @return the result with replacements
      */
     public static String injectKeys(final CharSequence charSequence, final Map<String, Object> arguments) {
+        return injectKeys(INCLUDE_CURLY_BRACES, EXCLUDE_CURLY_BRACES, charSequence, arguments);
+    }
+
+    /**
+     * Injects all arguments in the specified char sequence. The arguments are
+     * injected by replacement of keys between braces. To exclude keys, just
+     * double braces (like {{key}} will return {key}). If some keys aren't
+     * found, they are ignored.
+     * 
+     * <p>
+     * precondition: {@code charSequence} cannot be {@code null}
+     * </p>
+     * 
+     * <pre>
+     * Properties properties = new Properties();
+     * properties.setProperty("where", "beach");
+     * properties.setProperty("when", "afternoon");
+     * 
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "", properties);
+     * // =&gt; ""
+     * 
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to the ${where} this ${when}", properties);
+     * // =&gt; "I'll go to the beach this afternoon"
+     * 
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to ${where}${{where}}${where}", properties);
+     * // =&gt; "I'll go to beach${where}beach"
+     * </pre>
+     * 
+     * @param include
+     *            the characters that surround the property key to replace
+     * @param exclude
+     *            the characters that surround the property key to exclude of
+     *            replacement
+     * @param charSequence
+     *            the input char sequence
+     * @param properties
+     *            the properties to inject
+     * @return the result with replacements
+     */
+    public static String injectKeys(final Pair<String, String> include, final Pair<String, String> exclude, final CharSequence charSequence,
+            final Properties properties) {
         if (charSequence == null) {
             throw new IllegalArgumentException("The input char sequence cannot be null");
-        } else if (isEmpty(charSequence) || MapUtils.isEmpty(arguments)) {
+        } else if (isEmpty(charSequence) || properties == null || properties.isEmpty()) {
             return charSequence.toString();
         }
 
-        return injectKeys(charSequence, arguments.entrySet().toArray(CastUtils.cast(new Map.Entry[arguments.size()])));
+        return injectKeys(include, exclude, charSequence, properties.entrySet().toArray(CastUtils.cast(new Map.Entry[properties.size()])));
+    }
+
+    /**
+     * Injects all arguments in the specified char sequence. The arguments are
+     * injected by replacement of keys between braces. To exclude keys, just
+     * double braces (like {{key}} will return {key}). If some keys aren't
+     * found, they are ignored.
+     * 
+     * <p>
+     * precondition: {@code charSequence} cannot be {@code null}
+     * </p>
+     * 
+     * <pre>
+     * Properties properties = new Properties();
+     * properties.setProperty("where", "beach");
+     * properties.setProperty("when", "afternoon");
+     * 
+     * StringUtils.injectKeys("", properties);
+     * // =&gt; ""
+     * 
+     * StringUtils.injectKeys("I'll go to the {where} this {when}", properties);
+     * // =&gt; "I'll go to the beach this afternoon"
+     * 
+     * StringUtils.injectKeys("I'll go to {where}{{where}}{where}", properties);
+     * // =&gt; "I'll go to beach{where}beach"
+     * </pre>
+     * 
+     * @param charSequence
+     *            the input char sequence
+     * @param properties
+     *            the properties to inject
+     * @return the result with replacements
+     */
+    public static String injectKeys(final CharSequence charSequence, final Properties properties) {
+        return injectKeys(INCLUDE_CURLY_BRACES, EXCLUDE_CURLY_BRACES, charSequence, properties);
     }
 
     private static void replaceBrace(final StringBuilder output, final String text, final String replacement) {
