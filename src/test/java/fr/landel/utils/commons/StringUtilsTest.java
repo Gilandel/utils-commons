@@ -584,9 +584,9 @@ public class StringUtilsTest extends AbstractTest {
                 Collections.singletonMap("key", "test")));
         assertEquals("test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
                 "test", Collections.singletonMap("key", "test")));
-        assertEquals("test1 ${key0} test2 test1 ${key1}",
+        assertEquals("test1 ${key0} test2 test1 ${key1} ${{key1} test1}",
                 StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
-                        "${key1} ${key0} ${key2} ${key1} ${{key1}}",
+                        "${key1} ${key0} ${key2} ${key1} ${{key1}} ${{key1} ${key1}}",
                         MapUtils2.newHashMap(Pair.of("key1", "test1"), Pair.of("key2", "test2"))));
         assertEquals("Test null", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
                 "Test ${key}", Collections.singletonMap("key", null)));
@@ -682,6 +682,12 @@ public class StringUtilsTest extends AbstractTest {
 
         assertException(() -> StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, null,
                 properties1), IllegalArgumentException.class, "The input char sequence cannot be null");
+
+        assertException(() -> StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${", "}"), "${test}", properties1),
+                IllegalArgumentException.class, "The exclude cannot be equal to include operators");
+
+        assertException(() -> StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("$<", ">"), "${test}", properties1),
+                IllegalArgumentException.class, "The exclude must contain include operators");
     }
 
     /**
