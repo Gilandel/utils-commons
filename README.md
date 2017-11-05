@@ -24,7 +24,7 @@ Work progress:
 <dependency>
 	<groupId>fr.landel.utils</groupId>
 	<artifactId>utils-commons</artifactId>
-	<version>1.0.11</version>
+	<version>1.0.12</version>
 </dependency>
 ```
 
