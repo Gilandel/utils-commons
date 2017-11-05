@@ -2,21 +2,29 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilandel
+ * Copyright (C) 2016 - 2017 Gilles Landel
  * %%
- * Authors: Gilles Landel
- * URL: https://github.com/Gilandel
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This file is under Apache License, version 2.0 (2004).
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * #L%
  */
 package fr.landel.utils.commons;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -54,19 +62,8 @@ public class ArrayUtilsTest extends AbstractTest {
         assertFalse(ArrayUtils.containsAll(bytes1, new Character[] {'1'}));
         assertFalse(ArrayUtils.containsAll(bytes1, new Character[] {'1'}, false));
 
-        try {
-            ArrayUtils.containsAll(null, bytes2);
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
-
-        try {
-            ArrayUtils.containsAll(bytes1, null);
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
+        assertException(() -> ArrayUtils.containsAll(null, bytes2), NullPointerException.class);
+        assertException(() -> ArrayUtils.containsAll(bytes1, null), NullPointerException.class);
     }
 
     /**
@@ -86,19 +83,83 @@ public class ArrayUtilsTest extends AbstractTest {
         assertFalse(ArrayUtils.containsAny(bytes1, new Character[] {'1'}));
         assertFalse(ArrayUtils.containsAny(bytes1, new Character[] {'1'}, false));
 
-        try {
-            ArrayUtils.containsAny(null, bytes2);
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
+        assertException(() -> ArrayUtils.containsAny(null, bytes2), NullPointerException.class);
+        assertException(() -> ArrayUtils.containsAny(bytes1, null), NullPointerException.class);
+    }
 
-        try {
-            ArrayUtils.containsAny(bytes1, null);
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
+    /**
+     * Test method for {@link ArrayUtils#replace(T[], T, T)}.
+     */
+    @Test
+    public void testReplace() {
+        Character[] chars1 = new Character[] {'2', '6', null, 'd'};
+
+        ArrayUtils.replace(chars1, '6', '7');
+
+        assertTrue(Arrays.equals(new Character[] {'2', '7', null, 'd'}, chars1));
+
+        assertException(() -> ArrayUtils.replace(null, '6', '7'), NullPointerException.class);
+    }
+
+    /**
+     * Test method for {@link ArrayUtils#replace(T[], T[], T[])}.
+     */
+    @Test
+    public void testReplaceArray() {
+        Character[] chars1 = new Character[] {'2', '6', null, 'd'};
+        Character[] charsSearched = new Character[] {'6', null};
+        Character[] charsReplacement = new Character[] {'8', '6'};
+
+        ArrayUtils.replace(chars1, charsSearched, charsReplacement);
+
+        assertTrue(Arrays.equals(new Character[] {'2', '8', '6', 'd'}, chars1));
+
+        assertException(() -> ArrayUtils.replace(null, charsSearched, charsReplacement), NullPointerException.class);
+        assertException(() -> ArrayUtils.replace(chars1, null, charsReplacement), NullPointerException.class);
+        assertException(() -> ArrayUtils.replace(chars1, charsSearched, null), NullPointerException.class);
+
+        assertException(() -> ArrayUtils.replace(chars1, charsSearched, chars1), IllegalArgumentException.class,
+                "Searched values and replacement values arrays must have the same length");
+    }
+
+    /**
+     * Test method for {@link ArrayUtils#concat(T[], T...)}.
+     */
+    @Test
+    public void testConcat() {
+        Character[] chars1 = new Character[] {'2', '6', null, 'd'};
+        Character[] chars2 = new Character[] {'6', null};
+        Character[] charsExpected = new Character[] {'2', '6', null, 'd', '6', null};
+
+        assertTrue(Arrays.equals(charsExpected, ArrayUtils.concat(chars1, chars2)));
+
+        assertNotEquals(chars1, ArrayUtils.concat(chars1, (Character[]) null));
+        assertTrue(Arrays.equals(chars1, ArrayUtils.concat(chars1, (Character[]) null)));
+
+        assertNotEquals(chars2, ArrayUtils.concat((Character[]) null, chars2));
+        assertTrue(Arrays.equals(chars2, ArrayUtils.concat((Character[]) null, chars2)));
+    }
+
+    /**
+     * Test method for {@link ArrayUtils#concat(T[], T[], T...)}.
+     */
+    @Test
+    public void testConcatOutput() {
+        Character[] chars1 = new Character[] {'2', '6', null, 'd'};
+        Character[] chars2 = new Character[] {'6', null};
+        Character[] charsExpected = new Character[] {'2', '6', null, 'd', '6', null};
+
+        assertTrue(Arrays.equals(charsExpected, ArrayUtils.concat(new Character[6], chars1, chars2)));
+
+        assertTrue(Arrays.equals(chars1, ArrayUtils.concat(new Character[4], chars1, (Character[]) null)));
+        assertTrue(Arrays.equals(chars2, ArrayUtils.concat(new Character[2], (Character[]) null, chars2)));
+
+        assertTrue(Arrays.equals(new Character[] {'2', '6', null, 'd', null, null},
+                ArrayUtils.concat(new Character[6], chars1, (Character[]) null)));
+
+        assertException(() -> ArrayUtils.concat(null, chars1, chars2), NullPointerException.class, "The output array cannot be null");
+        assertException(() -> ArrayUtils.concat(new Character[2], chars1, chars2), IllegalArgumentException.class,
+                "The output array cannot be smaller than array1 plus array2 length");
     }
 
     /**
@@ -119,19 +180,8 @@ public class ArrayUtilsTest extends AbstractTest {
 
         assertEquals(0, ArrayUtils.count(bytes1, new Character[] {'1'}));
 
-        try {
-            ArrayUtils.count(bytes1, null);
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
-
-        try {
-            ArrayUtils.count(null, bytes1);
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
+        assertException(() -> ArrayUtils.count(bytes1, null), NullPointerException.class);
+        assertException(() -> ArrayUtils.count(null, bytes1), NullPointerException.class);
     }
 
     /**
@@ -149,11 +199,6 @@ public class ArrayUtilsTest extends AbstractTest {
 
         assertEquals(0, ArrayUtils.count(new Character[0], '1'));
 
-        try {
-            ArrayUtils.count(null, '1');
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
+        assertException(() -> ArrayUtils.count(null, '1'), NullPointerException.class);
     }
 }
