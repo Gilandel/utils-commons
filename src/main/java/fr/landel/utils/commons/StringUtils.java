@@ -2,12 +2,19 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilandel
+ * Copyright (C) 2016 - 2017 Gilles Landel
  * %%
- * Authors: Gilles Landel
- * URL: https://github.com/Gilandel
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This file is under Apache License, version 2.0 (2004).
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * #L%
  */
 package fr.landel.utils.commons;
@@ -54,9 +61,11 @@ public final class StringUtils extends StringFormatUtils {
     private static final String BRACE_OPEN_EXCLUDE = "{{";
     private static final String BRACE_CLOSE_EXCLUDE = "}}";
     private static final String DOLLAR_BRACE_OPEN_EXCLUDE = "${{";
+    private static final String BRACES = "{}";
+
     private static final String BRACE_OPEN_TMP = "[#STR_UT_TMP#[";
     private static final String BRACE_CLOSE_TMP = "]#STR_UT_TMP#]";
-    private static final String BRACES = "{}";
+    private static final String TEMP_REPLACEMENT = "___ST_REPLACEMENT___";
 
     public static final Pair<String, String> INCLUDE_CURLY_BRACES = Pair.of(BRACE_OPEN, BRACE_CLOSE);
     public static final Pair<String, String> EXCLUDE_CURLY_BRACES = Pair.of(BRACE_OPEN_EXCLUDE, BRACE_CLOSE_EXCLUDE);
@@ -821,6 +830,10 @@ public final class StringUtils extends StringFormatUtils {
             throw new IllegalArgumentException("The include and exclude parameters cannot be null");
         } else if (ObjectUtils.anyNull(include.getLeft(), include.getRight(), exclude.getLeft(), exclude.getRight())) {
             throw new IllegalArgumentException("The include and exclude values cannot be null");
+        } else if (exclude.getLeft().equals(include.getLeft()) || exclude.getRight().equals(include.getRight())) {
+            throw new IllegalArgumentException("The exclude cannot be equal to include operators");
+        } else if (!exclude.getLeft().contains(include.getLeft()) || !exclude.getRight().contains(include.getRight())) {
+            throw new IllegalArgumentException("The exclude must contain include operators");
         } else if (isEmpty(charSequence) || arguments == null || arguments.length == 0) {
             return charSequence.toString();
         }
@@ -832,24 +845,32 @@ public final class StringUtils extends StringFormatUtils {
             return output.toString();
         }
 
-        // replace the excluded braces by a temporary string
-        replaceBrace(output, exclude.getLeft(), BRACE_OPEN_TMP);
-        replaceBrace(output, exclude.getRight(), BRACE_CLOSE_TMP);
-
-        // replace braces with key by the arguments
         for (T argument : arguments) {
             if (argument != null) {
                 int index = 0;
+
                 final String key = new StringBuilder(include.getLeft()).append(argument.getKey()).append(include.getRight()).toString();
+                final String keyExclude = new StringBuilder(exclude.getLeft()).append(argument.getKey()).append(exclude.getRight())
+                        .toString();
+
+                // replace the excluded braces by a temporary string
+                while ((index = output.indexOf(keyExclude, index)) > -1) {
+                    output.replace(index, index + keyExclude.length(), TEMP_REPLACEMENT);
+                }
+
+                // replace the key by the argument
+                index = 0;
                 while ((index = output.indexOf(key, index)) > -1) {
                     output.replace(index, index + key.length(), String.valueOf(argument.getValue()));
                 }
+
+                // replace the temporary string by the excluded braces
+                index = 0;
+                while ((index = output.indexOf(TEMP_REPLACEMENT, index)) > -1) {
+                    output.replace(index, index + TEMP_REPLACEMENT.length(), key);
+                }
             }
         }
-
-        // replace the temporary brace by the simple brace
-        replaceBrace(output, BRACE_OPEN_TMP, include.getLeft());
-        replaceBrace(output, BRACE_CLOSE_TMP, include.getRight());
 
         return output.toString();
     }

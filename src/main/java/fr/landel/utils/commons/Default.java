@@ -2,17 +2,23 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilandel
+ * Copyright (C) 2016 - 2017 Gilles Landel
  * %%
- * Authors: Gilles Landel
- * URL: https://github.com/Gilandel
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This file is under Apache License, version 2.0 (2004).
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * #L%
  */
 package fr.landel.utils.commons;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -77,7 +83,7 @@ public final class Default<T> {
      * @param value
      *            the non-null value to be present
      * @param defaultValue
-     *            the default value
+     *            the default value (cannot be {@code null})
      */
     private Default(final T value, final T defaultValue) {
         this.value = value;
@@ -133,11 +139,9 @@ public final class Default<T> {
 
     /**
      * If a value is present in this {@link Default}, returns the value,
-     * otherwise throws {@code NoSuchElementException}.
+     * otherwise returns the default value.
      *
      * @return the non-null value held by this {@link Default}
-     * @throws NoSuchElementException
-     *             if there is no value present
      *
      * @see Default#isPresent()
      */

@@ -2,12 +2,19 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilandel
+ * Copyright (C) 2016 - 2017 Gilles Landel
  * %%
- * Authors: Gilles Landel
- * URL: https://github.com/Gilandel
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  * 
- * This file is under Apache License, version 2.0 (2004).
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * #L%
  */
 package fr.landel.utils.commons;
@@ -584,9 +591,9 @@ public class StringUtilsTest extends AbstractTest {
                 Collections.singletonMap("key", "test")));
         assertEquals("test", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
                 "test", Collections.singletonMap("key", "test")));
-        assertEquals("test1 ${key0} test2 test1 ${key1}",
+        assertEquals("test1 ${key0} test2 test1 ${key1} ${{key1} test1}",
                 StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
-                        "${key1} ${key0} ${key2} ${key1} ${{key1}}",
+                        "${key1} ${key0} ${key2} ${key1} ${{key1}} ${{key1} ${key1}}",
                         MapUtils2.newHashMap(Pair.of("key1", "test1"), Pair.of("key2", "test2"))));
         assertEquals("Test null", StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES,
                 "Test ${key}", Collections.singletonMap("key", null)));
@@ -682,6 +689,12 @@ public class StringUtilsTest extends AbstractTest {
 
         assertException(() -> StringUtils.injectKeys(StringUtils.INCLUDE_DOLLAR_CURLY_BRACES, StringUtils.EXCLUDE_DOLLAR_CURLY_BRACES, null,
                 properties1), IllegalArgumentException.class, "The input char sequence cannot be null");
+
+        assertException(() -> StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${", "}"), "${test}", properties1),
+                IllegalArgumentException.class, "The exclude cannot be equal to include operators");
+
+        assertException(() -> StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("$<", ">"), "${test}", properties1),
+                IllegalArgumentException.class, "The exclude must contain include operators");
     }
 
     /**
