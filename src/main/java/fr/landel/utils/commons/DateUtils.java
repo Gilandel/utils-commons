@@ -388,7 +388,9 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * Average leap year period.
      * 
-     * <code>(year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)</code>
+     * <pre>
+     * (year % 4 == 0 &amp;&amp; year % 100 != 0) || (year % 400 == 0)
+     * </pre>
      */
     public static final float LEAP_YEAR_PERIOD_AVG = 0.2425f;
 
