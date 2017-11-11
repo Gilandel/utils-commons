@@ -348,6 +348,17 @@ public final class StringUtils extends StringFormatUtils {
     }
 
     /**
+     * Replaces single quotes by double quotes.
+     * 
+     * @param str
+     *            The input {@link String}
+     * @return the new sequence
+     */
+    public static String replaceQuotes(final String str) {
+        return replaceChars(str, '\'', '\"');
+    }
+
+    /**
      * <p>
      * Joins the elements of the provided iterable into a single String
      * containing the provided list of elements.
@@ -824,17 +835,10 @@ public final class StringUtils extends StringFormatUtils {
     @SafeVarargs
     public static <T extends Map.Entry<String, Object>> String injectKeys(final Pair<String, String> include,
             final Pair<String, String> exclude, final CharSequence charSequence, final T... arguments) {
-        if (charSequence == null) {
-            throw new IllegalArgumentException("The input char sequence cannot be null");
-        } else if (ObjectUtils.anyNull(include, exclude)) {
-            throw new IllegalArgumentException("The include and exclude parameters cannot be null");
-        } else if (ObjectUtils.anyNull(include.getLeft(), include.getRight(), exclude.getLeft(), exclude.getRight())) {
-            throw new IllegalArgumentException("The include and exclude values cannot be null");
-        } else if (exclude.getLeft().equals(include.getLeft()) || exclude.getRight().equals(include.getRight())) {
-            throw new IllegalArgumentException("The exclude cannot be equal to include operators");
-        } else if (!exclude.getLeft().contains(include.getLeft()) || !exclude.getRight().contains(include.getRight())) {
-            throw new IllegalArgumentException("The exclude must contain include operators");
-        } else if (isEmpty(charSequence) || arguments == null || arguments.length == 0) {
+
+        checkParamsInjectKeys(include, exclude, charSequence, arguments);
+
+        if (isEmpty(charSequence) || arguments == null || arguments.length == 0) {
             return charSequence.toString();
         }
 
@@ -873,6 +877,21 @@ public final class StringUtils extends StringFormatUtils {
         }
 
         return output.toString();
+    }
+
+    private static <T extends Map.Entry<String, Object>> void checkParamsInjectKeys(final Pair<String, String> include,
+            final Pair<String, String> exclude, final CharSequence charSequence, final T[] arguments) {
+        if (charSequence == null) {
+            throw new IllegalArgumentException("The input char sequence cannot be null");
+        } else if (ObjectUtils.anyNull(include, exclude)) {
+            throw new IllegalArgumentException("The include and exclude parameters cannot be null");
+        } else if (ObjectUtils.anyNull(include.getLeft(), include.getRight(), exclude.getLeft(), exclude.getRight())) {
+            throw new IllegalArgumentException("The include and exclude values cannot be null");
+        } else if (exclude.getLeft().equals(include.getLeft()) || exclude.getRight().equals(include.getRight())) {
+            throw new IllegalArgumentException("The exclude cannot be equal to include operators");
+        } else if (!exclude.getLeft().contains(include.getLeft()) || !exclude.getRight().contains(include.getRight())) {
+            throw new IllegalArgumentException("The exclude must contain include operators");
+        }
     }
 
     /**

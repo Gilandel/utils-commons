@@ -753,4 +753,15 @@ public class StringUtilsTest extends AbstractTest {
             }
         }
     }
+
+    /**
+     * Test method for {@link StringUtils#replaceQuotes(String)} .
+     */
+    @Test
+    public void testReplaceQuotes() {
+        assertNull(StringUtils.replaceQuotes(null));
+        assertEquals("", StringUtils.replaceQuotes(""));
+        assertEquals("t\"o\"t\"\"o", StringUtils.replaceQuotes("t'o't''o"));
+        assertEquals("\\\"t\"o\"t\"\"o", StringUtils.replaceQuotes("\\'t\'o't''o"));
+    }
 }
