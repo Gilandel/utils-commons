@@ -653,7 +653,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return the mapped date
      */
     public static Date getDate(final LocalDateTime date, final ZoneId zoneId) {
-        return Date.from(date.atZone(ObjectUtils.defaultIfNull(zoneId, () -> ZoneId.systemDefault())).toInstant());
+        return Date.from(date.atZone(ObjectUtils.defaultIfNull(zoneId, ZoneId::systemDefault)).toInstant());
     }
 
     /**
@@ -683,7 +683,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return the mapped date
      */
     public static Date getDate(final LocalDate date, final LocalTime time, final ZoneId zoneId) {
-        return Date.from(time.atDate(date).atZone(ObjectUtils.defaultIfNull(zoneId, () -> ZoneId.systemDefault())).toInstant());
+        return Date.from(time.atDate(date).atZone(ObjectUtils.defaultIfNull(zoneId, ZoneId::systemDefault)).toInstant());
     }
 
     /**
@@ -989,7 +989,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return the mapped date
      */
     public static LocalDateTime getLocalDateTime(final Date date, final ZoneId zoneId) {
-        return LocalDateTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, () -> ZoneId.systemDefault()));
+        return LocalDateTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, ZoneId::systemDefault));
     }
 
     /**
@@ -1100,7 +1100,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return the mapped date
      */
     public static ZonedDateTime getZonedDateTime(final Date date, final ZoneId zoneId) {
-        return ZonedDateTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, () -> ZoneId.systemDefault()));
+        return ZonedDateTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, ZoneId::systemDefault));
     }
 
     /**
@@ -1137,7 +1137,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return the mapped date
      */
     public static OffsetDateTime getOffsetDateTime(final Date date, final ZoneId zoneId) {
-        return OffsetDateTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, () -> ZoneId.systemDefault()));
+        return OffsetDateTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, ZoneId::systemDefault));
     }
 
     /**
@@ -1174,7 +1174,7 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @return the mapped date
      */
     public static OffsetTime getOffsetTime(final Date date, final ZoneId zoneId) {
-        return OffsetTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, () -> ZoneId.systemDefault()));
+        return OffsetTime.ofInstant(date.toInstant(), ObjectUtils.defaultIfNull(zoneId, ZoneId::systemDefault));
     }
 
     /**
