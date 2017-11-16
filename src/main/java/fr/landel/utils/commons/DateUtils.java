@@ -29,6 +29,7 @@ import java.time.OffsetTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -393,6 +394,11 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * </pre>
      */
     public static final float LEAP_YEAR_PERIOD_AVG = 0.2425f;
+
+    /**
+     * Average days by month
+     */
+    public static final float DAYS_PER_MONTH_AVG = (DAYS_PER_YEAR + LEAP_YEAR_PERIOD_AVG) / MONTHS_PER_YEAR;
 
     /**
      * ROUND ({@link #YEARS_PER_DECADE} * {@link #LEAP_YEAR_PERIOD_AVG})
@@ -1186,5 +1192,192 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static OffsetTime getOffsetTime(final Calendar calendar) {
         return OffsetTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId());
+    }
+
+    /**
+     * Get the latest date
+     * 
+     * <pre>
+     * DateUtils.max(oldDate, newDate) =&gt; newDate
+     * DateUtils.max(null, newDate) =&gt; newDate
+     * DateUtils.max(null) =&gt; null
+     * </pre>
+     * 
+     * @param dates
+     *            the dates list
+     * @return the latest date (may be {@code null})
+     * @throws NullPointerException
+     *             if dates array is {@code null}
+     * @throws IllegalArgumentException
+     *             if dates array is empty
+     */
+    public static Date max(final Date... dates) {
+        checkMinMaxDates(dates);
+        Date max = null;
+        for (Date date : dates) {
+            if (max == null || (date != null && date.after(max))) {
+                max = date;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Get the latest date
+     * 
+     * <pre>
+     * DateUtils.max(oldDate, newDate) =&gt; newDate
+     * DateUtils.max(null, newDate) =&gt; newDate
+     * DateUtils.max(null) =&gt; null
+     * </pre>
+     * 
+     * @param dates
+     *            the dates list
+     * @return the latest date (may be {@code null})
+     * @throws NullPointerException
+     *             if dates array is {@code null}
+     * @throws IllegalArgumentException
+     *             if dates array is empty
+     */
+    public static Calendar max(final Calendar... dates) {
+        checkMinMaxDates(dates);
+        Calendar max = null;
+        for (Calendar date : dates) {
+            if (max == null || (date != null && date.after(max))) {
+                max = date;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Get the latest date
+     * 
+     * <pre>
+     * DateUtils.max(oldDate, newDate) =&gt; newDate
+     * DateUtils.max(null, newDate) =&gt; newDate
+     * DateUtils.max(null) =&gt; null
+     * </pre>
+     * 
+     * @param dates
+     *            the dates list
+     * @return the latest date (may be {@code null})
+     * @throws NullPointerException
+     *             if dates array is {@code null}
+     * @throws IllegalArgumentException
+     *             if dates array is empty
+     */
+    @SafeVarargs
+    public static <T extends Temporal & Comparable<T>> T max(final T... dates) {
+        checkMinMaxDates(dates);
+        T max = null;
+        for (T date : dates) {
+            if (max == null || (date != null && date.compareTo(max) > 0)) {
+                max = date;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Get the oldest date
+     * 
+     * <pre>
+     * DateUtils.min(oldDate, newDate) =&gt; oldDate
+     * DateUtils.min(null, newDate) =&gt; newDate
+     * DateUtils.min(null) =&gt; null
+     * </pre>
+     * 
+     * @param dates
+     *            the dates list
+     * @return the oldest date (may be {@code null})
+     * @throws NullPointerException
+     *             if dates array is {@code null}
+     * @throws IllegalArgumentException
+     *             if dates array is empty
+     */
+    public static Date min(final Date... dates) {
+        checkMinMaxDates(dates);
+        Date max = null;
+        for (Date date : dates) {
+            if (max == null || (date != null && date.before(max))) {
+                max = date;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Get the oldest date
+     * 
+     * <pre>
+     * DateUtils.min(oldDate, newDate) =&gt; oldDate
+     * DateUtils.min(null, newDate) =&gt; newDate
+     * DateUtils.min(null) =&gt; null
+     * </pre>
+     * 
+     * @param dates
+     *            the dates list
+     * @return the oldest date (may be {@code null})
+     * @throws NullPointerException
+     *             if dates array is {@code null}
+     * @throws IllegalArgumentException
+     *             if dates array is empty
+     */
+    public static Calendar min(final Calendar... dates) {
+        checkMinMaxDates(dates);
+        Calendar max = null;
+        for (Calendar date : dates) {
+            if (max == null || (date != null && date.before(max))) {
+                max = date;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Get the oldest date
+     * 
+     * <pre>
+     * DateUtils.min(oldDate, newDate) =&gt; oldDate
+     * DateUtils.min(null, newDate) =&gt; newDate
+     * DateUtils.min(null) =&gt; null
+     * </pre>
+     * 
+     * @param dates
+     *            the dates list
+     * @return the oldest date (may be {@code null})
+     * @throws NullPointerException
+     *             if dates array is {@code null}
+     * @throws IllegalArgumentException
+     *             if dates array is empty
+     */
+    @SafeVarargs
+    public static <T extends Temporal & Comparable<T>> T min(final T... dates) {
+        checkMinMaxDates(dates);
+        T max = null;
+        for (T date : dates) {
+            if (max == null || (date != null && date.compareTo(max) < 0)) {
+                max = date;
+            }
+        }
+        return max;
+    }
+
+    /**
+     * Check if dates array is valid
+     * 
+     * @param dates
+     *            the dates list
+     * @throws NullPointerException
+     *             if dates array is {@code null}
+     * @throws IllegalArgumentException
+     *             if dates array is empty
+     */
+    private static void checkMinMaxDates(final Object[] dates) {
+        Objects.requireNonNull(dates, "Dates array cannot be null");
+        if (ArrayUtils.isEmpty(dates)) {
+            throw new IllegalArgumentException("Dates array cannot be empty");
+        }
     }
 }

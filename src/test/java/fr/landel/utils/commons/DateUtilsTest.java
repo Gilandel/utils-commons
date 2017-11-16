@@ -603,4 +603,100 @@ public class DateUtilsTest extends AbstractTest {
         assertEquals(zonedDateTime, DateUtils.getZonedDateTime(calendar.getTime(), ZoneId.systemDefault()));
         assertEquals(zonedDateTime, DateUtils.getZonedDateTime(calendar.getTime(), null));
     }
+
+    /**
+     * Check {@link DateUtils#max}
+     */
+    @Test
+    public void testMax() {
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.set(2017, 2, 4, 16, 59, 20); // mars
+        calendar1.set(Calendar.MILLISECOND, 0);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(2017, 2, 4, 16, 59, 20); // mars
+        calendar2.set(Calendar.MILLISECOND, 1);
+
+        Calendar now = Calendar.getInstance();
+
+        assertEquals(now, DateUtils.max(calendar1, now, calendar2));
+        assertEquals(now.getTime(), DateUtils.max(calendar1.getTime(), now.getTime(), calendar2.getTime()));
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.max(DateUtils.getZonedDateTime(calendar1),
+                DateUtils.getZonedDateTime(now.getTime()), DateUtils.getZonedDateTime(calendar2.getTime())));
+
+        assertEquals(now, DateUtils.max(now));
+        assertEquals(now, DateUtils.max(null, now));
+        assertEquals(now, DateUtils.max(now, null));
+        assertEquals(now, DateUtils.max(null, now, null));
+
+        assertEquals(now.getTime(), DateUtils.max(now.getTime()));
+        assertEquals(now.getTime(), DateUtils.max(null, now.getTime()));
+        assertEquals(now.getTime(), DateUtils.max(now.getTime(), null));
+        assertEquals(now.getTime(), DateUtils.max(null, now.getTime(), null));
+
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.max(DateUtils.getZonedDateTime(now)));
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.max(null, DateUtils.getZonedDateTime(now)));
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.max(DateUtils.getZonedDateTime(now), null));
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.max(null, DateUtils.getZonedDateTime(now), null));
+
+        assertNull(DateUtils.max((Calendar) null));
+        assertNull(DateUtils.max((Date) null));
+        assertNull(DateUtils.max((ZonedDateTime) null));
+
+        assertException(() -> DateUtils.max((Calendar[]) null), NullPointerException.class, "Dates array cannot be null");
+        assertException(() -> DateUtils.max((Date[]) null), NullPointerException.class, "Dates array cannot be null");
+        assertException(() -> DateUtils.max((ZonedDateTime[]) null), NullPointerException.class, "Dates array cannot be null");
+
+        assertException(() -> DateUtils.max(new Calendar[0]), IllegalArgumentException.class, "Dates array cannot be empty");
+        assertException(() -> DateUtils.max(new Date[0]), IllegalArgumentException.class, "Dates array cannot be empty");
+        assertException(() -> DateUtils.max(new ZonedDateTime[0]), IllegalArgumentException.class, "Dates array cannot be empty");
+    }
+
+    /**
+     * Check {@link DateUtils#min}
+     */
+    @Test
+    public void testMin() {
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.set(2017, 2, 4, 16, 59, 20); // mars
+        calendar1.set(Calendar.MILLISECOND, 0);
+        Calendar calendar2 = Calendar.getInstance();
+        calendar2.set(2017, 2, 4, 16, 59, 20); // mars
+        calendar2.set(Calendar.MILLISECOND, 1);
+
+        Calendar now = Calendar.getInstance();
+
+        assertEquals(calendar1, DateUtils.min(calendar1, now, calendar2));
+        assertEquals(calendar1.getTime(), DateUtils.min(calendar1.getTime(), now.getTime(), calendar2.getTime()));
+        assertEquals(DateUtils.getZonedDateTime(calendar1), DateUtils.min(DateUtils.getZonedDateTime(calendar1),
+                DateUtils.getZonedDateTime(now.getTime()), DateUtils.getZonedDateTime(calendar2.getTime())));
+
+        assertEquals(now, DateUtils.min(now));
+        assertEquals(now, DateUtils.min(null, now));
+        assertEquals(now, DateUtils.min(now, null));
+        assertEquals(calendar1, DateUtils.min(null, now, null, calendar1, null));
+
+        assertEquals(now.getTime(), DateUtils.min(now.getTime()));
+        assertEquals(now.getTime(), DateUtils.min(null, now).getTime());
+        assertEquals(now.getTime(), DateUtils.min(now.getTime(), null));
+        assertEquals(calendar1.getTime(), DateUtils.min(null, now.getTime(), null, calendar1.getTime(), null));
+
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.min(DateUtils.getZonedDateTime(now)));
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.min(null, DateUtils.getZonedDateTime(now)));
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.min(DateUtils.getZonedDateTime(now), null));
+        assertEquals(DateUtils.getZonedDateTime(now), DateUtils.min(null, DateUtils.getZonedDateTime(now), null));
+        assertEquals(DateUtils.getZonedDateTime(calendar1),
+                DateUtils.min(null, DateUtils.getZonedDateTime(now), null, DateUtils.getZonedDateTime(calendar1), null));
+
+        assertNull(DateUtils.min((Calendar) null));
+        assertNull(DateUtils.min((Date) null));
+        assertNull(DateUtils.min((ZonedDateTime) null));
+
+        assertException(() -> DateUtils.min((Calendar[]) null), NullPointerException.class, "Dates array cannot be null");
+        assertException(() -> DateUtils.min((Date[]) null), NullPointerException.class, "Dates array cannot be null");
+        assertException(() -> DateUtils.min((ZonedDateTime[]) null), NullPointerException.class, "Dates array cannot be null");
+
+        assertException(() -> DateUtils.min(new Calendar[0]), IllegalArgumentException.class, "Dates array cannot be empty");
+        assertException(() -> DateUtils.min(new Date[0]), IllegalArgumentException.class, "Dates array cannot be empty");
+        assertException(() -> DateUtils.min(new ZonedDateTime[0]), IllegalArgumentException.class, "Dates array cannot be empty");
+    }
 }
