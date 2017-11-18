@@ -32,7 +32,7 @@ package fr.landel.utils.commons.tuple;
  * </p>
  * 
  * <p>
- * #ThreadSafe# if both tripled objects are thread-safe
+ * #ThreadSafe# if all triple objects are thread-safe
  * </p>
  *
  * @param <T>

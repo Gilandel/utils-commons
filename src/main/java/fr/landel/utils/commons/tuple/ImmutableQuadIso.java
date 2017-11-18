@@ -33,7 +33,7 @@ package fr.landel.utils.commons.tuple;
  * </p>
  * 
  * <p>
- * #ThreadSafe# if both quad objects are thread-safe
+ * #ThreadSafe# if all quad objects are thread-safe
  * </p>
  *
  * @param <T>

@@ -28,7 +28,7 @@ package fr.landel.utils.commons.tuple;
  * Not #ThreadSafe#
  * </p>
  *
- * @see org.apache.commons.lang3.tuple.Triple
+ * @see fr.landel.utils.commons.tuple.Quad
  *
  * @since Jul 26, 2016
  * @author Gilles
@@ -59,7 +59,7 @@ public class MutableQuad<A, B, C, D> extends Quad<A, B, C, D> {
     private D fourth;
 
     /**
-     * Create a new triple instance of three nulls.
+     * Create a new quad instance of four nulls.
      */
     public MutableQuad() {
         super();

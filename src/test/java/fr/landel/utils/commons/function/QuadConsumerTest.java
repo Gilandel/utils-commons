@@ -43,7 +43,7 @@ public class QuadConsumerTest {
 
     /**
      * Test method for
-     * {@link QuadConsumer#accept(java.lang.Object, java.lang.Object)}.
+     * {@link QuadConsumer#accept(Object, Object, Object, Object)}.
      */
     @Test
     public void testAccept() {
@@ -59,26 +59,6 @@ public class QuadConsumerTest {
         } catch (IllegalArgumentException e) {
             assertNotNull(e);
             assertEquals(ERROR, e.getMessage());
-        }
-    }
-
-    /**
-     * Test method for
-     * {@link QuadConsumer#acceptThrows(java.lang.Object, java.lang.Object)}.
-     */
-    @Test
-    public void testAcceptThrows() {
-        try {
-            C.accept("v1", "v2", "v3", "v4");
-        } catch (IllegalArgumentException e) {
-            fail("Consumer failed");
-        }
-
-        try {
-            C.accept("v1", null, "v3", "v4");
-            fail("Consumer has to fail");
-        } catch (IllegalArgumentException e) {
-            assertNotNull(e);
         }
     }
 

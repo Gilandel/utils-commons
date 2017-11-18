@@ -180,16 +180,16 @@ public abstract class AbstractQuad<A, B, C, D> implements Comparable<AbstractQua
      * </p>
      * 
      * <p>
-     * This uses {@link java.util.Formattable} to perform the formatting. Two
-     * variables may be used to embed the left and right elements. Use
-     * {@code %1$s} for the first element (key) and {@code %2$s} for the second
-     * element (value)... The default format used by {@code toString()} is
+     * This uses {@link java.util.Formattable} to perform the formatting. Four
+     * variables may be used to embed the elements. Use {@code %1$s} for the
+     * first element (key) and {@code %2$s} for the second element (value)...
+     * The default format used by {@code toString()} is
      * {@code (%1$s,%2$s,%3$s,%4$s)}.
      * </p>
      * 
      * @param format
-     *            the format string, optionally containing {@code %1$s} and
-     *            {@code %2$s}, not null
+     *            the format string, optionally containing {@code %1$s},
+     *            {@code %2$s}, {@code %3$s} and {@code %4$s}, not null
      * @return the formatted string, not null
      */
     public String toString(final String format) {

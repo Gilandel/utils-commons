@@ -1261,6 +1261,8 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 
      * @param dates
      *            the dates list
+     * @param <T>
+     *            the comparable temporal type
      * @return the latest date (may be {@code null})
      * @throws NullPointerException
      *             if dates array is {@code null}
@@ -1346,6 +1348,8 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * 
      * @param dates
      *            the dates list
+     * @param <T>
+     *            the comparable temporal type
      * @return the oldest date (may be {@code null})
      * @throws NullPointerException
      *             if dates array is {@code null}

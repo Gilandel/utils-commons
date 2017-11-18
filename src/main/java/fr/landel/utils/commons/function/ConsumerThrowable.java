@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 /**
  * Represents a throwable operation that accepts a single input argument and
- * returns no result. Unlike most other functional interfaces, {@code Consumer}
+ * returns no result. Unlike most other functional interfaces, {@link Consumer}
  * is expected to operate via side-effects.
  *
  * <p>
@@ -68,16 +68,16 @@ public interface ConsumerThrowable<T, E extends Throwable> extends Consumer<T>, 
     void acceptThrows(T t) throws E;
 
     /**
-     * Returns a composed {@code Consumer} that performs, in sequence, this
-     * operation followed by the {@code after} operation. If performing either
-     * operation throws an exception, it is relayed to the caller of the
+     * Returns a composed {@link ConsumerThrowable} that performs, in sequence,
+     * this operation followed by the {@code after} operation. If performing
+     * either operation throws an exception, it is relayed to the caller of the
      * composed operation. If performing this operation throws an exception, the
      * {@code after} operation will not be performed.
      *
      * @param after
      *            the operation to perform after this operation
-     * @return a composed {@code Consumer} that performs in sequence this
-     *         operation followed by the {@code after} operation
+     * @return a composed {@link ConsumerThrowable} that performs in sequence
+     *         this operation followed by the {@code after} operation
      * @throws NullPointerException
      *             if {@code after} is null
      * @throws E
