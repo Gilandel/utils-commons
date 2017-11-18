@@ -37,8 +37,8 @@ import org.junit.Test;
 public class QuadTest {
 
     /**
-     * Test method for {@link Quad#getLeft()},{@link Quad#getMiddle()},
-     * {@link Quad#getRight()}.
+     * Test method for {@link Quad#getFirst()}, {@link Quad#getSecond()},
+     * {@link Quad#getThird()} and {@link Quad#getFourth()}.
      */
     @Test
     public void testGet() {

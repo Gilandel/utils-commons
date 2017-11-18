@@ -26,7 +26,7 @@ import java.util.function.Consumer;
  * Represents a throwable operation that accepts four input arguments and
  * returns no result. This is the four-arity/exception specialization of
  * {@link Consumer}. Unlike most other functional interfaces,
- * {@code QuadConsumer} is expected to operate via side-effects.
+ * {@link QuadConsumerThrowable} is expected to operate via side-effects.
  *
  * <p>
  * This is a <a href="package-summary.html">functional interface</a> whose
@@ -87,16 +87,16 @@ public interface QuadConsumerThrowable<T, U, V, W, E extends Throwable> extends 
     void acceptThrows(T t, U u, V v, W w) throws E;
 
     /**
-     * Returns a composed {@code Consumer} that performs, in sequence, this
-     * operation followed by the {@code after} operation. If performing either
-     * operation throws an exception, it is relayed to the caller of the
-     * composed operation. If performing this operation throws an exception, the
-     * {@code after} operation will not be performed.
+     * Returns a composed {@link QuadConsumerThrowable} that performs, in
+     * sequence, this operation followed by the {@code after} operation. If
+     * performing either operation throws an exception, it is relayed to the
+     * caller of the composed operation. If performing this operation throws an
+     * exception, the {@code after} operation will not be performed.
      *
      * @param after
      *            the operation to perform after this operation
-     * @return a composed {@code Consumer} that performs in sequence this
-     *         operation followed by the {@code after} operation
+     * @return a composed {@link QuadConsumerThrowable} that performs in
+     *         sequence this operation followed by the {@code after} operation
      * @throws NullPointerException
      *             if {@code after} is null
      * @throws E

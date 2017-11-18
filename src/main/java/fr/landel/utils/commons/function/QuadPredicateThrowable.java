@@ -54,7 +54,7 @@ public interface QuadPredicateThrowable<T, U, V, W, E extends Throwable> extends
      * Evaluates this predicate on the given arguments.
      *
      * @param t
-     *            the input argument
+     *            the first argument
      * @param u
      *            the second argument
      * @param v

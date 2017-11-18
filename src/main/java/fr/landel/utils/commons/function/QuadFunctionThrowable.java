@@ -62,7 +62,7 @@ public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> exten
      * @param v
      *            the third argument
      * @param w
-     *            the fourth function argument
+     *            the fourth argument
      * @return The output result
      */
     @Override
@@ -85,7 +85,7 @@ public interface QuadFunctionThrowable<T, U, V, W, R, E extends Throwable> exten
      * @param v
      *            the third argument
      * @param w
-     *            the fourth function argument
+     *            the fourth argument
      * @return The output result
      * @throws E
      *             On error exception
