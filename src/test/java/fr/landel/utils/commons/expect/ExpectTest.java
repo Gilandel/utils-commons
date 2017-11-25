@@ -31,6 +31,8 @@ import org.junit.ComparisonFailure;
 import org.junit.Test;
 
 import fr.landel.utils.commons.AbstractTest;
+import fr.landel.utils.commons.StringUtils;
+import fr.landel.utils.commons.function.ThrowableSupplier;
 
 /**
  * Check the expect class
@@ -50,10 +52,10 @@ public class ExpectTest extends AbstractTest {
     }
 
     /**
-     * Test method for {@link Expect#exception(ConsumerAssert, Class)}.
+     * Test method for {@link Expect#exception(ThrowableSupplier, Class)}.
      */
     @Test
-    public void testExceptionConsumerAssertOfThrowableClassOfT() {
+    public void testExceptionThrowableSupplierOfThrowableClassOfT() {
         Expect.exception(() -> {
             throw new IllegalArgumentException();
         }, IllegalArgumentException.class);
@@ -77,11 +79,13 @@ public class ExpectTest extends AbstractTest {
     }
 
     /**
-     * Test method for {@link Expect#exception(ConsumerAssert, Class, String)}
-     * and {@link Expect#exception(ConsumerAssert, Class, Pattern)}.
+     * Test method for
+     * {@link Expect#exception(ThrowableSupplier, Class, String)},
+     * {@link Expect#exception(ThrowableSupplier, Class, Pattern)} and
+     * {@link Expect#exception(ThrowableSupplier, Class, Predicate)}.
      */
     @Test
-    public void testExceptionConsumerAssertOfThrowableClassOfTString() {
+    public void testExceptionThrowableSupplierOfThrowableClassOfTString() {
         Expect.exception(() -> {
             throw new IllegalArgumentException("message");
         }, IllegalArgumentException.class, "message");
@@ -89,6 +93,10 @@ public class ExpectTest extends AbstractTest {
         Expect.exception(() -> {
             throw new IllegalArgumentException("message");
         }, IllegalArgumentException.class, Pattern.compile("^mes.*"));
+
+        Expect.exception(() -> {
+            throw new IllegalArgumentException("message");
+        }, IllegalArgumentException.class, StringUtils::isNotEmpty);
 
         try {
             Expect.exception(() -> {
@@ -110,17 +118,28 @@ public class ExpectTest extends AbstractTest {
             assertEquals("The exception message isn't as expected.\nExpected (first part) and result (second part):\n.*?2$\n-----\nmessage",
                     e.getMessage());
         }
+
+        try {
+            Expect.exception(() -> {
+                throw new IllegalArgumentException("message");
+            }, IllegalArgumentException.class, StringUtils::isBlank);
+            fail();
+        } catch (ExpectException e) {
+            assertEquals(
+                    "The exception message isn't as expected.\nExpected (first part) and result (second part):\npredicate\n-----\nmessage",
+                    e.getMessage());
+        }
     }
 
     /**
      * Test method for
-     * {@link Expect#exception(ConsumerAssert, Class, Throwable)}.
+     * {@link Expect#exception(ThrowableSupplier, Class, Throwable)}.
      * 
      * @throws IOException
      *             On error
      */
     @Test
-    public void testExceptionConsumerAssertOfThrowableClassOfTE() throws IOException {
+    public void testExceptionThrowableSupplierOfThrowableClassOfTE() throws IOException {
         Expect.exception(() -> {
             throw new IllegalArgumentException();
         }, IllegalArgumentException.class, (ok, e, a) -> new IOException());
@@ -137,12 +156,12 @@ public class ExpectTest extends AbstractTest {
 
     /**
      * Test method for
-     * {@link Expect#exception(ConsumerAssert, Class, String, Throwable)}.
+     * {@link Expect#exception(ThrowableSupplier, Class, String, Throwable)}.
      * 
      * @throws IOException
      */
     @Test
-    public void testExceptionConsumerAssertOfThrowableClassOfTStringE() throws IOException {
+    public void testExceptionThrowableSupplierOfThrowableClassOfTStringE() throws IOException {
         Expect.exception(() -> {
             throw new IllegalArgumentException("message");
         }, IllegalArgumentException.class, "message", (ok, e, a) -> new IOException());
@@ -159,7 +178,7 @@ public class ExpectTest extends AbstractTest {
 
     /**
      * Test method for
-     * {@link Expect#exception(ConsumerAssert, Class, String, Throwable)}.
+     * {@link Expect#exception(ThrowableSupplier, Class, String, Throwable)}.
      * 
      * @throws IOException
      */
@@ -173,7 +192,7 @@ public class ExpectTest extends AbstractTest {
 
     /**
      * Test method for
-     * {@link Expect#exception(ConsumerAssert, Class, String, Throwable)}.
+     * {@link Expect#exception(ThrowableSupplier, Class, String, Throwable)}.
      * 
      * @throws IOException
      */

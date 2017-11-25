@@ -75,6 +75,9 @@ public final class StringUtils extends StringFormatUtils {
 
     private static final int ENSURE_CAPACITY = 16;
 
+    private static final int BUFFER_CAPACITY = 64;
+    private static final char[] NULL_CHARS = {'n', 'u', 'l', 'l'};
+
     /**
      * Hidden constructor.
      */
@@ -561,7 +564,7 @@ public final class StringUtils extends StringFormatUtils {
 
         final StringBuilder buf = new StringBuilder(noOfItems * ENSURE_CAPACITY);
 
-        for (int i = startIndex; i < endIndex; i++) {
+        for (int i = startIndex; i < endIndex; ++i) {
             if (i > startIndex) {
                 buf.append(sep);
             }
@@ -888,9 +891,9 @@ public final class StringUtils extends StringFormatUtils {
         } else if (ObjectUtils.anyNull(include.getLeft(), include.getRight(), exclude.getLeft(), exclude.getRight())) {
             throw new IllegalArgumentException("The include and exclude values cannot be null");
         } else if (exclude.getLeft().equals(include.getLeft()) || exclude.getRight().equals(include.getRight())) {
-            throw new IllegalArgumentException("The exclude cannot be equal to include operators");
+            throw new IllegalArgumentException("The exclude values cannot be equal to include operators");
         } else if (!exclude.getLeft().contains(include.getLeft()) || !exclude.getRight().contains(include.getRight())) {
-            throw new IllegalArgumentException("The exclude must contain include operators");
+            throw new IllegalArgumentException("The exclude values must contain include operators");
         }
     }
 
@@ -1091,6 +1094,44 @@ public final class StringUtils extends StringFormatUtils {
         while ((index = output.indexOf(text, index)) > -1) {
             output.replace(index, index + text.length(), replacement);
             index += replacement.length();
+        }
+    }
+
+    /**
+     * Concatenate objects. If one object is {@code null}, it's replaced by the
+     * word 'null', otherwise calls toString method for each object.
+     * 
+     * @param objects
+     *            the objects to concatenate
+     * @return the concatenated String (may be empty if objects array is empty)
+     * @throws NullPointerException
+     *             if {@code objects} array is {@code null}
+     */
+    public static String concat(final Object... objects) {
+        Objects.requireNonNull(objects, "objects array cannot be null");
+
+        if (objects.length > 0) {
+            char[] buf = new char[BUFFER_CAPACITY];
+            int pos = 0;
+            for (Object object : objects) {
+                char[] chars;
+                if (object != null) {
+                    chars = object.toString().toCharArray();
+                } else {
+                    chars = NULL_CHARS;
+                }
+
+                if (pos + chars.length > buf.length) {
+                    char[] newBuf = new char[buf.length + chars.length + ENSURE_CAPACITY];
+                    System.arraycopy(buf, 0, newBuf, 0, buf.length);
+                    buf = newBuf;
+                }
+                System.arraycopy(chars, 0, buf, pos, chars.length);
+                pos += chars.length;
+            }
+            return new String(buf, 0, pos);
+        } else {
+            return StringUtils.EMPTY;
         }
     }
 }

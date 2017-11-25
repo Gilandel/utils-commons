@@ -86,6 +86,10 @@ public abstract class AbstractImmutableGeneric<T> extends Generic<T> {
 
     /**
      * {@inheritDoc}
+     * 
+     * <p>
+     * The use of this list must be done in synchronized block
+     * </p>
      */
     @Override
     public List<T> getList() {
@@ -97,7 +101,9 @@ public abstract class AbstractImmutableGeneric<T> extends Generic<T> {
      */
     @Override
     public int size() {
-        return this.all.size();
+        synchronized (this.all) {
+            return this.all.size();
+        }
     }
 
     /**
