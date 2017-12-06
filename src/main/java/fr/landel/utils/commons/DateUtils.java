@@ -21,6 +21,7 @@ package fr.landel.utils.commons;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -797,6 +798,17 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     }
 
     /**
+     * Get the date from an instant.
+     * 
+     * @param date
+     *            the input date
+     * @return the {@link Instant} instance
+     */
+    public static Date getDate(final Instant instant) {
+        return Date.from(instant);
+    }
+
+    /**
      * Get a new calendar instance from the date
      * 
      * @param date
@@ -970,6 +982,17 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static Calendar getCalendar(final ZonedDateTime date) {
         return getCalendar(getDate(date));
+    }
+
+    /**
+     * Get the calendar from an instant.
+     * 
+     * @param calendar
+     *            the input calendar
+     * @return the {@link Instant} instance
+     */
+    public static Calendar getCalendar(final Instant instant) {
+        return getCalendar(getDate(instant));
     }
 
     /**
@@ -1192,6 +1215,28 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      */
     public static OffsetTime getOffsetTime(final Calendar calendar) {
         return OffsetTime.ofInstant(calendar.toInstant(), calendar.getTimeZone().toZoneId());
+    }
+
+    /**
+     * Get an instant from a calendar
+     * 
+     * @param calendar
+     *            the input calendar
+     * @return an {@link Instant}
+     */
+    public static Instant getInstant(final Calendar calendar) {
+        return calendar.toInstant();
+    }
+
+    /**
+     * Get an instant from a date
+     * 
+     * @param date
+     *            the input date
+     * @return an {@link Instant}
+     */
+    public static Instant getInstant(final Date date) {
+        return Instant.ofEpochMilli(date.getTime());
     }
 
     /**

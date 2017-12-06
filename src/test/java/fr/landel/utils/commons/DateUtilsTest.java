@@ -29,6 +29,7 @@ import static org.junit.Assert.fail;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -602,6 +603,33 @@ public class DateUtilsTest extends AbstractTest {
         assertEquals(zonedDateTime, DateUtils.getZonedDateTime(calendar.getTime()));
         assertEquals(zonedDateTime, DateUtils.getZonedDateTime(calendar.getTime(), ZoneId.systemDefault()));
         assertEquals(zonedDateTime, DateUtils.getZonedDateTime(calendar.getTime(), null));
+    }
+
+    /**
+     * Check {@link DateUtils#getInstant}, {@link DateUtils#getDate(Instant)}
+     * and {@link DateUtils#getCalendar(Instant)}
+     */
+    @Test
+    public void testInstant() {
+        Calendar calendar1 = Calendar.getInstance();
+        calendar1.set(2017, 2, 4, 16, 59, 20); // mars
+        calendar1.set(Calendar.MILLISECOND, 0);
+
+        Instant instant1 = DateUtils.getInstant(calendar1);
+
+        assertEquals(calendar1.getTimeInMillis(), instant1.getEpochSecond() * DateUtils.MILLIS_PER_SECOND);
+
+        instant1 = DateUtils.getInstant(calendar1.getTime());
+
+        assertEquals(calendar1.getTimeInMillis(), instant1.getEpochSecond() * DateUtils.MILLIS_PER_SECOND);
+
+        Date date1 = DateUtils.getDate(instant1);
+
+        assertEquals(date1.getTime(), instant1.getEpochSecond() * DateUtils.MILLIS_PER_SECOND);
+
+        Calendar calendar2 = DateUtils.getCalendar(instant1);
+
+        assertEquals(calendar2.getTimeInMillis(), instant1.getEpochSecond() * DateUtils.MILLIS_PER_SECOND);
     }
 
     /**
