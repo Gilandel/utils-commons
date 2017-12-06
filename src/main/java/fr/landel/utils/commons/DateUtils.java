@@ -800,8 +800,8 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * Get the date from an instant.
      * 
-     * @param date
-     *            the input date
+     * @param instant
+     *            the input instant
      * @return the {@link Instant} instance
      */
     public static Date getDate(final Instant instant) {
@@ -987,8 +987,8 @@ public final class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * Get the calendar from an instant.
      * 
-     * @param calendar
-     *            the input calendar
+     * @param instant
+     *            the input instant
      * @return the {@link Instant} instance
      */
     public static Calendar getCalendar(final Instant instant) {
