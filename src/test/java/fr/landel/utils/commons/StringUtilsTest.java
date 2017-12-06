@@ -388,6 +388,7 @@ public class StringUtilsTest extends AbstractTest {
 
         assertNull(StringUtils.join((Object[]) null, null, 0, 0, null));
         assertEquals("", StringUtils.join(new Object[0], null, 0, 0, null));
+        assertEquals("v", StringUtils.join(new Object[] {"v", null}, null, 0, 2, null));
         assertEquals("v", StringUtils.join(new Object[] {"v"}, null, 0, 1, null));
         assertEquals("", StringUtils.join(new Object[] {"v"}, null, 1, 1, null));
         assertEquals("xv", StringUtils.join(new Object[] {"v"}, null, 0, 1, fKey));
@@ -691,10 +692,19 @@ public class StringUtilsTest extends AbstractTest {
                 properties1), IllegalArgumentException.class, "The input char sequence cannot be null");
 
         assertException(() -> StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${", "}"), "${test}", properties1),
-                IllegalArgumentException.class, "The exclude cannot be equal to include operators");
+                IllegalArgumentException.class, "The exclude values cannot be equal to include operators");
+
+        assertException(() -> StringUtils.injectKeys(Pair.of("$(", "}"), Pair.of("${", "}"), "${test}", properties1),
+                IllegalArgumentException.class, "The exclude values cannot be equal to include operators");
 
         assertException(() -> StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("$<", ">"), "${test}", properties1),
-                IllegalArgumentException.class, "The exclude must contain include operators");
+                IllegalArgumentException.class, "The exclude values must contain include operators");
+
+        assertException(() -> StringUtils.injectKeys(Pair.of("${{", "}"), Pair.of("${", ">"), "${test}", properties1),
+                IllegalArgumentException.class, "The exclude values must contain include operators");
+
+        assertException(() -> StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", ">"), "${test}", properties1),
+                IllegalArgumentException.class, "The exclude values must contain include operators");
     }
 
     /**
@@ -763,5 +773,21 @@ public class StringUtilsTest extends AbstractTest {
         assertEquals("", StringUtils.replaceQuotes(""));
         assertEquals("t\"o\"t\"\"o", StringUtils.replaceQuotes("t'o't''o"));
         assertEquals("\\\"t\"o\"t\"\"o", StringUtils.replaceQuotes("\\'t\'o't''o"));
+    }
+
+    /**
+     * Test method for {@link StringUtils#concat(Object...)}
+     */
+    @Test
+    public void testConcat() {
+        assertEquals("", StringUtils.concat());
+        assertEquals("null", StringUtils.concat((Object) null));
+        assertEquals("null test nulltest", StringUtils.concat(null, " test ", null, "test"));
+
+        String lettersNumbers = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+        assertEquals(lettersNumbers + lettersNumbers, StringUtils.concat(lettersNumbers, lettersNumbers));
+
+        assertException(() -> StringUtils.concat((Object[]) null), NullPointerException.class, "objects array cannot be null");
     }
 }

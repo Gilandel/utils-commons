@@ -20,6 +20,7 @@
 package fr.landel.utils.commons.expect;
 
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import fr.landel.utils.commons.StringUtils;
@@ -38,6 +39,7 @@ public final class Expect {
     private static final String ERROR_NO_EXCEPTION = "No exception thrown";
     private static final String ERROR_EXCEPTION_DONT_MATCH = "The expected exception never came up (thrown: {}).";
     private static final String ERROR_MESSAGE_DONT_MATCH = "The exception message isn't as expected.\nExpected (first part) and result (second part):\n{}\n-----\n{}";
+    private static final String ERROR_PREDICATE = "predicate";
 
     /**
      * Hidden constructor
@@ -64,7 +66,7 @@ public final class Expect {
      *            The generic expected exception type
      */
     public static <T extends Throwable> void exception(final ThrowableSupplier<Throwable> consumer, final Class<T> expectedException) {
-        exception(consumer, expectedException, null, null, null);
+        exception(consumer, expectedException, null, null, null, null);
     }
 
     /**
@@ -89,6 +91,7 @@ public final class Expect {
      */
     public static <T extends Throwable> void exception(final ThrowableSupplier<Throwable> consumer, final Class<T> expectedException,
             final String expectedMessage) {
+
         exception(consumer, expectedException, expectedMessage, null);
     }
 
@@ -100,7 +103,7 @@ public final class Expect {
      * Expect.exception(() -&gt; {
      *     // throw new IllegalArgumentException("parameter cannot be null");
      *     getMyType(null);
-     * }, IllegalArgumentException.class, Pattern.compile("^parameter");
+     * }, IllegalArgumentException.class, Pattern.compile("^parameter"));
      * </pre>
      * 
      * @param consumer
@@ -114,7 +117,34 @@ public final class Expect {
      */
     public static <T extends Throwable> void exception(final ThrowableSupplier<Throwable> consumer, final Class<T> expectedException,
             final Pattern messagePattern) {
+
         exception(consumer, expectedException, messagePattern, null);
+    }
+
+    /**
+     * Check that the consumed code raises the specified exception, also check
+     * the message with the specified pattern.
+     * 
+     * <pre>
+     * Expect.exception(() -&gt; {
+     *     // throw new IllegalArgumentException("parameter cannot be null");
+     *     getMyType(null);
+     * }, IllegalArgumentException.class, StringUtils::isNotEmpty);
+     * </pre>
+     * 
+     * @param consumer
+     *            The consumer (required, not null)
+     * @param expectedException
+     *            The expected exception type (required, not null)
+     * @param messageChecker
+     *            The message checker
+     * @param <T>
+     *            The generic expected exception type
+     */
+    public static <T extends Throwable> void exception(final ThrowableSupplier<Throwable> consumer, final Class<T> expectedException,
+            final Predicate<String> messageChecker) {
+
+        exception(consumer, expectedException, messageChecker, null);
     }
 
     /**
@@ -158,7 +188,8 @@ public final class Expect {
      */
     public static <T extends Throwable, E extends Throwable> void exception(final ThrowableSupplier<Throwable> consumer,
             final Class<T> expectedException, final TriFunction<Boolean, String, String, E> exceptionFunction) throws E {
-        exception(consumer, expectedException, null, null, exceptionFunction);
+
+        exception(consumer, expectedException, null, null, null, exceptionFunction);
     }
 
     /**
@@ -206,7 +237,55 @@ public final class Expect {
             final Class<T> expectedException, final String expectedMessage, final TriFunction<Boolean, String, String, E> exceptionFunction)
             throws E {
 
-        Expect.exception(consumer, expectedException, expectedMessage, null, exceptionFunction);
+        Expect.exception(consumer, expectedException, expectedMessage, null, null, exceptionFunction);
+    }
+
+    /**
+     * Check that the consumed code raises the specified exception, also check
+     * the message and allow to change the thrown exception.
+     * 
+     * <pre>
+     * // Obviously, you can save this in a static variable to share it
+     * TriFunction&lt;Boolean, String, String&gt; junitError = (catched, expected, actual) -&gt; {
+     *     if (catched) {
+     *         return new ComparisonFailure("The exception message don't match.", expected, actual);
+     *     } else {
+     *         return new AssertionError("The expected exception never came up");
+     *     }
+     * };
+     * 
+     * Expect.exception(() -&gt; {
+     *     // throw new IllegalArgumentException("parameter cannot be null");
+     *     getMyType(null);
+     * }, IllegalArgumentException.class, StringUtils::isNotEmpty, junitError);
+     * 
+     * // ComparisonFailure come from: org.junit.ComparisonFailure
+     * </pre>
+     * 
+     * @param consumer
+     *            The consumer (required, not null)
+     * @param expectedException
+     *            The expected exception type (required, not null)
+     * @param messageChecker
+     *            The message checker
+     * @param exceptionFunction
+     *            The exception function (three parameters are injected: (first:
+     *            if it's the expected exception), (second: the expected
+     *            message) and (third: the actual message), the return has to be
+     *            a {@link Throwable}). If the exceptions don't match, the
+     *            {@link String} parameters are {@code null}}.
+     * @param <T>
+     *            The generic expected exception type
+     * @param <E>
+     *            The exception thrown if the expected exception isn't raised
+     * @throws E
+     *             Provided exception
+     */
+    public static <T extends Throwable, E extends Throwable> void exception(final ThrowableSupplier<Throwable> consumer,
+            final Class<T> expectedException, final Predicate<String> messageChecker,
+            final TriFunction<Boolean, String, String, E> exceptionFunction) throws E {
+
+        Expect.exception(consumer, expectedException, null, null, messageChecker, exceptionFunction);
     }
 
     /**
@@ -255,7 +334,7 @@ public final class Expect {
             final Class<T> expectedException, final Pattern messagePattern, final TriFunction<Boolean, String, String, E> exceptionFunction)
             throws E {
 
-        Expect.exception(consumer, expectedException, null, messagePattern, exceptionFunction);
+        Expect.exception(consumer, expectedException, null, messagePattern, null, exceptionFunction);
     }
 
     /**
@@ -267,10 +346,11 @@ public final class Expect {
      * @param expectedException
      *            The expected exception type (required, not null)
      * @param expectedMessage
-     *            The expected exception message
+     *            The expected exception message (applied if not {@code null})
      * @param messagePattern
-     *            The message pattern (applied if expected message is
-     *            {@code null})
+     *            The message pattern (applied if not {@code null})
+     * @param messageChecker
+     *            The message checker (applied if not {@code null})
      * @param exceptionFunction
      *            The exception function (three parameters are injected: (first:
      *            if it's the expected exception), (second: the expected message
@@ -286,7 +366,8 @@ public final class Expect {
      */
     private static <T extends Throwable, E extends Throwable> void exception(final ThrowableSupplier<Throwable> exceptionSupplier,
             final Class<T> expectedException, final String expectedMessage, final Pattern messagePattern,
-            final TriFunction<Boolean, String, String, E> exceptionFunction) throws E {
+            final Predicate<String> messageChecker, final TriFunction<Boolean, String, String, E> exceptionFunction) throws E {
+
         Objects.requireNonNull(exceptionSupplier, ERROR_CONSUMER_NULL);
         Objects.requireNonNull(expectedException, ERROR_EXPECTED_NULL);
 
@@ -302,14 +383,17 @@ public final class Expect {
         }
 
         boolean exceptionDontMatch = !expectedException.isAssignableFrom(e.getClass());
-        boolean expectedDontMatch = expectedMessage != null && !expectedMessage.equals(e.getMessage());
-        boolean patternDontMatch = expectedMessage == null && messagePattern != null && !messagePattern.matcher(e.getMessage()).matches();
+        boolean messageDontMatch = expectedMessage != null && !expectedMessage.equals(e.getMessage());
+        messageDontMatch |= messagePattern != null && !messagePattern.matcher(e.getMessage()).matches();
+        messageDontMatch |= messageChecker != null && !messageChecker.test(e.getMessage());
 
-        if (exceptionDontMatch || expectedDontMatch || patternDontMatch) {
+        if (exceptionDontMatch || messageDontMatch) {
 
             final String expectedResult;
-            if (expectedMessage == null && messagePattern != null) {
+            if (messagePattern != null) {
                 expectedResult = messagePattern.pattern();
+            } else if (messageChecker != null) {
+                expectedResult = ERROR_PREDICATE;
             } else {
                 expectedResult = expectedMessage;
             }

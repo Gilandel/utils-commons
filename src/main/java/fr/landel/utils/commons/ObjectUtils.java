@@ -25,6 +25,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 /**
  * <p>
  * Operations on {@code Object}.
@@ -478,4 +480,209 @@ public class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 
         return predicate.test(object) ? Optional.ofNullable(transformer.apply(object)) : Optional.empty();
     }
+    
+	/**
+	 * Get the primitive value of an {@link Integer}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * Integer value = new Integer(1);
+	 * int value1 = ObjectUtils.toPrimitive(value, 0); // =&gt; value1 = 1
+	 * int value2 = ObjectUtils.toPrimitive((Integer) null, 0); // =&gt; value2 = 0
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Integer} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive int
+	 */
+	public static int toPrimitive(final Integer value, final int defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.intValue();
+		}
+	}
+
+	/**
+	 * Get the primitive value of an {@link Long}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * Long value = new Long(1l);
+	 * long value1 = ObjectUtils.toPrimitive(value, 0l); // =&gt; value1 = 1l
+	 * long value2 = ObjectUtils.toPrimitive((Long) null, 0l); // =&gt; value2 = 0l
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Long} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive long
+	 */
+	public static long toPrimitive(final Long value, final long defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.longValue();
+		}
+	}
+
+	/**
+	 * Get the primitive value of an {@link Float}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * Float value = new Float(1f);
+	 * float value1 = ObjectUtils.toPrimitive(value, 0f); // =&gt; value1 = 1f
+	 * float value2 = ObjectUtils.toPrimitive((Float) null, 0f); // =&gt; value2 = 0f
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Float} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive float
+	 */
+	public static float toPrimitive(final Float value, final float defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.floatValue();
+		}
+	}
+
+	/**
+	 * Get the primitive value of an {@link Double}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * Double value = new Double(1d);
+	 * double value1 = ObjectUtils.toPrimitive(value, 0); // =&gt; value1 = 1d
+	 * double value2 = ObjectUtils.toPrimitive((Double) null, 0); // =&gt; value2 = 0d
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Double} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive double
+	 */
+	public static double toPrimitive(final Double value, final double defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.doubleValue();
+		}
+	}
+
+	/**
+	 * Get the primitive value of an {@link Short}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * Short value0 = new Short((short) 1);
+	 * short value1 = ObjectUtils.toPrimitive(value0, (short) 0); // =&gt; value1 = 1
+	 * short value2 = ObjectUtils.toPrimitive((Short) null, (short) 0); // =&gt; value2 = 0
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Short} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive short
+	 */
+	public static short toPrimitive(final Short value, final short defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.shortValue();
+		}
+	}
+
+	/**
+	 * Get the primitive value of an {@link Byte}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * Byte one = new Byte((byte) 1);
+	 * byte value1 = ObjectUtils.toPrimitive(one, (byte) 0); // =&gt; value1 = 1
+	 * byte value2 = ObjectUtils.toPrimitive((Byte) null, (byte) 0); // =&gt; value2 = 0
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Byte} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive byte
+	 */
+	public static byte toPrimitive(final Byte value, final byte defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.byteValue();
+		}
+	}
+
+	/**
+	 * Get the primitive value of an {@link Character}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * Character space = new Character((char) 32);
+	 * char value1 = ObjectUtils.toPrimitive(space, '_'); // =&gt; value1 = ' '
+	 * char value2 = ObjectUtils.toPrimitive((Character) null, '_'); // =&gt; value2 = '_'
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Character} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive char
+	 */
+	public static char toPrimitive(final Character value, final char defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.charValue();
+		}
+	}
+
+	/**
+	 * Get the primitive value of an {@link Boolean}. If {@code value} is not
+	 * {@code null}, returns the primitive value of {@code value} otherwise returns
+	 * {@code defaultValue}
+	 * 
+	 * <pre>
+	 * boolean value1 = ObjectUtils.toPrimitive(Boolean.TRUE, false); // =&gt; value1 = true
+	 * boolean value2 = ObjectUtils.toPrimitive(Boolean.FALSE, true); // =&gt; value2 = false
+	 * boolean value3 = ObjectUtils.toPrimitive(null, false); // =&gt; value3 = false
+	 * </pre>
+	 * 
+	 * @param value
+	 *            the {@link Boolean} value
+	 * @param defaultValue
+	 *            the default value
+	 * @return a primitive boolean
+	 * 
+	 * @see BooleanUtils#isFalse(Boolean)
+	 * @see BooleanUtils#isTrue(Boolean)
+	 * @see BooleanUtils#isNotFalse(Boolean)
+	 * @see BooleanUtils#isNotTrue(Boolean)
+	 */
+	public static boolean toPrimitive(final Boolean value, final boolean defaultValue) {
+		if (value == null) {
+			return defaultValue;
+		} else {
+			return value.booleanValue();
+		}
+	}
 }

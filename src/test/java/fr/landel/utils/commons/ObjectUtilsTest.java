@@ -312,4 +312,134 @@ public class ObjectUtilsTest extends AbstractTest {
         assertEquals("true", ObjectUtils.ifPredicateOptional(PREDICATE, true, b -> b.toString()).get());
         assertFalse(ObjectUtils.ifPredicateOptional(PREDICATE, null, b -> b.toString()).isPresent());
     }
+
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Boolean, boolean)}.
+     */
+    @Test
+    public void testToPrimitiveBoolean() {
+    	assertTrue(ObjectUtils.toPrimitive(Boolean.TRUE, true));
+    	assertFalse(ObjectUtils.toPrimitive(Boolean.FALSE, true));
+    	assertTrue(ObjectUtils.toPrimitive(Boolean.TRUE, false));
+    	assertFalse(ObjectUtils.toPrimitive(Boolean.FALSE, false));
+    	assertTrue(ObjectUtils.toPrimitive(null, true));
+    	assertFalse(ObjectUtils.toPrimitive(null, false));
+    }
+    
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Byte, byte)}.
+     */
+    @Test
+    public void testToPrimitiveByte() {
+    	Byte b0 = Byte.valueOf((byte) 0);
+    	Byte b1 = Byte.valueOf((byte) 1);
+    	assertEquals((byte) 0, ObjectUtils.toPrimitive(b0, (byte) 1));
+    	assertEquals((byte) 0, ObjectUtils.toPrimitive(b0, (byte) 0));
+    	assertEquals((byte) 1, ObjectUtils.toPrimitive(b1, (byte) 1));
+    	assertEquals((byte) 1, ObjectUtils.toPrimitive(b1, (byte) 0));
+    	assertEquals((byte) 1, ObjectUtils.toPrimitive((Byte) null, (byte) 1));
+    	assertEquals((byte) 0, ObjectUtils.toPrimitive((Byte) null, (byte) 0));
+    }
+    
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Character, char)}.
+     */
+    @Test
+    public void testToPrimitiveCharacter() {
+    	Character c0 = Character.valueOf((char) 0);
+    	Character c1 = Character.valueOf((char) 1);
+    	assertEquals((char) 0, ObjectUtils.toPrimitive(c0, (char) 1));
+    	assertEquals((char) 0, ObjectUtils.toPrimitive(c0, (char) 0));
+    	assertEquals((char) 1, ObjectUtils.toPrimitive(c1, (char) 1));
+    	assertEquals((char) 1, ObjectUtils.toPrimitive(c1, (char) 0));
+    	assertEquals((char) 1, ObjectUtils.toPrimitive((Character) null, (char) 1));
+    	assertEquals((char) 0, ObjectUtils.toPrimitive((Character) null, (char) 0));
+    }
+    
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Short, short)}.
+     */
+    @Test
+    public void testToPrimitiveShort() {
+    	Short s0 = Short.valueOf("0");
+    	Short s1 = Short.valueOf("1");
+    	assertEquals((short) 0, ObjectUtils.toPrimitive(s0, (short) 1));
+    	assertEquals((short) 0, ObjectUtils.toPrimitive(s0, (short) 0));
+    	assertEquals((short) 1, ObjectUtils.toPrimitive(s1, (short) 1));
+    	assertEquals((short) 1, ObjectUtils.toPrimitive(s1, (short) 0));
+    	assertEquals((short) 1, ObjectUtils.toPrimitive((Short) null, (short) 1));
+    	assertEquals((short) 0, ObjectUtils.toPrimitive((Short) null, (short) 0));
+    }
+    
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Integer, int)}.
+     */
+    @Test
+    public void testToPrimitiveInteger() {
+    	Integer i0 = Integer.valueOf("0");
+    	Integer i1 = Integer.valueOf("1");
+    	assertEquals((int) 0, ObjectUtils.toPrimitive(i0, 1));
+    	assertEquals((int) 0, ObjectUtils.toPrimitive(i0, 0));
+    	assertEquals((int) 1, ObjectUtils.toPrimitive(i1, 1));
+    	assertEquals((int) 1, ObjectUtils.toPrimitive(i1, 0));
+    	assertEquals((int) 1, ObjectUtils.toPrimitive((Integer) null, 1));
+    	assertEquals((int) 0, ObjectUtils.toPrimitive((Integer) null, 0));
+    }
+    
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Long, long)}.
+     */
+    @Test
+    public void testToPrimitiveLong() {
+    	Long l0 = Long.valueOf("0");
+    	Long l1 = Long.valueOf("1");
+    	assertEquals(0l, ObjectUtils.toPrimitive(l0, 1l));
+    	assertEquals(0l, ObjectUtils.toPrimitive(l0, 0l));
+    	assertEquals(1l, ObjectUtils.toPrimitive(l1, 1l));
+    	assertEquals(1l, ObjectUtils.toPrimitive(l1, 0l));
+    	assertEquals(1l, ObjectUtils.toPrimitive((Long) null, 1l));
+    	assertEquals(0l, ObjectUtils.toPrimitive((Long) null, 0l));
+    }
+    
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Float, float)}.
+     */
+    @Test
+    public void testToPrimitiveFloat() {
+    	double delta = 0.01;
+    	
+    	Float f0 = Float.valueOf("0");
+    	Float f1 = Float.valueOf("1");
+    	assertEquals(0f, ObjectUtils.toPrimitive(f0, 1f), delta);
+    	assertEquals(0f, ObjectUtils.toPrimitive(f0, 0f), delta);
+    	assertEquals(1f, ObjectUtils.toPrimitive(f1, 1f), delta);
+    	assertEquals(1f, ObjectUtils.toPrimitive(f1, 0f), delta);
+    	assertEquals(1f, ObjectUtils.toPrimitive((Float) null, 1f), delta);
+    	assertEquals(0f, ObjectUtils.toPrimitive((Float) null, 0f), delta);
+    }
+    
+    /**
+     * Test method for
+     * {@link ObjectUtils#toPrimitive(Double, double)}.
+     */
+    @Test
+    public void testToPrimitiveDouble() {
+    	double delta = 0.01;
+    	
+    	Double d0 = Double.valueOf("0");
+    	Double d1 = Double.valueOf("1");
+    	assertEquals(0d, ObjectUtils.toPrimitive(d0, 1d), delta);
+    	assertEquals(0d, ObjectUtils.toPrimitive(d0, 0d), delta);
+    	assertEquals(1d, ObjectUtils.toPrimitive(d1, 1d), delta);
+    	assertEquals(1d, ObjectUtils.toPrimitive(d1, 0d), delta);
+    	assertEquals(1d, ObjectUtils.toPrimitive((Double) null, 1d), delta);
+    	assertEquals(0d, ObjectUtils.toPrimitive((Double) null, 0d), delta);
+    }
 }

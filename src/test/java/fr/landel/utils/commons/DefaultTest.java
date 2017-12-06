@@ -379,6 +379,7 @@ public class DefaultTest {
         assertTrue(Default.ofNullable(null, 2).equals(Default.empty(2)));
         assertTrue(Default.empty(2).equals(Default.empty(2)));
 
+        // validate not an instance of
         assertFalse(Default.ofNullable(5, 2).equals(5));
     }
 

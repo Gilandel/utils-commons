@@ -368,6 +368,7 @@ public class ResultTest {
         assertFalse(Result.ofNullable(null).equals(Result.empty()));
         assertTrue(Result.empty().equals(Result.empty()));
 
+        // validate not an instance of
         assertFalse(Result.ofNullable(5).equals(5));
     }
 
