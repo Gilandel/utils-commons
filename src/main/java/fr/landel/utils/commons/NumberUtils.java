@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
 
+import fr.landel.utils.commons.function.FunctionThrowable;
+
 /**
  * Utility class to manage numbers.
  *
@@ -39,6 +41,11 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
 
     private static final int RADIX = 10;
     private static final int TEN = 10;
+
+    private final static int ASCII_0 = 48;
+    private final static int ASCII_9 = 57;
+
+    private static final byte[] INFINITY = {'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
 
     /**
      * Hidden constructor.
@@ -248,24 +255,28 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
         if (StringUtils.isEmpty(string)) {
             return false;
         }
+
+        final byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+
         int start = 0;
-        if (string.startsWith("-") || string.startsWith("+")) {
+        if (isSign(bytes[0])) {
             start = 1;
         }
-        int length = string.length();
+
+        final int length = bytes.length;
+
         short nb = 0;
         byte typed = 0;
 
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-
-        for (int i = start; i < bytes.length; i++) {
-            if (Character.isDigit(bytes[i])) {
+        for (int i = start; i < length; ++i) {
+            int character = (int) bytes[i];
+            if (character >= 48 && character <= 57) {
                 nb++;
             } else if (typeSupported && i == length - 1) {
-                typed = bytes[i] == 'l' || bytes[i] == 'L' ? (byte) 1 : 0;
+                typed = isLongMarker(bytes[i]) ? (byte) 1 : 0;
             }
         }
-        return start + nb + typed == bytes.length;
+        return start + nb + typed == length;
     }
 
     /**
@@ -397,22 +408,26 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * 
      * <ul>
      * <li>typeSupported is true and lenient is false:
-     * {@code [+-]?(\\d+[dfDF]|(\\d+)?\\.\\d+[dfDF]?)}</li>
+     * {@code [+-]?(\\d+[dfDF]|(\\d+)?\\.\\d+([eE][+-]?\\d+)?[dfDF]?)}</li>
      * 
      * <li>typeSupported is true and lenient is true:
-     * {@code [+-]?(\\d+|(\\d+)?\\.\\d+)[dfDF]?}</li>
+     * {@code [+-]?(\\d+|(\\d+)?\\.\\d+)([eE][+-]?\\d+)?[dfDF]?}</li>
      * 
      * <li>typeSupported is false and lenient is false:
-     * {@code [+-]?(\\d+)?\\.\\d+}</li>
+     * {@code [+-]?(\\d+)?\\.\\d+([eE][+-]?\\d+)?}</li>
      * 
      * <li>typeSupported is false and lenient is true:
-     * {@code [+-]?(\\d+|(\\d+)?\\.\\d+)?}</li>
+     * {@code [+-]?(\\d+|(\\d+)?\\.\\d+)?([eE][+-]?\\d+)?}</li>
      * </ul>
+     * 
+     * <p>
+     * Infinity key word is also supported
+     * </p>
      * 
      * <p>
      * Only format is checked, not if the {@code float} is a {@code double}
      * ({@link Float#MAX_VALUE} or {@link Float#MIN_VALUE}) or an {@code int} is
-     * a {@code long}...
+     * a {@code long} or the exponent length is correct...
      * </p>
      * 
      * <pre>
@@ -443,53 +458,128 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return true, if decimal number
      */
     public static boolean isNumberDecimal(final String string, final boolean typeSupported, final boolean lenient) {
+
         if (StringUtils.isEmpty(string)) {
             return false;
         }
+
+        final byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
+
         int start = 0;
-        if (string.startsWith("-") || string.startsWith("+")) {
+        if (isSign(bytes[0])) {
             start = 1;
         }
+
+        final int length = bytes.length;
+
+        final Boolean infinity = isInfinity(bytes, length, start);
+        if (infinity != null) {
+            return infinity;
+        }
+
         byte dot = 0;
+        byte exponent = 0;
+        int exponentPos = -1;
+        byte expSign = 0;
         byte typed = 0;
         short nb1 = 0;
         short nb2 = 0;
+        short nb3 = 0;
 
-        byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
-        byte[] types = new byte[] {'D', 'F', 'd', 'f'};
-
-        for (int i = start; i < bytes.length; i++) {
-            if (Character.isDigit(bytes[i])) {
-                if (dot == 1) {
-                    nb2++;
+        for (int i = start; i < length; ++i) {
+            if (isDigit(bytes[i])) {
+                if (exponent == 1) {
+                    ++nb3;
+                } else if (dot == 1) {
+                    ++nb2;
                 } else {
-                    nb1++;
+                    ++nb1;
                 }
             } else if ('.' == bytes[i]) {
-                if (dot == 1) {
-                    return false; // multiple dots
+                if (dot == 1 || exponent == 1) {
+                    // multiple dots or after an exponent marker
+                    return false;
                 } else {
                     dot = 1;
                 }
-            } else if (typeSupported && i == bytes.length - 1 && Arrays.binarySearch(types, bytes[i]) > -1) {
-                typed = (byte) 1;
+            } else if (isExponentMarker(bytes[i])) {
+                if (exponent == 1) {
+                    return false; // multiple exponents
+                } else {
+                    exponent = 1;
+                    exponentPos = i;
+                }
+            } else if (isSign(bytes[i])) {
+                if (expSign == 1 || exponentPos != i - 1) {
+                    // multiple exponent signs, no exponent marker or not just
+                    // after exponent marker
+                    return false;
+                } else {
+                    expSign = 1;
+                }
+            } else if (typeSupported && i == length - 1 && isDecimalMarker(bytes[i])) {
+                typed = 1;
             }
         }
-        return compareLength(start, nb1, dot, nb2, typed, bytes, lenient);
+        return compareLength(start, nb1, dot, nb2, exponent, expSign, nb3, typed, bytes, lenient);
     }
 
-    private static boolean compareLength(final int start, final short nb1, final byte dot, final short nb2, final byte typed,
-            final byte[] bytes, final boolean lenient) {
+    private static Boolean isInfinity(final byte[] bytes, final int length, final int start) {
+        if ('I' == bytes[start]) {
+            if (length > 1) {
+                final byte[] bytesWithoutSign = new byte[length - start];
+                System.arraycopy(bytes, start, bytesWithoutSign, 0, length - start);
+                return Arrays.equals(INFINITY, bytesWithoutSign);
+            } else {
+                return false;
+            }
+        }
+        return null;
+    }
+
+    private static boolean isDigit(final byte b) {
+        final int character = (int) b;
+        return character >= ASCII_0 && character <= ASCII_9;
+    }
+
+    private static boolean isSign(final byte b) {
+        return '+' == b || '-' == b;
+    }
+
+    private static boolean isExponentMarker(final byte b) {
+        return 'e' == b || 'E' == b;
+    }
+
+    private static boolean isLongMarker(final byte b) {
+        return 'l' == b || 'L' == b;
+    }
+
+    private static boolean isDecimalMarker(final byte b) {
+        return 'f' == b || 'F' == b || 'd' == b || 'D' == b;
+    }
+
+    private static boolean compareLength(final int start, final short nb1, final byte dot, final short nb2, final byte exponent,
+            final byte expSign, final short nb3, final byte typed, final byte[] bytes, final boolean lenient) {
+
         if (nb1 > 0) {
             if (dot == 1 && nb2 > 0) {
-                return start + nb1 + dot + nb2 + typed == bytes.length;
+                return start + nb1 + dot + nb2 + getExpLength(exponent, expSign, nb3) + typed == bytes.length;
             } else if (lenient || typed == 1) {
-                return start + nb1 + typed == bytes.length;
+                return start + nb1 + getExpLength(exponent, expSign, nb3) + typed == bytes.length;
             }
         } else if (dot == 1 && nb2 > 0) {
-            return start + dot + nb2 + typed == bytes.length;
+            return start + dot + nb2 + getExpLength(exponent, expSign, nb3) + typed == bytes.length;
         }
         return false;
+    }
+
+    private static int getExpLength(final byte exponent, final byte expSign, final short nb3) {
+
+        if (exponent == 1 && nb3 > 0) {
+            return exponent + expSign + nb3;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -527,22 +617,37 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
     }
 
     /**
-     * Parse a string into a byte. (Null safe and number safe). Return null, if
-     * the string is null or not a number. Can raise a NumberFormatException, if
-     * the number is greater than an integer.
+     * Parse a string into a byte. (Null safe and number safe). Returns null, if
+     * the string is null or not a number.
      * 
      * @param string
      *            The input
      * @return The parsed result
      */
     public static Byte parseByte(final String string) {
-        return parseByte(string, null, RADIX);
+        return parseByte(string, null);
     }
 
     /**
-     * Parse a string into a byte. (Null safe and number safe). Return null, if
-     * the string is null or not a number. Can raise a NumberFormatException, if
-     * the number is greater than an integer.
+     * Parse a string into a byte. (Null safe and number safe). Returns null, if
+     * the string is null or not a number (if {@code noThrow} is {@code true}).
+     * 
+     * @param string
+     *            The input
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Byte parseByte(final String string, final boolean noThrow) {
+        return parseByte(string, null, RADIX, noThrow);
+    }
+
+    /**
+     * Parse a string into a byte. (Null safe and number safe).
      * 
      * @param string
      *            The input
@@ -555,8 +660,26 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
     }
 
     /**
-     * Parse a string into a byte. (Null safe and number safe). Can raise a
-     * NumberFormatException, if the number is greater than an integer.
+     * Parse a string into a byte. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Byte parseByte(final String string, final Byte defaultValue, final boolean noThrow) {
+        return parseByte(string, defaultValue, RADIX, noThrow);
+    }
+
+    /**
+     * Parse a string into a byte. (Null safe and number safe).
      * 
      * @param string
      *            The input
@@ -567,31 +690,62 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Byte parseByte(final String string, final Byte defaultValue, final int radix) {
-        if (NumberUtils.isNumberInteger(string)) {
-            int value = Integer.parseInt(string, radix);
-            if (value >= Byte.MIN_VALUE && value <= Byte.MAX_VALUE) {
-                return (byte) value;
-            }
-        }
-        return defaultValue;
+        return parseByte(string, defaultValue, radix, true);
     }
 
     /**
-     * Parse a string into a byte. (Null safe and number safe). Return null, if
-     * the string is null or not a number. Can raise a NumberFormatException, if
-     * the number is greater than an integer.
+     * Parse a string into a byte. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param radix
+     *            The radix to be used while parsing the string
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Byte parseByte(final String string, final Byte defaultValue, final int radix, final boolean noThrow) {
+        return parse(string, defaultValue, s -> Byte.parseByte(s, radix), noThrow);
+    }
+
+    /**
+     * Parse a string into a byte. (Null safe and number safe). Returns null, if
+     * the string is null or not a number.
      * 
      * @param string
      *            The input
      * @return The parsed result
      */
     public static Short parseShort(final String string) {
-        return parseShort(string, null, RADIX);
+        return parseShort(string, null, RADIX, true);
     }
 
     /**
-     * Parse a string into a byte. (Null safe and number safe). Can raise a
-     * NumberFormatException, if the number is greater than an integer.
+     * Parse a string into a byte. (Null safe and number safe). Returns null, if
+     * the string is null or not a number (if {@code noThrow} is {@code true}).
+     * 
+     * @param string
+     *            The input
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Short parseShort(final String string, final boolean noThrow) {
+        return parseShort(string, null, RADIX, noThrow);
+    }
+
+    /**
+     * Parse a string into a byte. (Null safe and number safe).
      * 
      * @param string
      *            The input
@@ -604,8 +758,26 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
     }
 
     /**
-     * Parse a string into a short. (Null safe and number safe). Can raise a
-     * NumberFormatException, if the number is greater than an integer.
+     * Parse a string into a byte. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Short parseShort(final String string, final Short defaultValue, final boolean noThrow) {
+        return parseShort(string, defaultValue, RADIX, noThrow);
+    }
+
+    /**
+     * Parse a string into a short. (Null safe and number safe).
      * 
      * @param string
      *            The input
@@ -616,19 +788,33 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Short parseShort(final String string, final Short defaultValue, final int radix) {
-        if (NumberUtils.isNumberInteger(string)) {
-            int value = Integer.parseInt(string, radix);
-            if (value >= Short.MIN_VALUE && value <= Short.MAX_VALUE) {
-                return (short) value;
-            }
-        }
-        return defaultValue;
+        return parseShort(string, defaultValue, radix, true);
     }
 
     /**
-     * Parse a string into an integer. (Null safe and number safe). Return null,
-     * if the string is null or not a number. Can raise a NumberFormatException,
-     * if the number is greater than an integer.
+     * Parse a string into a short. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param radix
+     *            The radix to be used while parsing the string
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Short parseShort(final String string, final Short defaultValue, final int radix, final boolean noThrow) {
+        return parse(string, defaultValue, s -> Short.parseShort(s, radix), noThrow);
+    }
+
+    /**
+     * Parse a string into an integer. (Null safe and number safe). Returns
+     * null, if the string is null or not a number.
      * 
      * @param string
      *            The input
@@ -639,8 +825,26 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
     }
 
     /**
-     * Parse a string into an integer. (Null safe and number safe). Can raise a
-     * NumberFormatException, if the number is greater than an integer.
+     * Parse a string into an integer. (Null safe and number safe). Returns
+     * null, if the string is null or not a number (if {@code noThrow} is
+     * {@code true}).
+     * 
+     * @param string
+     *            The input
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Integer parseInt(final String string, final boolean noThrow) {
+        return parseInt(string, null, RADIX, noThrow);
+    }
+
+    /**
+     * Parse a string into an integer. (Null safe and number safe).
      * 
      * @param string
      *            The input
@@ -649,12 +853,30 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Integer parseInt(final String string, final Integer defaultValue) {
-        return parseInt(string, defaultValue, RADIX);
+        return parseInt(string, defaultValue, RADIX, true);
     }
 
     /**
-     * Parse a string into an integer. (Null safe and number safe). Can raise a
-     * NumberFormatException, if the number is greater than an integer.
+     * Parse a string into an integer. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Integer parseInt(final String string, final Integer defaultValue, final boolean noThrow) {
+        return parseInt(string, defaultValue, RADIX, noThrow);
+    }
+
+    /**
+     * Parse a string into an integer. (Null safe and number safe).
      * 
      * @param string
      *            The input
@@ -665,14 +887,32 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Integer parseInt(final String string, final Integer defaultValue, final int radix) {
-        if (NumberUtils.isNumberInteger(string)) {
-            return Integer.parseInt(string, radix);
-        }
-        return defaultValue;
+        return parseInt(string, defaultValue, radix, true);
     }
 
     /**
-     * Parse a string into a long. (Null safe and number safe). Return null, if
+     * Parse a string into an integer. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param radix
+     *            The radix to be used while parsing the string
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Integer parseInt(final String string, final Integer defaultValue, final int radix, final boolean noThrow) {
+        return parse(string, defaultValue, s -> Integer.parseInt(s, radix), noThrow);
+    }
+
+    /**
+     * Parse a string into a long. (Null safe and number safe). Returns null, if
      * the string is null or not a number.
      * 
      * @param string
@@ -681,6 +921,24 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      */
     public static Long parseLong(final String string) {
         return parseLong(string, null, RADIX);
+    }
+
+    /**
+     * Parse a string into a long. (Null safe and number safe). Returns null, if
+     * the string is null or not a number (if {@code noThrow} is {@code true}).
+     * 
+     * @param string
+     *            The input
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Long parseLong(final String string, final boolean noThrow) {
+        return parseLong(string, null, noThrow);
     }
 
     /**
@@ -693,7 +951,41 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Long parseLong(final String string, final Long defaultValue) {
-        return parseLong(string, defaultValue, RADIX);
+        return parseLong(string, defaultValue, true);
+    }
+
+    /**
+     * Parse a string into a long. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Long parseLong(final String string, final Long defaultValue, final boolean noThrow) {
+        return parseLong(string, defaultValue, RADIX, noThrow);
+    }
+
+    /**
+     * Parse a string into a long. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param radix
+     *            The radix to be used while parsing the string
+     * @return The parsed result
+     */
+    public static Long parseLong(final String string, final Long defaultValue, final int radix) {
+        return parseLong(string, defaultValue, radix, true);
     }
 
     /**
@@ -705,29 +997,51 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      *            If the input cannot be parse, value is returned
      * @param radix
      *            The radix to be used while parsing the string
+     * @param noThrow
+     *            if true, don't throw a {@link NumberFormatException} if parse
+     *            failed
      * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
      */
-    public static Long parseLong(final String string, final Long defaultValue, final int radix) {
-        if (NumberUtils.isNumberInteger(string)) {
-            return Long.parseLong(string, radix);
-        }
-        return defaultValue;
+    public static Long parseLong(final String string, final Long defaultValue, final int radix, final boolean noThrow) {
+        return parse(string, defaultValue, s -> Long.parseLong(s, radix), noThrow);
     }
 
     /**
-     * Parse a string into a float. (Null safe and number safe). Return null, if
-     * the string is null or not a number.
+     * Parse a string into a float. (Null safe and number safe). Returns null,
+     * if the string is null or not a number.
      * 
      * @param string
      *            The input
      * @return The parsed result
      */
     public static Float parseFloat(final String string) {
-        return parseFloat(string, null);
+        return parseFloat(string, null, true);
     }
 
     /**
-     * Parse a string into a float. (Null safe and number safe)
+     * Parse a string into a float. (Null safe and number safe). Returns null,
+     * if the string is null or not a number (if {@code noThrow} is
+     * {@code true}).
+     * 
+     * @param string
+     *            The input
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Float parseFloat(final String string, final boolean noThrow) {
+        return parseFloat(string, null, noThrow);
+    }
+
+    /**
+     * Parse a string into a float. (Null safe and number safe).
      * 
      * @param string
      *            The input
@@ -736,14 +1050,30 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Float parseFloat(final String string, final Float defaultValue) {
-        if (NumberUtils.isNumberDecimal(string, true, true)) {
-            return Float.parseFloat(string);
-        }
-        return defaultValue;
+        return parseFloat(string, defaultValue, true);
     }
 
     /**
-     * Parse a string into a double. (Null safe and number safe). Return null,
+     * Parse a string into a float. (Null safe and number safe).
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Float parseFloat(final String string, final Float defaultValue, final boolean noThrow) {
+        return parse(string, defaultValue, Float::parseFloat, noThrow);
+    }
+
+    /**
+     * Parse a string into a double. (Null safe and number safe). Returns null,
      * if the string is null or not a number.
      * 
      * @param string
@@ -751,7 +1081,26 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Double parseDouble(final String string) {
-        return parseDouble(string, null);
+        return parseDouble(string, null, true);
+    }
+
+    /**
+     * Parse a string into a double. (Null safe and number safe). Returns null,
+     * if the string is null or not a number (if {@code noThrow} is
+     * {@code true}).
+     * 
+     * @param string
+     *            The input
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Double parseDouble(final String string, final boolean noThrow) {
+        return parseDouble(string, null, noThrow);
     }
 
     /**
@@ -764,8 +1113,59 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return The parsed result
      */
     public static Double parseDouble(final String string, final Double defaultValue) {
-        if (NumberUtils.isNumberDecimal(string, true, true)) {
-            return Double.parseDouble(string);
+        return parseDouble(string, defaultValue, true);
+    }
+
+    /**
+     * Parse a string into a double. (Null safe and number safe)
+     * 
+     * @param string
+     *            The input
+     * @param defaultValue
+     *            If the input cannot be parse, value is returned
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @return The parsed result
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    public static Double parseDouble(final String string, final Double defaultValue, final boolean noThrow) {
+        return parse(string, defaultValue, Double::parseDouble, noThrow);
+    }
+
+    /**
+     * Parse a string into a number through the provided parser, if the string
+     * cannot be parsed or if parse failed the default number is returned
+     * 
+     * @param string
+     *            the string to parse
+     * @param defaultValue
+     *            the default value
+     * @param parser
+     *            the parser
+     * @param noThrow
+     *            true, to avoid throwing a {@link NumberFormatException} if
+     *            parse failed
+     * @param <T>
+     *            the output number type
+     * @return the parsed value or the default value
+     * @throws NumberFormatException
+     *             if the number cannot be parsed and {@code noThrow} is
+     *             {@code false}
+     */
+    private static <T extends Number> T parse(final String string, final T defaultValue,
+            final FunctionThrowable<String, T, NumberFormatException> parser, final boolean noThrow) {
+
+        if (StringUtils.isNotEmpty(string)) {
+            try {
+                return parser.apply(string);
+            } catch (NumberFormatException e) {
+                if (!noThrow) {
+                    throw e;
+                }
+            }
         }
         return defaultValue;
     }
