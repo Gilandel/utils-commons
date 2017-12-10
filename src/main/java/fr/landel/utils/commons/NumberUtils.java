@@ -42,9 +42,6 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
     private static final int RADIX = 10;
     private static final int TEN = 10;
 
-    private final static int ASCII_0 = 48;
-    private final static int ASCII_9 = 57;
-
     private static final byte[] INFINITY = {'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
 
     /**
@@ -487,7 +484,7 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
         short nb3 = 0;
 
         for (int i = start; i < length; ++i) {
-            if (isDigit(bytes[i])) {
+            if (AsciiUtils.IS_NUMERIC.test((int) bytes[i])) {
                 if (exponent == 1) {
                     ++nb3;
                 } else if (dot == 1) {
@@ -535,11 +532,6 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
             }
         }
         return null;
-    }
-
-    private static boolean isDigit(final byte b) {
-        final int character = (int) b;
-        return character >= ASCII_0 && character <= ASCII_9;
     }
 
     private static boolean isSign(final byte b) {

@@ -20,11 +20,12 @@
 package fr.landel.utils.commons;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
+
+import fr.landel.utils.commons.Comparators.BiComparator;
 
 /**
  * This class is an helper to inject parameters into a {@link String} formatter
@@ -405,7 +406,7 @@ public abstract class StringFormatUtils extends org.apache.commons.lang3.StringU
     }
 
     private static StringBuilder replaceAndClear(final Set<Group> groups, final StringBuilder sb) {
-        groups.stream().sorted(Group.REVERSED_COMPARATOR).forEachOrdered((g) -> {
+        groups.stream().sorted(Group.COMPARATOR.desc()).forEachOrdered((g) -> {
             if (g.remove) {
                 sb.replace(g.start, g.end, EMPTY);
             } else {
@@ -426,12 +427,7 @@ public abstract class StringFormatUtils extends org.apache.commons.lang3.StringU
      */
     private static class Group implements Comparable<Group> {
 
-        private static final Comparator<Group> REVERSED_COMPARATOR = new Comparator<Group>() {
-            @Override
-            public int compare(final Group o1, final Group o2) {
-                return o2.start - o1.start;
-            }
-        };
+        private static final BiComparator<Group> COMPARATOR = new BiComparator<>();
 
         private final int start;
         private int end;

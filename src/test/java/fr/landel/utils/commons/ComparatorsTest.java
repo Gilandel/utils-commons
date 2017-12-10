@@ -350,6 +350,11 @@ public class ComparatorsTest extends AbstractTest {
 
         assertEquals(1, Comparators.VERSION.asc().compare(v1, v2));
 
+        v1 = new Version("1.2-alpha-3");
+        v2 = new Version("1.2-alpha-1");
+
+        assertEquals(1, Comparators.VERSION.asc().compare(v1, v2));
+
         v1 = new Version("1.2.0");
         v2 = new Version("1.2.1");
         Version v3 = new Version("1.2.0-SNAPSHOT");
