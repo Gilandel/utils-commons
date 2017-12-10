@@ -19,10 +19,15 @@
  */
 package fr.landel.utils.commons;
 
+import static fr.landel.utils.commons.NumberUtilsTest.EnumNumberDecimal.TYPE_NOT_SUPPORTED_LENIENT;
+import static fr.landel.utils.commons.NumberUtilsTest.EnumNumberDecimal.TYPE_NOT_SUPPORTED_NOT_LENIENT;
+import static fr.landel.utils.commons.NumberUtilsTest.EnumNumberDecimal.TYPE_SUPPORTED_LENIENT;
+import static fr.landel.utils.commons.NumberUtilsTest.EnumNumberDecimal.TYPE_SUPPORTED_NOT_LENIENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -144,6 +149,19 @@ public class NumberUtilsTest extends AbstractTest {
         assertNull(NumberUtils.parseInt("10.0"));
         assertNull(NumberUtils.parseInt("10.0D"));
         assertNull(NumberUtils.parseInt("10.0F"));
+
+        assertNull(NumberUtils.parseInt(null, false));
+        assertNull(NumberUtils.parseInt("", false));
+        assertException(() -> NumberUtils.parseInt("   SS ", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("  12 ", false), NumberFormatException.class);
+
+        assertEquals(expected, (int) NumberUtils.parseInt("10", false));
+        assertEquals(-expected, (int) NumberUtils.parseInt("-10", false));
+        assertEquals(expected, (int) NumberUtils.parseInt("+10", false));
+        assertException(() -> NumberUtils.parseInt("10L", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("10.0", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("10.0D", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("10.0F", false), NumberFormatException.class);
     }
 
     /**
@@ -152,8 +170,8 @@ public class NumberUtilsTest extends AbstractTest {
      */
     @Test
     public void testParseIntStringInteger() {
-        final int value = 10;
-        final int expectedIfNullOrFalse = 10;
+        final int value = 19;
+        final int expectedIfNullOrFalse = 19;
         final int expected = 10;
 
         assertEquals(expectedIfNullOrFalse, (int) NumberUtils.parseInt(null, value));
@@ -168,6 +186,19 @@ public class NumberUtilsTest extends AbstractTest {
         assertEquals(expectedIfNullOrFalse, (int) NumberUtils.parseInt("10.0", value));
         assertEquals(expectedIfNullOrFalse, (int) NumberUtils.parseInt("10.0D", value));
         assertEquals(expectedIfNullOrFalse, (int) NumberUtils.parseInt("10.0F", value));
+
+        assertEquals(expectedIfNullOrFalse, (int) NumberUtils.parseInt(null, value, false));
+        assertEquals(expectedIfNullOrFalse, (int) NumberUtils.parseInt("", value, false));
+        assertException(() -> NumberUtils.parseInt("   SS ", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("  12 ", value, false), NumberFormatException.class);
+
+        assertEquals(expected, (int) NumberUtils.parseInt("10", value, false));
+        assertEquals(-expected, (int) NumberUtils.parseInt("-10", value, false));
+        assertEquals(expected, (int) NumberUtils.parseInt("+10", value, false));
+        assertException(() -> NumberUtils.parseInt("10L", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("10.0", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("10.0D", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseInt("10.0F", value, false), NumberFormatException.class);
     }
 
     /**
@@ -181,14 +212,26 @@ public class NumberUtilsTest extends AbstractTest {
         assertNull(NumberUtils.parseFloat(null));
         assertNull(NumberUtils.parseFloat(""));
         assertNull(NumberUtils.parseFloat("   SS "));
-        assertNull(NumberUtils.parseFloat("  12 "));
 
+        assertEquals(expected, NumberUtils.parseFloat("  10 "), delta);
         assertEquals(expected, NumberUtils.parseFloat("10"), delta);
         assertEquals(-expected, NumberUtils.parseFloat("-10"), delta);
         assertNull(NumberUtils.parseFloat("10L"));
         assertEquals(expected, NumberUtils.parseFloat("10.0"), delta);
         assertEquals(expected, NumberUtils.parseFloat("10.0D"), delta);
         assertEquals(expected, NumberUtils.parseFloat("10.0F"), delta);
+
+        assertNull(NumberUtils.parseFloat(null, false));
+        assertNull(NumberUtils.parseFloat("", false));
+        assertException(() -> NumberUtils.parseFloat("   SS ", false), NumberFormatException.class);
+
+        assertEquals(expected, NumberUtils.parseFloat("  10 ", false), delta);
+        assertEquals(expected, NumberUtils.parseFloat("10", false), delta);
+        assertEquals(-expected, NumberUtils.parseFloat("-10", false), delta);
+        assertException(() -> NumberUtils.parseFloat("10L", false), NumberFormatException.class);
+        assertEquals(expected, NumberUtils.parseFloat("10.0", false), delta);
+        assertEquals(expected, NumberUtils.parseFloat("10.0D", false), delta);
+        assertEquals(expected, NumberUtils.parseFloat("10.0F", false), delta);
     }
 
     /**
@@ -198,22 +241,51 @@ public class NumberUtilsTest extends AbstractTest {
     @Test
     public void testParseFloatStringFloat() {
         final float delta = 0.001f;
-        final float value = 10.0f;
-        final float expectedIfNullOrFalse = 10.0f;
+        final float value = 19.0f;
+        final float expectedIfNullOrFalse = 19.0f;
         final float expected = 10.0f;
 
         assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat(null, value), delta);
         assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("", value), delta);
-        assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("   SS ", value), delta);
-        assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("  12 ", value), delta);
+        assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("   ND ", value), delta);
 
+        assertEquals(expected, (float) NumberUtils.parseFloat("  10 ", value), delta);
         assertEquals(expected, (float) NumberUtils.parseFloat("10", value), delta);
         assertEquals(-expected, (float) NumberUtils.parseFloat("-10", value), delta);
         assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("10L", value), delta);
         assertEquals(expected, (float) NumberUtils.parseFloat("10.0", value), delta);
         assertEquals(expected, (float) NumberUtils.parseFloat("+10.0", value), delta);
-        assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("10.0D", value), delta);
-        assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("10.0F", value), delta);
+        assertEquals(expected, (float) NumberUtils.parseFloat("10.0D", value), delta);
+        assertEquals(expected, (float) NumberUtils.parseFloat("10.0F", value), delta);
+
+        assertEquals(Float.MAX_VALUE, (float) NumberUtils.parseFloat(String.valueOf(Float.MAX_VALUE), value), delta);
+        assertEquals(Float.MIN_VALUE, (float) NumberUtils.parseFloat(String.valueOf(Float.MIN_VALUE), value), delta);
+        assertEquals(Float.POSITIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(Double.MAX_VALUE), value), delta);
+        assertEquals(Float.NEGATIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(-Double.MAX_VALUE), value), delta);
+        assertEquals(0.0f, (float) NumberUtils.parseFloat(String.valueOf(Double.MIN_VALUE), value), delta);
+        assertEquals(Float.POSITIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(Float.POSITIVE_INFINITY), value), delta);
+        assertEquals(Float.NEGATIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(Float.NEGATIVE_INFINITY), value), delta);
+
+        assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat(null, value, false), delta);
+        assertEquals(expectedIfNullOrFalse, (float) NumberUtils.parseFloat("", value, false), delta);
+        assertException(() -> NumberUtils.parseFloat("   ND ", value, false), NumberFormatException.class);
+
+        assertEquals(expected, (float) NumberUtils.parseFloat("  10 ", value, false), delta);
+        assertEquals(expected, (float) NumberUtils.parseFloat("10", value, false), delta);
+        assertEquals(-expected, (float) NumberUtils.parseFloat("-10", value, false), delta);
+        assertException(() -> NumberUtils.parseFloat("10L", value, false), NumberFormatException.class);
+        assertEquals(expected, (float) NumberUtils.parseFloat("10.0", value, false), delta);
+        assertEquals(expected, (float) NumberUtils.parseFloat("+10.0", value, false), delta);
+        assertEquals(expected, (float) NumberUtils.parseFloat("10.0D", value, false), delta);
+        assertEquals(expected, (float) NumberUtils.parseFloat("10.0F", value, false), delta);
+
+        assertEquals(Float.MAX_VALUE, (float) NumberUtils.parseFloat(String.valueOf(Float.MAX_VALUE), value, false), delta);
+        assertEquals(Float.MIN_VALUE, (float) NumberUtils.parseFloat(String.valueOf(Float.MIN_VALUE), value, false), delta);
+        assertEquals(Float.POSITIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(Double.MAX_VALUE), value, false), delta);
+        assertEquals(Float.NEGATIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(-Double.MAX_VALUE), value, false), delta);
+        assertEquals(0.0f, (float) NumberUtils.parseFloat(String.valueOf(Double.MIN_VALUE), value, false), delta);
+        assertEquals(Float.POSITIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(Float.POSITIVE_INFINITY), value, false), delta);
+        assertEquals(Float.NEGATIVE_INFINITY, (float) NumberUtils.parseFloat(String.valueOf(Float.NEGATIVE_INFINITY), value, false), delta);
     }
 
     /**
@@ -234,6 +306,18 @@ public class NumberUtilsTest extends AbstractTest {
         assertNull(NumberUtils.parseLong("10.0"));
         assertNull(NumberUtils.parseLong("10.0D"));
         assertNull(NumberUtils.parseLong("10.0F"));
+
+        assertNull(NumberUtils.parseLong(null, false));
+        assertNull(NumberUtils.parseLong("", false));
+        assertException(() -> NumberUtils.parseLong("   SS ", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("  12 ", false), NumberFormatException.class);
+
+        assertEquals(expected, (long) NumberUtils.parseLong("10", false));
+        assertEquals(-expected, (long) NumberUtils.parseLong("-10", false));
+        assertException(() -> NumberUtils.parseLong("10L", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("10.0", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("10.0D", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("10.0F", false), NumberFormatException.class);
     }
 
     /**
@@ -242,22 +326,35 @@ public class NumberUtilsTest extends AbstractTest {
      */
     @Test
     public void testParseLongStringLong() {
-        final long value = 10L;
-        final long expectedIfNullOrFalse = 10L;
-        final long expected = 10L;
+        final long value = 190L;
+        final long expectedIfNullOrFalse = 190L;
+        final long expected = 190L;
 
         assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong(null, value));
         assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("", value));
         assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("   SS ", value));
         assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("  12 ", value));
 
-        assertEquals(expected, (long) NumberUtils.parseLong("10", value));
-        assertEquals(-expected, (long) NumberUtils.parseLong("-10", value));
-        assertEquals(expected, (long) NumberUtils.parseLong("+10", value));
-        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("10L", value));
-        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("10.0", value));
-        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("10.0D", value));
-        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("10.0F", value));
+        assertEquals(expected, (long) NumberUtils.parseLong("190", value));
+        assertEquals(-expected, (long) NumberUtils.parseLong("-190", value));
+        assertEquals(expected, (long) NumberUtils.parseLong("+190", value));
+        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("190L", value));
+        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("190.0", value));
+        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("190.0D", value));
+        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("190.0F", value));
+
+        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong(null, value, false));
+        assertEquals(expectedIfNullOrFalse, (long) NumberUtils.parseLong("", value, false));
+        assertException(() -> NumberUtils.parseLong("   SS ", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("  12 ", value, false), NumberFormatException.class);
+
+        assertEquals(expected, (long) NumberUtils.parseLong("190", value, false));
+        assertEquals(-expected, (long) NumberUtils.parseLong("-190", value, false));
+        assertEquals(expected, (long) NumberUtils.parseLong("+190", value, false));
+        assertException(() -> NumberUtils.parseLong("190L", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("190.0", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("190.0D", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseLong("190.0F", value, false), NumberFormatException.class);
     }
 
     /**
@@ -271,14 +368,26 @@ public class NumberUtilsTest extends AbstractTest {
         assertNull(NumberUtils.parseDouble(null));
         assertNull(NumberUtils.parseDouble(""));
         assertNull(NumberUtils.parseDouble("   SS "));
-        assertNull(NumberUtils.parseDouble("  12 "));
 
+        assertEquals(expected, NumberUtils.parseDouble("  10 "), delta);
         assertEquals(expected, NumberUtils.parseDouble("10"), delta);
         assertEquals(-expected, NumberUtils.parseDouble("-10"), delta);
         assertNull(NumberUtils.parseDouble("10L"));
         assertEquals(expected, (double) NumberUtils.parseDouble("10.0"), delta);
         assertEquals(expected, NumberUtils.parseDouble("10.0D"), delta);
         assertEquals(expected, NumberUtils.parseDouble("10.0F"), delta);
+
+        assertNull(NumberUtils.parseDouble(null, false));
+        assertNull(NumberUtils.parseDouble("", false));
+        assertException(() -> NumberUtils.parseDouble("   SS ", false), NumberFormatException.class);
+
+        assertEquals(expected, NumberUtils.parseDouble("  10 ", false), delta);
+        assertEquals(expected, NumberUtils.parseDouble("10", false), delta);
+        assertEquals(-expected, NumberUtils.parseDouble("-10", false), delta);
+        assertException(() -> NumberUtils.parseDouble("10L", false), NumberFormatException.class);
+        assertEquals(expected, (double) NumberUtils.parseDouble("10.0", false), delta);
+        assertEquals(expected, NumberUtils.parseDouble("10.0D", false), delta);
+        assertEquals(expected, NumberUtils.parseDouble("10.0F", false), delta);
     }
 
     /**
@@ -288,21 +397,33 @@ public class NumberUtilsTest extends AbstractTest {
     @Test
     public void testParseDoubleStringDouble() {
         final double delta = 0.001d;
-        final double value = 10.0d;
-        final double expectedIfNullOrFalse = 10.0d;
+        final double value = 19.0d;
+        final double expectedIfNullOrFalse = 19.0d;
         final double expected = 10.0d;
 
         assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble(null, value), delta);
         assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble("", value), delta);
         assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble("   SS ", value), delta);
-        assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble("  12 ", value), delta);
 
+        assertEquals(expected, (double) NumberUtils.parseDouble("  10 ", value), delta);
         assertEquals(expected, (double) NumberUtils.parseDouble("10", value), delta);
         assertEquals(-expected, (double) NumberUtils.parseDouble("-10", value), delta);
         assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble("10L", value), delta);
         assertEquals(expected, (double) NumberUtils.parseDouble("10.0", value), delta);
-        assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble("10.0D", value), delta);
-        assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble("10.0F", value), delta);
+        assertEquals(expected, (double) NumberUtils.parseDouble("10.0D", value), delta);
+        assertEquals(expected, (double) NumberUtils.parseDouble("10.0F", value), delta);
+
+        assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble(null, value, false), delta);
+        assertEquals(expectedIfNullOrFalse, (double) NumberUtils.parseDouble("", value, false), delta);
+        assertException(() -> NumberUtils.parseDouble("   SS ", value, false), NumberFormatException.class);
+
+        assertEquals(expected, (double) NumberUtils.parseDouble("  10 ", value, false), delta);
+        assertEquals(expected, (double) NumberUtils.parseDouble("10", value, false), delta);
+        assertEquals(-expected, (double) NumberUtils.parseDouble("-10", value, false), delta);
+        assertException(() -> NumberUtils.parseDouble("10L", value, false), NumberFormatException.class);
+        assertEquals(expected, (double) NumberUtils.parseDouble("10.0", value, false), delta);
+        assertEquals(expected, (double) NumberUtils.parseDouble("10.0D", value, false), delta);
+        assertEquals(expected, (double) NumberUtils.parseDouble("10.0F", value, false), delta);
     }
 
     /**
@@ -323,6 +444,18 @@ public class NumberUtilsTest extends AbstractTest {
         assertNull(NumberUtils.parseShort("10.0"));
         assertNull(NumberUtils.parseShort("10.0D"));
         assertNull(NumberUtils.parseShort("10.0F"));
+
+        assertNull(NumberUtils.parseShort(null));
+        assertNull(NumberUtils.parseShort(""));
+        assertException(() -> NumberUtils.parseShort("   SS ", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("  12 ", false), NumberFormatException.class);
+
+        assertEquals(expected, (short) NumberUtils.parseShort("10", false));
+        assertEquals(-expected, (short) NumberUtils.parseShort("-10", false));
+        assertException(() -> NumberUtils.parseShort("10L", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10.0", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10.0D", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10.0F", false), NumberFormatException.class);
     }
 
     /**
@@ -331,8 +464,8 @@ public class NumberUtilsTest extends AbstractTest {
      */
     @Test
     public void testParseShortStringShort() {
-        final short value = 10;
-        final short expectedIfNullOrFalse = 10;
+        final short value = 19;
+        final short expectedIfNullOrFalse = 19;
         final short expected = 10;
 
         assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseShort(null, value));
@@ -350,6 +483,22 @@ public class NumberUtilsTest extends AbstractTest {
         assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseShort("10.0", value));
         assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseShort("10.0D", value));
         assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseShort("10.0F", value));
+
+        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseShort(null, value, false));
+        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseShort("", value, false));
+        assertException(() -> NumberUtils.parseShort("   SS ", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("  12 ", value, false), NumberFormatException.class);
+
+        assertEquals(expected, (short) NumberUtils.parseShort("10", value, false));
+        assertEquals(-expected, (short) NumberUtils.parseShort("-10", value, false));
+        assertEquals(expected, (short) NumberUtils.parseShort("+10", value, false));
+        assertException(() -> NumberUtils.parseShort(String.valueOf(Short.MAX_VALUE + 1), value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort(String.valueOf(Short.MIN_VALUE - 1), value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10L", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10L", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10.0", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10.0D", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseShort("10.0F", value, false), NumberFormatException.class);
     }
 
     /**
@@ -370,6 +519,18 @@ public class NumberUtilsTest extends AbstractTest {
         assertNull(NumberUtils.parseByte("10.0"));
         assertNull(NumberUtils.parseByte("10.0D"));
         assertNull(NumberUtils.parseByte("10.0F"));
+
+        assertNull(NumberUtils.parseByte(null, false));
+        assertNull(NumberUtils.parseByte("", false));
+        assertException(() -> NumberUtils.parseByte("   SS ", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("  12 ", false), NumberFormatException.class);
+
+        assertEquals(expected, (byte) NumberUtils.parseByte("10", false));
+        assertEquals(-expected, (byte) NumberUtils.parseByte("-10", false));
+        assertException(() -> NumberUtils.parseByte("10L", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10.0", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10.0D", false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10.0F", false), NumberFormatException.class);
     }
 
     /**
@@ -378,8 +539,8 @@ public class NumberUtilsTest extends AbstractTest {
      */
     @Test
     public void testParseByteStringByte() {
-        final byte value = 10;
-        final byte expectedIfNullOrFalse = 10;
+        final byte value = 19;
+        final byte expectedIfNullOrFalse = 19;
         final byte expected = 10;
 
         assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte(null, value));
@@ -390,13 +551,33 @@ public class NumberUtilsTest extends AbstractTest {
         assertEquals(expected, (byte) NumberUtils.parseByte("10", value));
         assertEquals(-expected, (byte) NumberUtils.parseByte("-10", value));
         assertEquals(expected, (byte) NumberUtils.parseByte("+10", value));
-        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseByte(String.valueOf(Byte.MAX_VALUE + 1), value));
-        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseByte(String.valueOf(Byte.MIN_VALUE - 1), value));
-        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseByte("10L", value));
-        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseByte("10L", value));
-        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseByte("10.0", value));
-        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseByte("10.0D", value));
-        assertEquals(expectedIfNullOrFalse, (short) NumberUtils.parseByte("10.0F", value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte(String.valueOf(Byte.MAX_VALUE + 1), value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte(String.valueOf(Byte.MIN_VALUE - 1), value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte(String.valueOf(Long.MAX_VALUE), value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte(String.valueOf(Long.MIN_VALUE), value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte("10L", value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte("10L", value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte("10.0", value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte("10.0D", value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte("10.0F", value));
+
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte(null, value));
+        assertEquals(expectedIfNullOrFalse, (byte) NumberUtils.parseByte("", value));
+        assertException(() -> NumberUtils.parseByte("   SS ", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("  12 ", value, false), NumberFormatException.class);
+
+        assertEquals(expected, (byte) NumberUtils.parseByte("10", value, false));
+        assertEquals(-expected, (byte) NumberUtils.parseByte("-10", value, false));
+        assertEquals(expected, (byte) NumberUtils.parseByte("+10", value, false));
+        assertException(() -> NumberUtils.parseByte(String.valueOf(Byte.MAX_VALUE + 1), value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte(String.valueOf(Byte.MIN_VALUE - 1), value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte(String.valueOf(Long.MAX_VALUE), value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte(String.valueOf(Long.MIN_VALUE), value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10L", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10L", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10.0", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10.0D", value, false), NumberFormatException.class);
+        assertException(() -> NumberUtils.parseByte("10.0F", value, false), NumberFormatException.class);
     }
 
     /**
@@ -634,74 +815,89 @@ public class NumberUtilsTest extends AbstractTest {
         assertFalse(NumberUtils.isNumberInteger((Object) null));
     }
 
+    private static void checkDecimalNumber(final boolean expected, final Pattern p, final String string, final EnumNumberDecimal mode) {
+        if (expected) {
+            assertTrue(p.matcher(string).matches());
+
+            switch (mode) {
+            case TYPE_NOT_SUPPORTED_NOT_LENIENT:
+                assertTrue(NumberUtils.isNumberDecimal(string));
+                break;
+            case TYPE_SUPPORTED_NOT_LENIENT:
+                assertTrue(NumberUtils.isNumberDecimal(string, true));
+                break;
+            case TYPE_SUPPORTED_LENIENT:
+                assertTrue(NumberUtils.isNumberDecimal(string, true, true));
+                break;
+            case TYPE_NOT_SUPPORTED_LENIENT:
+                assertTrue(NumberUtils.isNumberDecimal(string, false, true));
+                break;
+            default:
+                fail("no mode defined or unknown");
+            }
+        } else {
+            assertFalse(p.matcher(string).matches());
+
+            switch (mode) {
+            case TYPE_NOT_SUPPORTED_NOT_LENIENT:
+                assertFalse(NumberUtils.isNumberDecimal(string));
+                break;
+            case TYPE_SUPPORTED_NOT_LENIENT:
+                assertFalse(NumberUtils.isNumberDecimal(string, true));
+                break;
+            case TYPE_SUPPORTED_LENIENT:
+                assertFalse(NumberUtils.isNumberDecimal(string, true, true));
+                break;
+            case TYPE_NOT_SUPPORTED_LENIENT:
+                assertFalse(NumberUtils.isNumberDecimal(string, false, true));
+                break;
+            default:
+                fail("no mode defined or unknown");
+            }
+        }
+    }
+
     /**
      * Test method for {@link NumberUtils#isNumberDecimal} .
      */
     @Test
-    public void testIsNumberDecimal() {
+    public void testIsNumberDecimalTypeSupportedNotLenient() {
 
         // type supported + not lenient
-        Pattern p = Pattern.compile("[+-]?(\\d+[dfDF]|(\\d+)?\\.\\d+[dfDF]?)");
+        Pattern p = Pattern.compile("[+-]?(\\d+[dfDF]|(\\d+)?\\.\\d+([eE][+-]?\\d+)?[dfDF]?)");
 
-        assertFalse(p.matcher("25").matches());
-        assertFalse(p.matcher("+25").matches());
-        assertTrue(p.matcher("-25.25").matches());
-        assertTrue(p.matcher("-25.25d").matches());
-        assertTrue(p.matcher(".25").matches());
-        assertTrue(p.matcher(".25f").matches());
-        assertTrue(p.matcher("2f").matches());
-        assertFalse(p.matcher("2l").matches());
-
-        assertFalse(NumberUtils.isNumberDecimal("25", true));
-        assertFalse(NumberUtils.isNumberDecimal("+25", true));
-        assertTrue(NumberUtils.isNumberDecimal("-25.25", true));
-        assertTrue(NumberUtils.isNumberDecimal("-25.25d", true));
-        assertTrue(NumberUtils.isNumberDecimal(".25", true));
-        assertTrue(NumberUtils.isNumberDecimal(".25f", true));
-        assertTrue(NumberUtils.isNumberDecimal("2f", true));
-        assertFalse(NumberUtils.isNumberDecimal("2l", true));
-
-        // type supported + lenient
-        p = Pattern.compile("[+-]?(\\d+|(\\d+)?\\.\\d+)[dfDF]?");
-
-        assertTrue(p.matcher("25").matches());
-        assertTrue(p.matcher("+25").matches());
-        assertTrue(p.matcher("-25.25").matches());
-        assertTrue(p.matcher("-25.25d").matches());
-        assertTrue(p.matcher(".25").matches());
-        assertTrue(p.matcher(".25f").matches());
-        assertTrue(p.matcher("2f").matches());
-        assertFalse(p.matcher("2l").matches());
-
-        assertTrue(NumberUtils.isNumberDecimal("25", true, true));
-        assertTrue(NumberUtils.isNumberDecimal("+25", true, true));
-        assertTrue(NumberUtils.isNumberDecimal("-25.25", true, true));
-        assertTrue(NumberUtils.isNumberDecimal("-25.25d", true, true));
-        assertTrue(NumberUtils.isNumberDecimal(".25", true, true));
-        assertTrue(NumberUtils.isNumberDecimal(".25f", true, true));
-        assertTrue(NumberUtils.isNumberDecimal("2f", true, true));
-        assertFalse(NumberUtils.isNumberDecimal("2l", true, true));
-
-        // not type supported + not lenient
-        p = Pattern.compile("[+-]?(\\d+)?\\.\\d+");
-
-        assertFalse(p.matcher("25").matches());
-        assertFalse(p.matcher("+25").matches());
-        assertTrue(p.matcher("-25.25").matches());
-        assertFalse(p.matcher("-25.25d").matches());
-        assertTrue(p.matcher(".25").matches());
-        assertFalse(p.matcher(".25f").matches());
-        assertFalse(p.matcher("2f").matches());
-        assertFalse(p.matcher("2l").matches());
-
-        assertFalse(NumberUtils.isNumberDecimal("25"));
-        assertFalse(NumberUtils.isNumberDecimal("+25"));
-        assertTrue(NumberUtils.isNumberDecimal("-25.25"));
-        assertFalse(NumberUtils.isNumberDecimal("-25.25d"));
-        assertTrue(NumberUtils.isNumberDecimal(".25"));
-        assertFalse(NumberUtils.isNumberDecimal(".25f"));
-        assertFalse(NumberUtils.isNumberDecimal("2f"));
-        assertFalse(NumberUtils.isNumberDecimal("2l"));
+        checkDecimalNumber(false, p, "25", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "+25", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25d", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, ".25", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, ".25f", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "2f", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "2l", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2d", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e2D", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2f", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e2F", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E+2d", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e-2F", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2de", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2d2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e-21", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e+22", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+22", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+e22", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2.2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2e2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-2525e+2.2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+22", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+2-2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25252+2e-2", TYPE_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25252e-2+3", TYPE_SUPPORTED_NOT_LENIENT);
 
     }
 
@@ -709,28 +905,158 @@ public class NumberUtilsTest extends AbstractTest {
      * Test method for {@link NumberUtils#isNumberDecimal} .
      */
     @Test
-    public void testIsNumberDecimal2() {
+    public void testIsNumberDecimalTypeSupportedLenient() {
 
-        // not type supported + lenient
-        Pattern p = Pattern.compile("[+-]?(\\d+|(\\d+)?\\.\\d+)?");
+        // type supported + lenient
+        Pattern p = Pattern.compile("[+-]?(\\d+|(\\d+)?\\.\\d+)([eE][+-]?\\d+)?[dfDF]?");
 
-        assertTrue(p.matcher("25").matches());
-        assertTrue(p.matcher("+25").matches());
-        assertTrue(p.matcher("-25.25").matches());
-        assertFalse(p.matcher("-25.25d").matches());
-        assertTrue(p.matcher(".25").matches());
-        assertFalse(p.matcher(".25f").matches());
-        assertFalse(p.matcher("2f").matches());
-        assertFalse(p.matcher("2l").matches());
+        checkDecimalNumber(true, p, "25", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "+25", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25d", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, ".25", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, ".25f", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "2f", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "2l", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2d", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2D", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2f", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e2F", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E+2d", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e-2F", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2de", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2d2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e-21", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e+22", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+22", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+e22", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2.2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2e2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-2525e+2.2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+22", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+2-2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25252+2e-2", TYPE_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25252e-2+3", TYPE_SUPPORTED_LENIENT);
+    }
 
-        assertTrue(NumberUtils.isNumberDecimal("25", false, true));
-        assertTrue(NumberUtils.isNumberDecimal("+25", false, true));
-        assertTrue(NumberUtils.isNumberDecimal("-25.25", false, true));
-        assertFalse(NumberUtils.isNumberDecimal("-25.25d", false, true));
-        assertTrue(NumberUtils.isNumberDecimal(".25", false, true));
-        assertFalse(NumberUtils.isNumberDecimal(".25f", false, true));
-        assertFalse(NumberUtils.isNumberDecimal("2f", false, true));
-        assertFalse(NumberUtils.isNumberDecimal("2l", false, true));
+    /**
+     * Test method for {@link NumberUtils#isNumberDecimal} .
+     */
+    @Test
+    public void testIsNumberDecimalTypeNotSupportedNotLenient() {
+
+        // type not supported + not lenient
+        Pattern p = Pattern.compile("[+-]?(\\d+)?\\.\\d+([eE][+-]?\\d+)?");
+
+        checkDecimalNumber(false, p, "25", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "+25", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25d", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, ".25", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, ".25f", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "2f", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "2l", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E2d", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e2D", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E2f", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e2F", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2d", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e-2F", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2de", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2d2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e-21", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e+22", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+22", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+e22", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2.2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2e2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-2525e+2.2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+22", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+2-2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25252+2e-2", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+        checkDecimalNumber(false, p, "-25252e-2+3", TYPE_NOT_SUPPORTED_NOT_LENIENT);
+    }
+
+    /**
+     * Test method for {@link NumberUtils#isNumberDecimal} .
+     */
+    @Test
+    public void testIsNumberDecimalTypeNotSupportedLenient() {
+
+        // type not supported + lenient
+        Pattern p = Pattern.compile("[+-]?(\\d+|(\\d+)?\\.\\d+)?([eE][+-]?\\d+)?");
+
+        checkDecimalNumber(true, p, "25", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "+25", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25d", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, ".25", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, ".25f", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "2f", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "2l", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E2d", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e2D", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e2f", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e2F", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2de", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2d2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25E+2d", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e-2F", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25E2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e-21", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(true, p, "-25.25e+22", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+22", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25+e22", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2.2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25.25e+2e2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-2525e+2.2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+22", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-2525e2+2-2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25252+2e-2", TYPE_NOT_SUPPORTED_LENIENT);
+        checkDecimalNumber(false, p, "-25252e-2+3", TYPE_NOT_SUPPORTED_LENIENT);
+    }
+
+    /**
+     * Test method for {@link NumberUtils#isNumberDecimal} .
+     */
+    @Test
+    public void testIsNumberDecimalInfinity() {
+
+        assertTrue(NumberUtils.isNumberDecimal("Infinity"));
+        assertTrue(NumberUtils.isNumberDecimal("-Infinity"));
+        assertTrue(NumberUtils.isNumberDecimal("+Infinity"));
+        assertFalse(NumberUtils.isNumberDecimal("Infinite"));
+        assertFalse(NumberUtils.isNumberDecimal("-Infinite"));
+        assertFalse(NumberUtils.isNumberDecimal("+Infinite"));
+        assertFalse(NumberUtils.isNumberDecimal("I"));
+        assertFalse(NumberUtils.isNumberDecimal("-I"));
+        assertFalse(NumberUtils.isNumberDecimal("+I"));
+        assertFalse(NumberUtils.isNumberDecimal("I1"));
+        assertFalse(NumberUtils.isNumberDecimal("-I2"));
+        assertFalse(NumberUtils.isNumberDecimal("+I3"));
+        assertFalse(NumberUtils.isNumberDecimal("infinity"));
+        assertFalse(NumberUtils.isNumberDecimal("-infinity"));
+        assertFalse(NumberUtils.isNumberDecimal("+infinity"));
+    }
+
+    /**
+     * Test method for {@link NumberUtils#isNumberDecimal} .
+     */
+    @Test
+    public void testIsNumberDecimal() {
 
         // errors
 
@@ -816,6 +1142,8 @@ public class NumberUtilsTest extends AbstractTest {
         assertEquals(1, NumberUtils.signum(new AtomicLong(12L)));
 
         assertEquals(0, NumberUtils.signum((Integer) null));
+
+        assertEquals(0, NumberUtils.signum(new NewNumber()));
     }
 
     /**
@@ -854,5 +1182,45 @@ public class NumberUtilsTest extends AbstractTest {
         assertFalse(NumberUtils.isZero(new AtomicLong(1)));
 
         assertFalse(NumberUtils.isZero((Integer) null));
+
+        assertFalse(NumberUtils.isZero(new NewNumber()));
+    }
+
+    /**
+     * Enumeration of check mode in {@link NumberUtils#isNumberDecimal}
+     */
+    protected static enum EnumNumberDecimal {
+        TYPE_NOT_SUPPORTED_NOT_LENIENT,
+        TYPE_SUPPORTED_NOT_LENIENT,
+        TYPE_SUPPORTED_LENIENT,
+        TYPE_NOT_SUPPORTED_LENIENT;
+    }
+
+    private static class NewNumber extends Number {
+
+        /**
+         * serialVersionUID
+         */
+        private static final long serialVersionUID = -5179043884358962228L;
+
+        @Override
+        public int intValue() {
+            return 0;
+        }
+
+        @Override
+        public long longValue() {
+            return 0;
+        }
+
+        @Override
+        public float floatValue() {
+            return 0;
+        }
+
+        @Override
+        public double doubleValue() {
+            return 0;
+        }
     }
 }
