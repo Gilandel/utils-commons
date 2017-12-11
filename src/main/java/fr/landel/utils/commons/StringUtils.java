@@ -811,8 +811,8 @@ public final class StringUtils extends StringFormatUtils {
      * </p>
      * 
      * <pre>
-     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "", Pair.of("key", "test")); // =&gt;
-     *                                                                                               // ""
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "", Pair.of("key", "test"));
+     * // =&gt; ""
      * 
      * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to the {where} this {when}", Pair.of("where", "beach"),
      *         Pair.of("when", "afternoon"));
