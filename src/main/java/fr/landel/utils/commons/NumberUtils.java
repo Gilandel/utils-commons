@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -43,6 +44,11 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
     private static final int TEN = 10;
 
     private static final byte[] INFINITY = {'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
+
+    private static final Predicate<Byte> IS_SIGN = b -> '+' == b || '-' == b;
+    private static final Predicate<Byte> IS_EXPONENT = b -> 'e' == b || 'E' == b;
+    private static final Predicate<Byte> IS_LONG = b -> 'l' == b || 'L' == b;
+    private static final Predicate<Byte> IS_DECIMAL = b -> 'f' == b || 'F' == b || 'd' == b || 'D' == b;
 
     /**
      * Hidden constructor.
@@ -249,6 +255,7 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
      * @return true, if integer number
      */
     public static boolean isNumberInteger(final String string, final boolean typeSupported) {
+
         if (StringUtils.isEmpty(string)) {
             return false;
         }
@@ -256,7 +263,7 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
         final byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
 
         int start = 0;
-        if (isSign(bytes[0])) {
+        if (IS_SIGN.test(bytes[0])) {
             start = 1;
         }
 
@@ -266,11 +273,10 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
         byte typed = 0;
 
         for (int i = start; i < length; ++i) {
-            int character = (int) bytes[i];
-            if (character >= 48 && character <= 57) {
-                nb++;
+            if (AsciiUtils.IS_NUMERIC.test(bytes[i])) {
+                ++nb;
             } else if (typeSupported && i == length - 1) {
-                typed = isLongMarker(bytes[i]) ? (byte) 1 : 0;
+                typed = IS_LONG.test(bytes[i]) ? (byte) 1 : 0;
             }
         }
         return start + nb + typed == length;
@@ -462,8 +468,8 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
 
         final byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
 
-        int start = 0;
-        if (isSign(bytes[0])) {
+        byte start = 0;
+        if (IS_SIGN.test(bytes[0])) {
             start = 1;
         }
 
@@ -499,14 +505,14 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
                 } else {
                     dot = 1;
                 }
-            } else if (isExponentMarker(bytes[i])) {
+            } else if (IS_EXPONENT.test(bytes[i])) {
                 if (exponent == 1) {
                     return false; // multiple exponents
                 } else {
                     exponent = 1;
                     exponentPos = i;
                 }
-            } else if (isSign(bytes[i])) {
+            } else if (IS_SIGN.test(bytes[i])) {
                 if (expSign == 1 || exponentPos != i - 1) {
                     // multiple exponent signs, no exponent marker or not just
                     // after exponent marker
@@ -514,11 +520,12 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
                 } else {
                     expSign = 1;
                 }
-            } else if (typeSupported && i == length - 1 && isDecimalMarker(bytes[i])) {
+            } else if (typeSupported && i == length - 1 && IS_DECIMAL.test(bytes[i])) {
                 typed = 1;
             }
         }
-        return compareLength(start, nb1, dot, nb2, exponent, expSign, nb3, typed, bytes, lenient);
+        // prepare length by subtracting all common values
+        return compareLength(nb1, dot, nb2, typed, length - (start + getExpLength(exponent, expSign, nb3) + typed), lenient);
     }
 
     private static Boolean isInfinity(final byte[] bytes, final int length, final int start) {
@@ -534,33 +541,17 @@ public final class NumberUtils extends org.apache.commons.lang3.math.NumberUtils
         return null;
     }
 
-    private static boolean isSign(final byte b) {
-        return '+' == b || '-' == b;
-    }
-
-    private static boolean isExponentMarker(final byte b) {
-        return 'e' == b || 'E' == b;
-    }
-
-    private static boolean isLongMarker(final byte b) {
-        return 'l' == b || 'L' == b;
-    }
-
-    private static boolean isDecimalMarker(final byte b) {
-        return 'f' == b || 'F' == b || 'd' == b || 'D' == b;
-    }
-
-    private static boolean compareLength(final int start, final short nb1, final byte dot, final short nb2, final byte exponent,
-            final byte expSign, final short nb3, final byte typed, final byte[] bytes, final boolean lenient) {
+    private static boolean compareLength(final short nb1, final byte dot, final short nb2, final byte typed, final int length,
+            final boolean lenient) {
 
         if (nb1 > 0) {
             if (dot == 1 && nb2 > 0) {
-                return start + nb1 + dot + nb2 + getExpLength(exponent, expSign, nb3) + typed == bytes.length;
+                return nb1 + dot + nb2 == length;
             } else if (lenient || typed == 1) {
-                return start + nb1 + getExpLength(exponent, expSign, nb3) + typed == bytes.length;
+                return nb1 == length;
             }
         } else if (dot == 1 && nb2 > 0) {
-            return start + dot + nb2 + getExpLength(exponent, expSign, nb3) + typed == bytes.length;
+            return dot + nb2 == length;
         }
         return false;
     }

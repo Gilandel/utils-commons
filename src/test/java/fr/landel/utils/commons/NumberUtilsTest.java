@@ -25,6 +25,7 @@ import static fr.landel.utils.commons.NumberUtilsTest.EnumNumberDecimal.TYPE_SUP
 import static fr.landel.utils.commons.NumberUtilsTest.EnumNumberDecimal.TYPE_SUPPORTED_NOT_LENIENT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -834,6 +835,7 @@ public class NumberUtilsTest extends AbstractTest {
                 break;
             default:
                 fail("no mode defined or unknown");
+                break;
             }
         } else {
             assertFalse(p.matcher(string).matches());
@@ -853,6 +855,7 @@ public class NumberUtilsTest extends AbstractTest {
                 break;
             default:
                 fail("no mode defined or unknown");
+                break;
             }
         }
     }
@@ -865,6 +868,8 @@ public class NumberUtilsTest extends AbstractTest {
 
         // type supported + not lenient
         Pattern p = Pattern.compile("[+-]?(\\d+[dfDF]|(\\d+)?\\.\\d+([eE][+-]?\\d+)?[dfDF]?)");
+
+        assertNotNull(p);
 
         checkDecimalNumber(false, p, "25", TYPE_SUPPORTED_NOT_LENIENT);
         checkDecimalNumber(false, p, "+25", TYPE_SUPPORTED_NOT_LENIENT);
@@ -898,7 +903,6 @@ public class NumberUtilsTest extends AbstractTest {
         checkDecimalNumber(false, p, "-2525e2+2-2", TYPE_SUPPORTED_NOT_LENIENT);
         checkDecimalNumber(false, p, "-25252+2e-2", TYPE_SUPPORTED_NOT_LENIENT);
         checkDecimalNumber(false, p, "-25252e-2+3", TYPE_SUPPORTED_NOT_LENIENT);
-
     }
 
     /**
@@ -909,6 +913,8 @@ public class NumberUtilsTest extends AbstractTest {
 
         // type supported + lenient
         Pattern p = Pattern.compile("[+-]?(\\d+|(\\d+)?\\.\\d+)([eE][+-]?\\d+)?[dfDF]?");
+
+        assertNotNull(p);
 
         checkDecimalNumber(true, p, "25", TYPE_SUPPORTED_LENIENT);
         checkDecimalNumber(true, p, "+25", TYPE_SUPPORTED_LENIENT);
@@ -953,6 +959,8 @@ public class NumberUtilsTest extends AbstractTest {
         // type not supported + not lenient
         Pattern p = Pattern.compile("[+-]?(\\d+)?\\.\\d+([eE][+-]?\\d+)?");
 
+        assertNotNull(p);
+
         checkDecimalNumber(false, p, "25", TYPE_NOT_SUPPORTED_NOT_LENIENT);
         checkDecimalNumber(false, p, "+25", TYPE_NOT_SUPPORTED_NOT_LENIENT);
         checkDecimalNumber(true, p, "-25.25", TYPE_NOT_SUPPORTED_NOT_LENIENT);
@@ -994,6 +1002,8 @@ public class NumberUtilsTest extends AbstractTest {
 
         // type not supported + lenient
         Pattern p = Pattern.compile("[+-]?(\\d+|(\\d+)?\\.\\d+)?([eE][+-]?\\d+)?");
+
+        assertNotNull(p);
 
         checkDecimalNumber(true, p, "25", TYPE_NOT_SUPPORTED_LENIENT);
         checkDecimalNumber(true, p, "+25", TYPE_NOT_SUPPORTED_LENIENT);
