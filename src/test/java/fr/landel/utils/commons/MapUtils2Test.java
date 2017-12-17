@@ -20,8 +20,10 @@
 package fr.landel.utils.commons;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -289,5 +291,86 @@ public class MapUtils2Test extends AbstractTest {
         assertException(() -> {
             MapUtils2.newMap(TreeMap::new, (Pair[]) null);
         }, IllegalArgumentException.class, "objects cannot be null or empty");
+    }
+
+    /**
+     * Test method for {@link MapUtils2#areKeysEqual(Entry, Entry)}.
+     */
+    @Test
+    public void testAreKeysEqual() {
+        Entry<String, Integer> entry1 = new SimpleEntry<>("key", 1);
+        Entry<String, Integer> entry1b = new SimpleEntry<>("key", 1);
+        Entry<String, Integer> entry2 = new SimpleEntry<>("key", 12);
+        Entry<String, Integer> entry3 = new SimpleEntry<>("key1", 1);
+        Entry<String, Integer> entry4 = new SimpleEntry<>(null, 1);
+        Entry<String, Integer> entry5 = new SimpleEntry<>("key", null);
+
+        assertTrue(MapUtils2.areKeysEqual(entry1, entry1b));
+        assertTrue(MapUtils2.areKeysEqual(entry1, entry2));
+        assertFalse(MapUtils2.areKeysEqual(entry1, entry3));
+        assertFalse(MapUtils2.areKeysEqual(entry1, entry4));
+        assertTrue(MapUtils2.areKeysEqual(entry1, entry5));
+
+        assertException(() -> {
+            MapUtils2.areKeysEqual((Entry<String, Integer>) null, entry5);
+        }, NullPointerException.class, "entries cannot be null");
+
+        assertException(() -> {
+            MapUtils2.areKeysEqual(entry1, (Entry<String, Integer>) null);
+        }, NullPointerException.class, "entries cannot be null");
+    }
+
+    /**
+     * Test method for {@link MapUtils2#areValuesEqual(Entry, Entry)}.
+     */
+    @Test
+    public void testAreValuesEqual() {
+        Entry<String, Integer> entry1 = new SimpleEntry<>("key", 1);
+        Entry<String, Integer> entry1b = new SimpleEntry<>("key", 1);
+        Entry<String, Integer> entry2 = new SimpleEntry<>("key", 12);
+        Entry<String, Integer> entry3 = new SimpleEntry<>("key1", 1);
+        Entry<String, Integer> entry4 = new SimpleEntry<>(null, 1);
+        Entry<String, Integer> entry5 = new SimpleEntry<>("key", null);
+
+        assertTrue(MapUtils2.areValuesEqual(entry1, entry1b));
+        assertFalse(MapUtils2.areValuesEqual(entry1, entry2));
+        assertTrue(MapUtils2.areValuesEqual(entry1, entry3));
+        assertTrue(MapUtils2.areValuesEqual(entry1, entry4));
+        assertFalse(MapUtils2.areValuesEqual(entry1, entry5));
+
+        assertException(() -> {
+            MapUtils2.areValuesEqual((Entry<String, Integer>) null, entry5);
+        }, NullPointerException.class, "entries cannot be null");
+
+        assertException(() -> {
+            MapUtils2.areValuesEqual(entry1, (Entry<String, Integer>) null);
+        }, NullPointerException.class, "entries cannot be null");
+    }
+
+    /**
+     * Test method for {@link MapUtils2#areEntriesEqual(Entry, Entry)}.
+     */
+    @Test
+    public void testAreEntriesEqual() {
+        Entry<String, Integer> entry1 = new SimpleEntry<>("key", 1);
+        Entry<String, Integer> entry1b = new SimpleEntry<>("key", 1);
+        Entry<String, Integer> entry2 = new SimpleEntry<>("key", 12);
+        Entry<String, Integer> entry3 = new SimpleEntry<>("key1", 1);
+        Entry<String, Integer> entry4 = new SimpleEntry<>(null, 1);
+        Entry<String, Integer> entry5 = new SimpleEntry<>("key", null);
+
+        assertTrue(MapUtils2.areEntriesEqual(entry1, entry1b));
+        assertFalse(MapUtils2.areEntriesEqual(entry1, entry2));
+        assertFalse(MapUtils2.areEntriesEqual(entry1, entry3));
+        assertFalse(MapUtils2.areEntriesEqual(entry1, entry4));
+        assertFalse(MapUtils2.areEntriesEqual(entry1, entry5));
+
+        assertException(() -> {
+            MapUtils2.areEntriesEqual(null, entry5);
+        }, NullPointerException.class, "entries cannot be null");
+
+        assertException(() -> {
+            MapUtils2.areEntriesEqual(entry1, null);
+        }, NullPointerException.class, "entries cannot be null");
     }
 }

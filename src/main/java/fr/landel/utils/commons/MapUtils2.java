@@ -21,6 +21,7 @@ package fr.landel.utils.commons;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -37,6 +38,7 @@ public class MapUtils2 {
 
     private static final String ERROR_OBJECTS = "objects cannot be null or empty";
     private static final String ERROR_OBJECTS_ODD = ERROR_OBJECTS + " and has to contain an odd number of elements";
+    private static final String ERROR_ENTRY_NULL = "entries cannot be null";
 
     private static final Supplier<IllegalArgumentException> ERROR_OBJECTS_SUPPLIER = () -> new IllegalArgumentException(ERROR_OBJECTS);
 
@@ -300,5 +302,125 @@ public class MapUtils2 {
         }
 
         return map;
+    }
+
+    /**
+     * Checks if the entries keys are equal
+     * 
+     * @param entry1
+     *            the first entry
+     * @param entry2
+     *            the second entry
+     * @param <K>
+     *            the key type
+     * @param <V>
+     *            the value type
+     * @return true, if keys are equal
+     * @throws NullPointerException
+     *             if one entry is {@code null}
+     */
+    public static <K, V> boolean areKeysEqual(final Entry<K, V> entry1, final Entry<K, V> entry2) {
+        return areKeysEqual(entry1, Objects.requireNonNull(entry2, ERROR_ENTRY_NULL).getKey());
+    }
+
+    /**
+     * Checks if the entry key is equal to the key
+     * 
+     * @param entry1
+     *            the first entry
+     * @param key2
+     *            the second key
+     * @param <K>
+     *            the key type
+     * @param <V>
+     *            the value type
+     * @return true, if keys are equal
+     * @throws NullPointerException
+     *             if one entry is {@code null}
+     */
+    public static <K, V> boolean areKeysEqual(final Entry<K, V> entry1, final K key2) {
+        return Objects.equals(Objects.requireNonNull(entry1, ERROR_ENTRY_NULL).getKey(), key2);
+    }
+
+    /**
+     * Checks if the entry value are equal
+     * 
+     * @param entry1
+     *            the first entry
+     * @param entry2
+     *            the second entry
+     * @param <K>
+     *            the key type
+     * @param <V>
+     *            the value type
+     * @return true, if values are equal
+     * @throws NullPointerException
+     *             if one entry is {@code null}
+     */
+    public static <K, V> boolean areValuesEqual(final Entry<K, V> entry1, final Entry<K, V> entry2) {
+        return areValuesEqual(entry1, Objects.requireNonNull(entry2, ERROR_ENTRY_NULL).getValue());
+    }
+
+    /**
+     * Checks if the entry value is equal to the value
+     * 
+     * @param entry1
+     *            the first entry
+     * @param value2
+     *            the second value
+     * @param <K>
+     *            the key type
+     * @param <V>
+     *            the value type
+     * @return true, if values are equal
+     * @throws NullPointerException
+     *             if one entry is {@code null}
+     */
+    public static <K, V> boolean areValuesEqual(final Entry<K, V> entry1, final V value2) {
+        return Objects.equals(Objects.requireNonNull(entry1, ERROR_ENTRY_NULL).getValue(), value2);
+    }
+
+    /**
+     * Checks if the entries are equal
+     * 
+     * @param entry1
+     *            the first entry
+     * @param entry2
+     *            the second entry
+     * @param <K>
+     *            the key type
+     * @param <V>
+     *            the value type
+     * @return true, if keys and values are equal
+     * @throws NullPointerException
+     *             if one entry is {@code null}
+     */
+    public static <K, V> boolean areEntriesEqual(final Entry<K, V> entry1, final Entry<K, V> entry2) {
+        Objects.requireNonNull(entry2, ERROR_ENTRY_NULL);
+
+        return areEntriesEqual(entry1, entry2.getKey(), entry2.getValue());
+    }
+
+    /**
+     * Checks if the entry key is equal to the value
+     * 
+     * @param entry1
+     *            the first entry
+     * @param key2
+     *            the second key
+     * @param value2
+     *            the second value
+     * @param <K>
+     *            the key type
+     * @param <V>
+     *            the value type
+     * @return true, if keys and values are equal
+     * @throws NullPointerException
+     *             if one entry is {@code null}
+     */
+    public static <K, V> boolean areEntriesEqual(final Entry<K, V> entry1, final K key2, final V value2) {
+        Objects.requireNonNull(entry1, ERROR_ENTRY_NULL);
+
+        return Objects.equals(entry1.getKey(), key2) && Objects.equals(entry1.getValue(), value2);
     }
 }

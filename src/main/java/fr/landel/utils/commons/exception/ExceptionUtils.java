@@ -45,7 +45,7 @@ public final class ExceptionUtils extends org.apache.commons.lang3.exception.Exc
     }
 
     /**
-     * Throws an exception if the predicate NOT matches
+     * Throws an exception if the predicate doesn't match
      * 
      * <pre>
      * String key = "test";
@@ -70,7 +70,7 @@ public final class ExceptionUtils extends org.apache.commons.lang3.exception.Exc
      * @param <E>
      *            the exception type
      * @throws E
-     *             if predicate matches
+     *             if predicate doesn't match
      */
     public static <T, E extends Throwable> void throwsException(final T object, final Predicate<T> predicate,
             final Function<String, E> supplier, final Locale locale, final String message, final Object... arguments) throws E {

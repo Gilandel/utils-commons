@@ -238,8 +238,8 @@ public final class ArrayUtils extends org.apache.commons.lang3.ArrayUtils {
     public static <T> T[] concat(final T[] outputArray, final T[] array1, final T... array2) {
         Objects.requireNonNull(outputArray, "The output array cannot be null");
 
-        final int array1Length = array1 != null ? array1.length : 0;
-        final int array2Length = array2 != null ? array2.length : 0;
+        final int array1Length = getLength(array1);
+        final int array2Length = getLength(array2);
 
         if (outputArray.length < array1Length + array2Length) {
             throw new IllegalArgumentException("The output array cannot be smaller than array1 plus array2 length");

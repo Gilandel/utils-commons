@@ -811,8 +811,8 @@ public final class StringUtils extends StringFormatUtils {
      * </p>
      * 
      * <pre>
-     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "", Pair.of("key", "test")); // =&gt;
-     *                                                                                               // ""
+     * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "", Pair.of("key", "test"));
+     * // =&gt; ""
      * 
      * StringUtils.injectKeys(Pair.of("${", "}"), Pair.of("${{", "}}"), "I'll go to the {where} this {when}", Pair.of("where", "beach"),
      *         Pair.of("when", "afternoon"));
@@ -839,7 +839,7 @@ public final class StringUtils extends StringFormatUtils {
     public static <T extends Map.Entry<String, Object>> String injectKeys(final Pair<String, String> include,
             final Pair<String, String> exclude, final CharSequence charSequence, final T... arguments) {
 
-        checkParamsInjectKeys(include, exclude, charSequence, arguments);
+        checkParamsInjectKeys(include, exclude, charSequence);
 
         if (isEmpty(charSequence) || arguments == null || arguments.length == 0) {
             return charSequence.toString();
@@ -883,7 +883,7 @@ public final class StringUtils extends StringFormatUtils {
     }
 
     private static <T extends Map.Entry<String, Object>> void checkParamsInjectKeys(final Pair<String, String> include,
-            final Pair<String, String> exclude, final CharSequence charSequence, final T[] arguments) {
+            final Pair<String, String> exclude, final CharSequence charSequence) {
         if (charSequence == null) {
             throw new IllegalArgumentException("The input char sequence cannot be null");
         } else if (ObjectUtils.anyNull(include, exclude)) {
