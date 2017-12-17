@@ -24,7 +24,7 @@ Work progress:
 <dependency>
 	<groupId>fr.landel.utils</groupId>
 	<artifactId>utils-commons</artifactId>
-	<version>1.0.15</version>
+	<version>1.0.16</version>
 </dependency>
 ```
 
@@ -46,6 +46,7 @@ Work progress:
 1. [Listener](#listener)
 1. [Over](#over)
 1. [Tuple](#tuple)
+1. [Changelog](#changelog)
 1. [License](#license)
 
 ## Commons
@@ -344,6 +345,11 @@ final Single<Color> colorContainer = Single.ofMutable(c);
 checker.test(v -> colorContainer.set(v));
 LOGGER.info("My new color: {}", colorContainer.get());
 ```
+
+## Changelog
+### 1.0.16 - 2017-12-17
+- New: add new methods to compare map entries, keys and values
+- Misc: improve quality and simplify code
 
 ## License
 Apache License, version 2.0
