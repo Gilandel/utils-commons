@@ -2,7 +2,7 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,6 +104,19 @@ public class MutablePairIso<T> extends PairIso<T> {
      */
     public void setRight(final T right) {
         this.right = right;
+    }
+
+    /**
+     * Sets the {@code Map.Entry} key. This sets the left element of the pair.
+     * 
+     * @param key
+     *            the left value to set, not null
+     * @return the old key for the left element
+     */
+    public T setKey(final T key) {
+        final T result = getKey();
+        setLeft(key);
+        return result;
     }
 
     /**

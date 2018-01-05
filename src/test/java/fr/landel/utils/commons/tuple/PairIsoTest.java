@@ -2,7 +2,7 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,8 @@ public class PairIsoTest {
     }
 
     /**
-     * Test method for {@link PairIso#ofMutable(java.lang.Object, java.lang.Object)}.
+     * Test method for
+     * {@link PairIso#ofMutable(java.lang.Object, java.lang.Object)}.
      */
     @Test
     public void testOfMutable() {
@@ -142,7 +143,7 @@ public class PairIsoTest {
         MutablePairIso<String> bi = PairIso.ofMutable(key, value);
 
         assertEquals(value, bi.getValue());
-        bi.setValue(value2);
+        assertEquals(value, bi.setValue(value2));
         assertEquals(value2, bi.getValue());
 
         bi.setRight(value);
@@ -153,6 +154,10 @@ public class PairIsoTest {
         assertEquals(key, bi.getKey());
         bi.setLeft(value2);
         assertEquals(value2, bi.getKey());
+
+        assertEquals(value2, bi.getKey());
+        assertEquals(value2, bi.setKey(key));
+        assertEquals(key, bi.getKey());
 
         PairIso<String> bii = PairIso.of(key, value);
         try {
