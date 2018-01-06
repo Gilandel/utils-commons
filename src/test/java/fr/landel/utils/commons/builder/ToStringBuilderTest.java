@@ -318,6 +318,12 @@ public class ToStringBuilderTest {
         expected.append("{");
         expected.append("\"java.awt.Color[r=0,g=0,b=0]\"");
         expected.append(",");
+        expected.append("\"{test\"");
+        expected.append(",");
+        expected.append("\"test}\"");
+        expected.append(",");
+        expected.append("{test}");
+        expected.append(",");
         expected.append("\"0\"");
         expected.append(",");
         expected.append("\"blue\":\"java.awt.Color[r=0,g=0,b=255]\"");
@@ -335,6 +341,9 @@ public class ToStringBuilderTest {
 
         ToStringBuilder builder = new ToStringBuilder("test", ToStringStyles.JSON_QUOTED);
         builder.append(Color.BLACK);
+        builder.append("{test");
+        builder.append("test}");
+        builder.append("{test}");
         builder.appendAndFormat(Color.BLACK, color -> String.valueOf(color.getBlue()));
         builder.append("blue", Color.BLUE);
         builder.appendAndFormat("value", 120_156.568_9, ToStringBuilder.NUMBER_FORMATTER);
@@ -369,6 +378,12 @@ public class ToStringBuilderTest {
         expected.append("\n[");
         expected.append("'java.awt.Color[r=0,g=0,b=0]'");
         expected.append(",\n");
+        expected.append("'[test'");
+        expected.append(",\n");
+        expected.append("'test]'");
+        expected.append(",\n");
+        expected.append("[test]");
+        expected.append(",\n");
         expected.append("'0'");
         expected.append(",\n");
         expected.append("'blue' = 'java.awt.Color[r=0,g=0,b=255]'");
@@ -386,6 +401,9 @@ public class ToStringBuilderTest {
 
         ToStringBuilder builder = new ToStringBuilder("test", ToStringStyles.READABLE);
         builder.append(Color.BLACK);
+        builder.append("[test");
+        builder.append("test]");
+        builder.append("[test]");
         builder.appendAndFormat(Color.BLACK, color -> String.valueOf(color.getBlue()));
         builder.append("blue", Color.BLUE);
         builder.appendAndFormat("value", 120_156.568_9, ToStringBuilder.NUMBER_FORMATTER);
