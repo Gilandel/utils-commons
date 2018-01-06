@@ -579,7 +579,7 @@ class NumberUtilsParsers extends org.apache.commons.lang3.math.NumberUtils {
         if (StringUtils.isNotEmpty(string)) {
             try {
                 return parser.apply(string);
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 if (!noThrow) {
                     throw e;
                 }
