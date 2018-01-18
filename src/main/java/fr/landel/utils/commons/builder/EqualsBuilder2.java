@@ -2,7 +2,7 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ package fr.landel.utils.commons.builder;
 
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import org.apache.commons.lang3.builder.Builder;
@@ -125,6 +126,34 @@ public class EqualsBuilder2<T> implements Builder<Boolean> {
         // not check if superClass != null, because if a super class doesn't
         // match the checked values classes, a compiler error is thrown
         this.casted = (T) this.other;
+    }
+
+    /**
+     * Append the super equals function.
+     * 
+     * @param superEquals
+     *            the super equals state
+     * @return the current builder
+     */
+    public <V> EqualsBuilder2<T> appendSuper(final boolean superEquals) {
+        if (this.isEqual) {
+            this.builder.appendSuper(superEquals);
+        }
+        return this;
+    }
+
+    /**
+     * Append the super equals function.
+     * 
+     * @param predicate
+     *            the super predicate
+     * @return the current builder
+     */
+    public <V> EqualsBuilder2<T> appendSuper(final Predicate<T> predicate) {
+        if (this.isEqual) {
+            this.builder.appendSuper(predicate.test(this.casted));
+        }
+        return this;
     }
 
     /**

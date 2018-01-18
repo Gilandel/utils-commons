@@ -2,7 +2,7 @@
  * #%L
  * utils-commons
  * %%
- * Copyright (C) 2016 - 2017 Gilles Landel
+ * Copyright (C) 2016 - 2018 Gilles Landel
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,14 @@ import org.apache.commons.lang3.StringUtils;
  */
 public final class NumberUtils extends NumberUtilsParsers {
 
+    private static final byte ZERO = 0;
+    private static final byte ONE = 1;
+    private static final int ENO = -1;
     private static final int TEN = 10;
 
     private static final byte[] INFINITY = {'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
+    private static final byte I = 'I';
+    private static final byte DOT = '.';
 
     private static final Predicate<Byte> IS_SIGN = b -> '+' == b || '-' == b;
     private static final Predicate<Byte> IS_EXPONENT = b -> 'e' == b || 'E' == b;
@@ -101,13 +106,14 @@ public final class NumberUtils extends NumberUtilsParsers {
      * @param num2
      *            The second double
      * @param accuracy
-     *            The accuracy (1/pow(10,accuracy))
+     *            The accuracy (1/pow(10,accuracy)) (ex: 3 =&gt; 0.001 and -3
+     *            =&gt; 1000)
      * @return true if equals
      */
     public static boolean isEqual(final Double num1, final Double num2, final Integer accuracy) {
         if (num1 != null && num2 != null) {
             if (accuracy != null) {
-                double maxGap = 1d / Math.pow(TEN, accuracy);
+                double maxGap = ONE / Math.pow(TEN, accuracy);
                 return Math.abs(num1 - num2) < maxGap;
             } else {
                 return isEqual(num1, num2);
@@ -137,13 +143,14 @@ public final class NumberUtils extends NumberUtilsParsers {
      * @param num2
      *            The second float
      * @param accuracy
-     *            The accuracy (1/pow(10,accuracy))
+     *            The accuracy (1/pow(10,accuracy)) (ex: 3 =&gt; 0.001 and -3
+     *            =&gt; 1000)
      * @return true if equals
      */
     public static boolean isEqual(final Float num1, final Float num2, final Integer accuracy) {
         if (num1 != null && num2 != null) {
             if (accuracy != null) {
-                float maxGap = (float) (1d / Math.pow(TEN, accuracy));
+                float maxGap = (float) (ONE / Math.pow(TEN, accuracy));
                 return Math.abs(num1 - num2) < maxGap;
             } else {
                 return isEqual(num1, num2);
@@ -259,21 +266,21 @@ public final class NumberUtils extends NumberUtilsParsers {
 
         final byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
 
-        int start = 0;
-        if (IS_SIGN.test(bytes[0])) {
-            start = 1;
+        int start = ZERO;
+        if (IS_SIGN.test(bytes[ZERO])) {
+            start = ONE;
         }
 
         final int length = bytes.length;
 
-        short nb = 0;
-        byte typed = 0;
+        short nb = ZERO;
+        byte typed = ZERO;
 
         for (int i = start; i < length; ++i) {
             if (AsciiUtils.IS_NUMERIC.test(bytes[i])) {
                 ++nb;
-            } else if (typeSupported && i == length - 1) {
-                typed = IS_LONG.test(bytes[i]) ? (byte) 1 : 0;
+            } else if (typeSupported && i == length - ONE) {
+                typed = IS_LONG.test(bytes[i]) ? ONE : ZERO;
             }
         }
         return start + nb + typed == length;
@@ -465,9 +472,9 @@ public final class NumberUtils extends NumberUtilsParsers {
 
         final byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
 
-        byte start = 0;
-        if (IS_SIGN.test(bytes[0])) {
-            start = 1;
+        byte start = ZERO;
+        if (IS_SIGN.test(bytes[ZERO])) {
+            start = ONE;
         }
 
         final int length = bytes.length;
@@ -477,48 +484,48 @@ public final class NumberUtils extends NumberUtilsParsers {
             return infinity;
         }
 
-        byte dot = 0;
-        byte exponent = 0;
-        int exponentPos = -1;
-        byte expSign = 0;
-        byte typed = 0;
-        short nb1 = 0;
-        short nb2 = 0;
-        short nb3 = 0;
+        byte dot = ZERO;
+        byte exponent = ZERO;
+        int exponentPos = ENO;
+        byte expSign = ZERO;
+        byte typed = ZERO;
+        short nb1 = ZERO;
+        short nb2 = ZERO;
+        short nb3 = ZERO;
 
         for (int i = start; i < length; ++i) {
             if (AsciiUtils.IS_NUMERIC.test((int) bytes[i])) {
-                if (exponent == 1) {
+                if (exponent == ONE) {
                     ++nb3;
-                } else if (dot == 1) {
+                } else if (dot == ONE) {
                     ++nb2;
                 } else {
                     ++nb1;
                 }
-            } else if ('.' == bytes[i]) {
-                if (dot == 1 || exponent == 1) {
+            } else if (DOT == bytes[i]) {
+                if (dot == ONE || exponent == ONE) {
                     // multiple dots or after an exponent marker
                     return false;
                 } else {
-                    dot = 1;
+                    dot = ONE;
                 }
             } else if (IS_EXPONENT.test(bytes[i])) {
-                if (exponent == 1) {
+                if (exponent == ONE) {
                     return false; // multiple exponents
                 } else {
-                    exponent = 1;
+                    exponent = ONE;
                     exponentPos = i;
                 }
             } else if (IS_SIGN.test(bytes[i])) {
-                if (expSign == 1 || exponentPos != i - 1) {
+                if (expSign == ONE || exponentPos != i - ONE) {
                     // multiple exponent signs, no exponent marker or not just
                     // after exponent marker
                     return false;
                 } else {
-                    expSign = 1;
+                    expSign = ONE;
                 }
-            } else if (typeSupported && i == length - 1 && IS_DECIMAL.test(bytes[i])) {
-                typed = 1;
+            } else if (typeSupported && i == length - ONE && IS_DECIMAL.test(bytes[i])) {
+                typed = ONE;
             }
         }
         // prepare length by subtracting all common values
@@ -526,10 +533,10 @@ public final class NumberUtils extends NumberUtilsParsers {
     }
 
     private static Boolean isInfinity(final byte[] bytes, final int length, final int start) {
-        if ('I' == bytes[start]) {
-            if (length > 1) {
+        if (I == bytes[start]) {
+            if (length > ONE) {
                 final byte[] bytesWithoutSign = new byte[length - start];
-                System.arraycopy(bytes, start, bytesWithoutSign, 0, length - start);
+                System.arraycopy(bytes, start, bytesWithoutSign, ZERO, length - start);
                 return Arrays.equals(INFINITY, bytesWithoutSign);
             } else {
                 return false;
@@ -541,13 +548,13 @@ public final class NumberUtils extends NumberUtilsParsers {
     private static boolean compareLength(final short nb1, final byte dot, final short nb2, final byte typed, final int length,
             final boolean lenient) {
 
-        if (nb1 > 0) {
-            if (dot == 1 && nb2 > 0) {
+        if (nb1 > ZERO) {
+            if (dot == ONE && nb2 > ZERO) {
                 return nb1 + dot + nb2 == length;
-            } else if (lenient || typed == 1) {
+            } else if (lenient || typed == ONE) {
                 return nb1 == length;
             }
-        } else if (dot == 1 && nb2 > 0) {
+        } else if (dot == ONE && nb2 > ZERO) {
             return dot + nb2 == length;
         }
         return false;
@@ -555,10 +562,10 @@ public final class NumberUtils extends NumberUtilsParsers {
 
     private static int getExpLength(final byte exponent, final byte expSign, final short nb3) {
 
-        if (exponent == 1 && nb3 > 0) {
+        if (exponent == ONE && nb3 > ZERO) {
             return exponent + expSign + nb3;
         } else {
-            return 0;
+            return ZERO;
         }
     }
 
@@ -741,34 +748,34 @@ public final class NumberUtils extends NumberUtilsParsers {
      *         null
      */
     public static <N extends Number> int signum(final N number) {
-        int result = 0;
+        int result = ZERO;
         if (number != null) {
             if (NumberUtils.isInteger(number)) {
                 final Integer n = (Integer) number;
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? -ONE : ZERO;
             } else if (NumberUtils.isLong(number)) {
                 final Long n = (Long) number;
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? ENO : ZERO;
             } else if (NumberUtils.isFloat(number)) {
                 final Float n = (Float) number;
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? ENO : ZERO;
             } else if (NumberUtils.isDouble(number)) {
                 final Double n = (Double) number;
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? ENO : ZERO;
             } else if (NumberUtils.isByte(number)) {
                 final Byte n = (Byte) number;
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? ENO : ZERO;
             } else if (NumberUtils.isShort(number)) {
                 final Short n = (Short) number;
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? ENO : ZERO;
             } else if (NumberUtils.isBigInteger(number)) {
                 result = ((BigInteger) number).signum();
             } else if (NumberUtils.isAtomicInteger(number)) {
                 final int n = ((AtomicInteger) number).get();
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? ENO : ZERO;
             } else if (NumberUtils.isAtomicLong(number)) {
                 final long n = ((AtomicLong) number).get();
-                result = n > 0 ? 1 : n < 0 ? -1 : 0;
+                result = n > ZERO ? ONE : n < ZERO ? ENO : ZERO;
             } else if (NumberUtils.isBigDecimal(number)) {
                 result = ((BigDecimal) number).signum();
             }
@@ -789,33 +796,25 @@ public final class NumberUtils extends NumberUtilsParsers {
         boolean result = false;
         if (number != null) {
             if (NumberUtils.isInteger(number)) {
-                final Integer n = (Integer) number;
-                result = n == 0;
+                result = (Integer) number == ZERO;
             } else if (NumberUtils.isLong(number)) {
-                final Long n = (Long) number;
-                result = n == 0;
+                result = (Long) number == ZERO;
             } else if (NumberUtils.isFloat(number)) {
-                final Float n = (Float) number;
-                result = n == 0;
+                result = (Float) number == ZERO;
             } else if (NumberUtils.isDouble(number)) {
-                final Double n = (Double) number;
-                result = n == 0;
+                result = (Double) number == ZERO;
             } else if (NumberUtils.isByte(number)) {
-                final Byte n = (Byte) number;
-                result = n == 0;
+                result = (Byte) number == ZERO;
             } else if (NumberUtils.isShort(number)) {
-                final Short n = (Short) number;
-                result = n == 0;
+                result = (Short) number == ZERO;
             } else if (NumberUtils.isBigInteger(number)) {
-                result = ((BigInteger) number).signum() == 0;
+                result = ((BigInteger) number).signum() == ZERO;
             } else if (NumberUtils.isAtomicInteger(number)) {
-                final int n = ((AtomicInteger) number).get();
-                result = n == 0;
+                result = ((AtomicInteger) number).get() == ZERO;
             } else if (NumberUtils.isAtomicLong(number)) {
-                final long n = ((AtomicLong) number).get();
-                result = n == 0;
+                result = ((AtomicLong) number).get() == ZERO;
             } else if (NumberUtils.isBigDecimal(number)) {
-                result = ((BigDecimal) number).signum() == 0;
+                result = ((BigDecimal) number).signum() == ZERO;
             }
         }
         return result;
