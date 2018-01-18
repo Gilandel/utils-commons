@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fr.landel.utils.commons.builder.ToStringBuilder;
+
 /**
  * A basic class to manage Maven version in comparator. This class allows to
  * compare version like Maven but also manages other formats (ex: 1.0.5.3.4.41 ;
@@ -37,7 +39,7 @@ public class Version implements Comparable<Version> {
     private static final String SNAPSHOT = "SNAPSHOT";
 
     private final String version;
-    private final String[] array;
+    private final Group[] array;
 
     public Version(final String version) {
         Objects.requireNonNull(version, "Version parameter cannot be null");
@@ -52,30 +54,30 @@ public class Version implements Comparable<Version> {
 
     @Override
     public int compareTo(final Version v2) {
-        String[] a1 = this.array;
-        String[] a2 = v2.array;
+        final Group[] a1 = this.array;
+        final Group[] a2 = v2.array;
 
         for (int i = 0; i < a1.length || i < a2.length; ++i) {
             if (i < a1.length && i < a2.length) {
-                String group1 = a1[i];
-                String group2 = a2[i];
+                Group group1 = a1[i];
+                Group group2 = a2[i];
 
                 if (!group1.equals(group2)) {
-                    boolean digit1 = NumberUtils.isDigits(group1);
-                    boolean digit2 = NumberUtils.isDigits(group2);
-                    boolean isSnapshot1 = !digit1 && SNAPSHOT.equals(group1);
-                    boolean isSnapshot2 = !digit2 && SNAPSHOT.equals(group2);
+                    boolean digit1 = group1.isDigits();
+                    boolean digit2 = group2.isDigits();
+                    boolean isSnapshot1 = !digit1 && group1.isSnapshot();
+                    boolean isSnapshot2 = !digit2 && group2.isSnapshot();
 
                     if (digit1 && digit2) {
-                        return Integer.compare(Integer.parseInt(group1), Integer.parseInt(group2));
+                        return Long.compare(group1.getNumber(), group2.getNumber());
                     } else if (digit1) {
-                        if (!isSnapshot2 && Integer.parseInt(group1) == 0) {
+                        if (!isSnapshot2 && group1.getNumber() == 0) {
                             return -1;
                         } else {
                             return 1;
                         }
                     } else if (digit2) {
-                        if (!isSnapshot1 && Integer.parseInt(group2) == 0) {
+                        if (!isSnapshot1 && group2.getNumber() == 0) {
                             return 1;
                         } else {
                             return -1;
@@ -85,16 +87,16 @@ public class Version implements Comparable<Version> {
                     } else if (isSnapshot2) {
                         return 1;
                     } else {
-                        return group1.compareTo(group2);
+                        return group1.getContent().compareTo(group2.getContent());
                     }
                 }
             } else if (i < a1.length) {
-                String group1 = a1[i];
+                Group group1 = a1[i];
 
-                if (SNAPSHOT.equals(group1)) {
+                if (group1.isSnapshot()) {
                     return -1;
-                } else if (NumberUtils.isDigits(group1)) {
-                    if (Integer.parseInt(group1) == 0) {
+                } else if (group1.isDigits()) {
+                    if (group1.getNumber() == 0) {
                         return 0;
                     }
                 } else {
@@ -102,12 +104,12 @@ public class Version implements Comparable<Version> {
                 }
                 return 1;
             } else {
-                String group2 = a2[i];
+                Group group2 = a2[i];
 
-                if (SNAPSHOT.equals(group2)) {
+                if (group2.isSnapshot()) {
                     return 1;
-                } else if (NumberUtils.isDigits(group2)) {
-                    if (Integer.parseInt(group2) == 0) {
+                } else if (group2.isDigits()) {
+                    if (group2.getNumber() == 0) {
                         return 0;
                     }
                 } else {
@@ -120,18 +122,117 @@ public class Version implements Comparable<Version> {
         return 0;
     }
 
-    private String[] getArray() {
+    private Group[] getArray() {
         final Matcher matcher = VERSION_PATTERN.matcher(this.version);
-        String[] array = new String[this.version.length()];
+        final Group[] array = new Group[this.version.length()];
         int i = 0;
         while (matcher.find()) {
-            array[i++] = matcher.group(1);
+            final String content = matcher.group(1);
+            long number;
+            boolean snapshot = false;
+            if (NumberUtils.isDigits(content)) {
+                try {
+                    number = Long.parseLong(content);
+                } catch (final NumberFormatException e) {
+                    number = -1;
+                }
+            } else {
+                number = -1;
+                snapshot = SNAPSHOT.equals(content);
+            }
+            array[i++] = new Group(content, number > -1, number, snapshot);
         }
+
         return ArrayUtils.subarray(array, 0, i);
     }
 
     @Override
     public String toString() {
         return this.getVersion();
+    }
+
+    /**
+     * Group tuple
+     * 
+     * @since 17 janv. 2018
+     * @author Gilles
+     *
+     */
+    static class Group {
+
+        private final String content;
+        private final boolean digits;
+        private final long number;
+        private final boolean snapshot;
+
+        /**
+         * Constructor
+         *
+         * @param content
+         *            the group content
+         * @param digits
+         *            true, if the content is a number
+         * @param number
+         *            the parsed group
+         * @param snapshot
+         *            true, if the group is SNAPSHOT
+         * @category constructor
+         */
+        public Group(final String content, final boolean digits, final long number, final boolean snapshot) {
+            this.content = content;
+            this.digits = digits;
+            this.number = number;
+            this.snapshot = snapshot;
+        }
+
+        /**
+         * @return the content
+         */
+        String getContent() {
+            return this.content;
+        }
+
+        /**
+         * @return the digit
+         */
+        boolean isDigits() {
+            return this.digits;
+        }
+
+        /**
+         * @return the number
+         */
+        long getNumber() {
+            return this.number;
+        }
+
+        /**
+         * @return the snapshot
+         */
+        boolean isSnapshot() {
+            return this.snapshot;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj != null && this.getContent().equals(((Group) obj).getContent());
+        }
+
+        @Override
+        public int hashCode() {
+            return this.getContent().hashCode();
+        }
+
+        @Override
+        public String toString() {
+            // @formatter:off
+            return new ToStringBuilder("Group")
+                    .append("content", this.getContent())
+                    .append("digits", this.isDigits())
+                    .append("number", this.getNumber())
+                    .append("snapshot", this.isSnapshot())
+                    .build();
+         // @formatter:on
+        }
     }
 }

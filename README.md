@@ -347,6 +347,11 @@ LOGGER.info("My new color: {}", colorContainer.get());
 ```
 
 ## Changelog
+### 1.0.17 - 2018-01-18
+- New: add new methods to Comparators to compare optional objects
+- New: add appendSuper to equals builder
+- Misc: improve Version code by preparing comparison
+
 ### 1.0.16 - 2017-12-17
 - New: add new methods to compare map entries, keys and values
 - Misc: improve quality and simplify code

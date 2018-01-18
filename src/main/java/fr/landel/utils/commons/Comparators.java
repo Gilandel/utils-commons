@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -150,6 +151,8 @@ public class Comparators {
      */
     public static final BiComparator<Version> VERSION = new BiComparator<>();
 
+    private static final String ERROR_MAPPER = "mapper";
+
     /**
      * Hidden constructor
      */
@@ -209,6 +212,53 @@ public class Comparators {
     }
 
     /**
+     * Compares two comparables
+     * 
+     * @param o1
+     *            The first value
+     * @param o2
+     *            The second value
+     * @param <T>
+     *            The comparable type
+     * @return The reverse comparison, if o1 is {@code null}, returns
+     *         {@link Integer#MAX_VALUE} and if o2 is {@code null}, returns
+     *         {@link Integer#MIN_VALUE}
+     */
+    public static <T extends Comparable<T>> int compare(final Optional<T> o1, final Optional<T> o2) {
+        return compare(o1, o2, Comparators::comparator);
+    }
+
+    /**
+     * Compares two comparables
+     * 
+     * @param o1
+     *            The first value
+     * @param o2
+     *            The second value
+     * @param comparator
+     *            the comparator used if {@code o1} and {@code o2} are not
+     *            {@code null}
+     * @param <T>
+     *            The comparable type
+     * @return The reverse comparison, if o1 is {@code null}, returns
+     *         {@link Integer#MAX_VALUE} and if o2 is {@code null}, returns
+     *         {@link Integer#MIN_VALUE}
+     */
+    public static <T extends Comparable<T>> int compare(final Optional<T> o1, final Optional<T> o2, final Comparator<T> comparator) {
+        int result;
+        if (o1.isPresent() && o2.isPresent()) {
+            result = comparator.compare(o1.get(), o2.get());
+        } else if (o1.isPresent()) {
+            result = Integer.MAX_VALUE;
+        } else if (o2.isPresent()) {
+            result = Integer.MIN_VALUE;
+        } else {
+            result = 0;
+        }
+        return result;
+    }
+
+    /**
      * Compares two comparables (in reverse mode)
      * 
      * @param o1
@@ -246,17 +296,44 @@ public class Comparators {
      *         {@link Integer#MIN_VALUE}
      */
     public static <T extends Comparable<T>> int compareReverse(final T o1, final T o2) {
-        int result;
-        if (o1 == o2) {
-            result = 0;
-        } else if (o1 == null) {
-            result = Integer.MAX_VALUE;
-        } else if (o2 == null) {
-            result = Integer.MIN_VALUE;
-        } else {
-            result = o2.compareTo(o1);
-        }
-        return result;
+        return compare(o2, o1);
+    }
+
+    /**
+     * Compares two comparables (in reverse mode)
+     * 
+     * @param o1
+     *            The first value
+     * @param o2
+     *            The second value
+     * @param <T>
+     *            The comparable type
+     * @return The reverse comparison, if o1 is {@code null}, returns
+     *         {@link Integer#MAX_VALUE} and if o2 is {@code null}, returns
+     *         {@link Integer#MIN_VALUE}
+     */
+    public static <T extends Comparable<T>> int compareReverse(final Optional<T> o1, final Optional<T> o2) {
+        return compareReverse(o1, o2, Comparators::comparator);
+    }
+
+    /**
+     * Compares two comparables (in reverse mode)
+     * 
+     * @param o1
+     *            The first value
+     * @param o2
+     *            The second value
+     * @param comparator
+     *            the comparator used if {@code o1} and {@code o2} are not
+     *            {@code null}
+     * @param <T>
+     *            The comparable type
+     * @return The reverse comparison, if o1 is {@code null}, returns
+     *         {@link Integer#MAX_VALUE} and if o2 is {@code null}, returns
+     *         {@link Integer#MIN_VALUE}
+     */
+    public static <T extends Comparable<T>> int compareReverse(final Optional<T> o1, final Optional<T> o2, final Comparator<T> comparator) {
+        return compare(o2, o1, comparator);
     }
 
     /**
@@ -271,13 +348,17 @@ public class Comparators {
      *             if {@code mapper} is {@code null}
      */
     private static final <T, X extends Comparable<X>> X map(final T o, final Function<T, X> mapper) {
-        Objects.requireNonNull(mapper, "mapper");
+        Objects.requireNonNull(mapper, ERROR_MAPPER);
 
         if (o == null) {
             return null;
         } else {
             return mapper.apply(o);
         }
+    }
+
+    private static final <T extends Comparable<T>> int comparator(final T o1, final T o2) {
+        return o1.compareTo(o2);
     }
 
     /**
@@ -330,7 +411,7 @@ public class Comparators {
          * Constructor
          *
          */
-        protected BiComparator() {
+        public BiComparator() {
             this.asc = new ComparatorImpl<>();
             this.desc = new ComparatorReverseImpl<>();
         }

@@ -20,17 +20,20 @@
 package fr.landel.utils.commons;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import fr.landel.utils.commons.Comparators.BiComparator;
 import fr.landel.utils.commons.tuple.Single;
 
 /**
@@ -350,6 +353,16 @@ public class ComparatorsTest extends AbstractTest {
 
         assertEquals(1, Comparators.VERSION.asc().compare(v1, v2));
 
+        v1 = new Version("1.3000000000-beta-2");
+        v2 = new Version("1.2-alpha-6");
+
+        assertEquals(1, Comparators.VERSION.asc().compare(v1, v2));
+
+        v1 = new Version("1." + Long.MAX_VALUE + "1-beta-2");
+        v2 = new Version("1.2-alpha-6");
+
+        assertEquals(-1, Comparators.VERSION.asc().compare(v1, v2));
+
         v1 = new Version("1.2-alpha-3");
         v2 = new Version("1.2-alpha-1");
 
@@ -399,6 +412,14 @@ public class ComparatorsTest extends AbstractTest {
         assertEquals(v2, versionSorted.get(3));
         assertEquals(v1, versionSorted.get(4));
         assertEquals(v6, versionSorted.get(5));
+
+        Version.Group group = new Version.Group("test", false, -1, false);
+
+        assertEquals("Group[content=test,digits=false,number=-1,snapshot=false]", group.toString());
+        assertEquals("test".hashCode(), group.hashCode());
+        assertFalse(group.equals(null));
+        assertFalse(group.equals(new Version.Group("1", true, 1, false)));
+        assertTrue(group.equals(group));
     }
 
     /**
@@ -460,9 +481,25 @@ public class ComparatorsTest extends AbstractTest {
         Integer object2 = Integer.valueOf(13);
 
         assertEquals(0, Comparators.compare(object, object));
-        assertEquals(0, Comparators.compare(null, null));
+        assertEquals(0, Comparators.compare((Integer) null, null));
         assertEquals(Integer.MAX_VALUE, Comparators.compare(object, null));
         assertEquals(Integer.MIN_VALUE, Comparators.compare(null, object));
+        assertEquals(-1, Comparators.compare(object, object2));
+        assertEquals(1, Comparators.compare(object2, object));
+    }
+
+    /**
+     * Check {@link Comparators#compare}
+     */
+    @Test
+    public void testCompareOptional() {
+        Optional<Integer> object = Optional.of(12);
+        Optional<Integer> object2 = Optional.of(13);
+
+        assertEquals(0, Comparators.compare(object, object));
+        assertEquals(0, Comparators.compare(Optional.<Integer> empty(), Optional.empty()));
+        assertEquals(Integer.MAX_VALUE, Comparators.compare(object, Optional.empty()));
+        assertEquals(Integer.MIN_VALUE, Comparators.compare(Optional.empty(), object));
         assertEquals(-1, Comparators.compare(object, object2));
         assertEquals(1, Comparators.compare(object2, object));
     }
@@ -476,10 +513,57 @@ public class ComparatorsTest extends AbstractTest {
         Integer object2 = Integer.valueOf(13);
 
         assertEquals(0, Comparators.compareReverse(object, object));
-        assertEquals(0, Comparators.compareReverse(null, null));
+        assertEquals(0, Comparators.compareReverse((Integer) null, null));
         assertEquals(Integer.MIN_VALUE, Comparators.compareReverse(object, null));
         assertEquals(Integer.MAX_VALUE, Comparators.compareReverse(null, object));
         assertEquals(1, Comparators.compareReverse(object, object2));
         assertEquals(-1, Comparators.compareReverse(object2, object));
+    }
+
+    /**
+     * Check {@link Comparators#compareReverse}
+     */
+    @Test
+    public void testCompareReverseOptional() {
+        Optional<Integer> object = Optional.of(12);
+        Optional<Integer> object2 = Optional.of(13);
+
+        assertEquals(0, Comparators.compareReverse(object, object));
+        assertEquals(0, Comparators.compareReverse(Optional.<Integer> empty(), Optional.empty()));
+        assertEquals(Integer.MIN_VALUE, Comparators.compareReverse(object, Optional.empty()));
+        assertEquals(Integer.MAX_VALUE, Comparators.compareReverse(Optional.empty(), object));
+        assertEquals(1, Comparators.compareReverse(object, object2));
+        assertEquals(-1, Comparators.compareReverse(object2, object));
+    }
+
+    /**
+     * Check {@link BiComparator}
+     */
+    @Test
+    public void testBiComparator() {
+        BiComparator<ComparableObject> c = new BiComparator<>();
+
+        assertEquals(-1, c.asc().compare(new ComparableObject("a"), new ComparableObject("b")));
+        assertEquals(1, c.desc().compare(new ComparableObject("a"), new ComparableObject("b")));
+
+        assertEquals(1, c.asc().compare(new ComparableObject("b"), new ComparableObject("a")));
+        assertEquals(-1, c.desc().compare(new ComparableObject("b"), new ComparableObject("a")));
+
+        assertEquals(0, c.asc().compare(new ComparableObject("a"), new ComparableObject("a")));
+        assertEquals(0, c.desc().compare(new ComparableObject("a"), new ComparableObject("a")));
+    }
+
+    static class ComparableObject implements Comparable<ComparableObject> {
+
+        private final String text;
+
+        public ComparableObject(final String text) {
+            this.text = text;
+        }
+
+        @Override
+        public int compareTo(final ComparableObject o) {
+            return this.text.compareTo(o.text);
+        }
     }
 }

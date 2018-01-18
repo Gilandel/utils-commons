@@ -94,5 +94,117 @@ public class EqualsBuilder2Test {
         }
 
         assertTrue(new EqualsBuilder2<>(e1, e2, Exception.class).append(e1.getMessage(), e2.getMessage()).isEqual());
+
+        assertTrue(new Object1(1, 2).equals(new Object1(1, 2)));
+        assertFalse(new Object1(1, 2).equals(new Object1(1, 3)));
+        assertFalse(new Object1(2, 2).equals(new Object1(2, 1)));
+        assertFalse(new Object1(2, 2).equals(new Object2(2, 2)));
+
+        assertTrue(new Object2(1, 2).equals(new Object2(1, 2)));
+        assertFalse(new Object2(1, 2).equals(new Object2(1, 3)));
+        assertFalse(new Object2(2, 2).equals(new Object2(2, 1)));
+
+        assertTrue(new Object3(1, 2).equals(new Object3(1, 2)));
+        assertFalse(new Object3(1, 2).equals(new Object3(1, 3)));
+        assertFalse(new Object3(2, 2).equals(new Object3(2, 1)));
+        assertFalse(new Object3(2, 2).equals(new Object4(2, 2)));
+
+        assertTrue(new Object4(1, 2).equals(new Object4(1, 2)));
+        assertFalse(new Object4(1, 2).equals(new Object4(1, 3)));
+        assertFalse(new Object4(2, 2).equals(new Object4(2, 1)));
+    }
+
+    static class Object1 extends SuperObject1 {
+        private Integer j;
+
+        public Object1(Integer i, Integer j) {
+            super(i);
+            this.j = j;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return new EqualsBuilder2<>(this, obj).appendSuper(super::equals).append(o -> o.j).isEqual();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder2<>(this).append(o -> o.j).appendSuper(super.hashCode()).toHashCode();
+        }
+    }
+
+    static class Object2 extends SuperObject1 {
+        private Integer j;
+
+        public Object2(Integer i, Integer j) {
+            super(i);
+            this.j = j;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return new EqualsBuilder2<>(this, obj).append(o -> o.j).appendSuper(super::equals).isEqual();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder2<>(this).append(o -> o.j).appendSuper(super.hashCode()).toHashCode();
+        }
+    }
+
+    static class Object3 extends SuperObject1 {
+        private Integer j;
+
+        public Object3(Integer i, Integer j) {
+            super(i);
+            this.j = j;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return new EqualsBuilder2<>(this, obj).appendSuper(super.equals(obj)).append(o -> o.j).isEqual();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder2<>(this).append(o -> o.j).appendSuper(super.hashCode()).toHashCode();
+        }
+    }
+
+    static class Object4 extends SuperObject1 {
+        private Integer j;
+
+        public Object4(Integer i, Integer j) {
+            super(i);
+            this.j = j;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return new EqualsBuilder2<>(this, obj).append(o -> o.j).appendSuper(super.equals(obj)).isEqual();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder2<>(this).append(o -> o.j).appendSuper(super.hashCode()).toHashCode();
+        }
+    }
+
+    static class SuperObject1 {
+        private Integer i;
+
+        public SuperObject1(Integer i) {
+            this.i = i;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return new EqualsBuilder2<>(this, obj).append(o -> o.i).isEqual();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder2<>(this).append(o -> o.i).toHashCode();
+        }
     }
 }
