@@ -74,10 +74,24 @@ public class NumberUtilsTest extends AbstractTest {
         assertTrue(NumberUtils.isEqual(0.25d, 0.25d, 5));
         assertTrue(NumberUtils.isEqual(0.00012d, 0.00013d, 5));
         assertFalse(NumberUtils.isEqual(0.00012d, 0.00013d, 6));
-        assertTrue(NumberUtils.isEqual(0.00012d, 0.00013d, null));
+        assertTrue(NumberUtils.isEqual(0.00012d, 0.00013d, (Integer) null));
         assertTrue(NumberUtils.isEqual((Double) null, (Double) null, 5));
         assertFalse(NumberUtils.isEqual(0.00013d, (Double) null, 5));
         assertFalse(NumberUtils.isEqual((Double) null, 0.00013d, 5));
+    }
+
+    /**
+     * Test method for {@link NumberUtils#isEqual(Double, Double, Double)} .
+     */
+    @Test
+    public void testIsEqualDoubleDoubleDouble() {
+        assertTrue(NumberUtils.isEqual(0.25d, 0.25d, 0.00001d));
+        assertTrue(NumberUtils.isEqual(0.000012d, 0.000013d, 0.00001d));
+        assertFalse(NumberUtils.isEqual(0.00012d, 0.00013d, 0.000001d));
+        assertTrue(NumberUtils.isEqual(0.00012d, 0.00013d, (Double) null));
+        assertTrue(NumberUtils.isEqual((Double) null, (Double) null, 5d));
+        assertFalse(NumberUtils.isEqual(0.00013d, (Double) null, 5d));
+        assertFalse(NumberUtils.isEqual((Double) null, 0.00013d, 5d));
     }
 
     /**
@@ -99,10 +113,24 @@ public class NumberUtilsTest extends AbstractTest {
         assertTrue(NumberUtils.isEqual(0.25f, 0.25f, 5));
         assertTrue(NumberUtils.isEqual(0.000012f, 0.000013f, 5));
         assertFalse(NumberUtils.isEqual(0.00012f, 0.00013f, 6));
-        assertFalse(NumberUtils.isEqual(0.00012f, 0.00013f, null));
+        assertFalse(NumberUtils.isEqual(0.00012f, 0.00013f, (Integer) null));
         assertTrue(NumberUtils.isEqual((Float) null, (Float) null, 5));
         assertFalse(NumberUtils.isEqual(0.00013f, (Float) null, 5));
         assertFalse(NumberUtils.isEqual((Float) null, 0.00013f, 5));
+    }
+
+    /**
+     * Test method for {@link NumberUtils#isEqual(Float, Float, Float)} .
+     */
+    @Test
+    public void testIsEqualFloatFloatFloat() {
+        assertTrue(NumberUtils.isEqual(0.25f, 0.25f, 0.00001f));
+        assertTrue(NumberUtils.isEqual(0.000012f, 0.000013f, 0.00001f));
+        assertFalse(NumberUtils.isEqual(0.00012f, 0.00013f, 0.000001f));
+        assertFalse(NumberUtils.isEqual(0.00012f, 0.00013f, (Float) null));
+        assertTrue(NumberUtils.isEqual((Float) null, (Float) null, 5f));
+        assertFalse(NumberUtils.isEqual(0.00013f, (Float) null, 5f));
+        assertFalse(NumberUtils.isEqual((Float) null, 0.00013f, 5f));
     }
 
     /**

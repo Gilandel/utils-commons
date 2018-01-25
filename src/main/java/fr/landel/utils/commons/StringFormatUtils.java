@@ -427,7 +427,7 @@ public abstract class StringFormatUtils extends org.apache.commons.lang3.StringU
      */
     private static class Group implements Comparable<Group> {
 
-        private static final BiComparator<Group> COMPARATOR = new BiComparator<>();
+        private static final BiComparator<Group> COMPARATOR = Comparators.createComparator();
 
         private final int start;
         private int end;

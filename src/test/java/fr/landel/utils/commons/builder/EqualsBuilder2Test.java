@@ -98,7 +98,7 @@ public class EqualsBuilder2Test {
         assertTrue(new Object1(1, 2).equals(new Object1(1, 2)));
         assertFalse(new Object1(1, 2).equals(new Object1(1, 3)));
         assertFalse(new Object1(2, 2).equals(new Object1(2, 1)));
-        assertFalse(new Object1(2, 2).equals(new Object2(2, 2)));
+        assertFalse(((SuperObject1) new Object1(2, 2)).equals(new Object2(2, 2)));
 
         assertTrue(new Object2(1, 2).equals(new Object2(1, 2)));
         assertFalse(new Object2(1, 2).equals(new Object2(1, 3)));
@@ -107,7 +107,7 @@ public class EqualsBuilder2Test {
         assertTrue(new Object3(1, 2).equals(new Object3(1, 2)));
         assertFalse(new Object3(1, 2).equals(new Object3(1, 3)));
         assertFalse(new Object3(2, 2).equals(new Object3(2, 1)));
-        assertFalse(new Object3(2, 2).equals(new Object4(2, 2)));
+        assertFalse(((SuperObject1) new Object3(2, 2)).equals(new Object4(2, 2)));
 
         assertTrue(new Object4(1, 2).equals(new Object4(1, 2)));
         assertFalse(new Object4(1, 2).equals(new Object4(1, 3)));

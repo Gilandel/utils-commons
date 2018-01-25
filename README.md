@@ -24,7 +24,7 @@ Work progress:
 <dependency>
 	<groupId>fr.landel.utils</groupId>
 	<artifactId>utils-commons</artifactId>
-	<version>1.0.16</version>
+	<version>1.0.18</version>
 </dependency>
 ```
 
@@ -347,6 +347,12 @@ LOGGER.info("My new color: {}", colorContainer.get());
 ```
 
 ## Changelog
+### 1.0.18 - 2018-01-25
+- New: add functional interfaces to create predicates that return false if an exception is thrown
+- New: add Comparators with mapper
+- New: add isEqual for float and double (by comparing the delta between numbers)
+- Misc: improve UT
+
 ### 1.0.17 - 2018-01-18
 - New: add new methods to Comparators to compare optional objects
 - New: add appendSuper to equals builder

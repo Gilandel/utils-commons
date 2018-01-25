@@ -362,6 +362,32 @@ public class Comparators {
     }
 
     /**
+     * Create a bidirectional comparator
+     * 
+     * @param <T>
+     *            the comparable type
+     * @return the new instance
+     */
+    public static <T extends Comparable<T>> BiComparator<T> createComparator() {
+        return new BiComparator<>();
+    }
+
+    /**
+     * Create a bidirectional comparator
+     * 
+     * @param mapper
+     *            the function use to map object into comparable
+     * @param <X>
+     *            the compared object type
+     * @param <T>
+     *            The comparable type
+     * @return the new instance
+     */
+    public static <X, T extends Comparable<T>> BiComparatorMapper<X, T> createComparator(final Function<X, T> mapper) {
+        return new BiComparatorMapper<>(mapper);
+    }
+
+    /**
      * Implementation of comparator
      *
      * @since Jul 2, 2016
@@ -378,6 +404,37 @@ public class Comparators {
     }
 
     /**
+     * Implementation of comparator
+     *
+     * @since Jan 20, 2018
+     * @author Gilles
+     *
+     * @param <X>
+     *            the compared object type
+     * @param <T>
+     *            The comparable type
+     */
+    private static class ComparatorMapperImpl<X, T extends Comparable<T>> implements Comparator<X> {
+        private final Function<X, T> mapper;
+
+        /**
+         * 
+         * Constructor
+         *
+         * @param mapper
+         *            the function use to map object into comparable
+         */
+        public ComparatorMapperImpl(final Function<X, T> mapper) {
+            this.mapper = Objects.requireNonNull(mapper, ERROR_MAPPER);
+        }
+
+        @Override
+        public int compare(final X o1, final X o2) {
+            return Comparators.compare(this.mapper.apply(o1), this.mapper.apply(o2));
+        }
+    }
+
+    /**
      * Implementation of reverse comparator
      *
      * @since Jul 2, 2016
@@ -390,6 +447,37 @@ public class Comparators {
         @Override
         public int compare(final T o1, final T o2) {
             return Comparators.compareReverse(o1, o2);
+        }
+    }
+
+    /**
+     * Implementation of reverse comparator
+     *
+     * @since Jan 20, 2018
+     * @author Gilles
+     *
+     * @param <X>
+     *            the compared object type
+     * @param <T>
+     *            The comparable type
+     */
+    private static class ComparatorReverseMapperImpl<X, T extends Comparable<T>> implements Comparator<X> {
+        private final Function<X, T> mapper;
+
+        /**
+         * 
+         * Constructor
+         *
+         * @param mapper
+         *            the function use to map object into comparable
+         */
+        public ComparatorReverseMapperImpl(final Function<X, T> mapper) {
+            this.mapper = Objects.requireNonNull(mapper, ERROR_MAPPER);
+        }
+
+        @Override
+        public int compare(final X o1, final X o2) {
+            return Comparators.compareReverse(this.mapper.apply(o1), this.mapper.apply(o2));
         }
     }
 
@@ -411,22 +499,64 @@ public class Comparators {
          * Constructor
          *
          */
-        public BiComparator() {
+        private BiComparator() {
             this.asc = new ComparatorImpl<>();
             this.desc = new ComparatorReverseImpl<>();
         }
 
         /**
-         * @return the asc
+         * @return the ascendant comparator
          */
         public Comparator<T> asc() {
             return this.asc;
         }
 
         /**
-         * @return the desc
+         * @return the descendant comparator
          */
         public Comparator<T> desc() {
+            return this.desc;
+        }
+    }
+
+    /**
+     * Class to create bi-directional comparators
+     *
+     * @since Jan 20, 2018
+     * @author Gilles
+     *
+     * @param <X>
+     *            the compared object type
+     * @param <T>
+     *            The comparable type
+     */
+    public static class BiComparatorMapper<X, T extends Comparable<T>> {
+        private final Comparator<X> asc;
+        private final Comparator<X> desc;
+
+        /**
+         * 
+         * Constructor
+         *
+         * @param mapper
+         *            the function use to map object into comparable
+         */
+        private BiComparatorMapper(final Function<X, T> mapper) {
+            this.asc = new ComparatorMapperImpl<>(mapper);
+            this.desc = new ComparatorReverseMapperImpl<>(mapper);
+        }
+
+        /**
+         * @return the ascendant comparator
+         */
+        public Comparator<X> asc() {
+            return this.asc;
+        }
+
+        /**
+         * @return the descendant comparator
+         */
+        public Comparator<X> desc() {
             return this.desc;
         }
     }

@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import fr.landel.utils.commons.Comparators.BiComparator;
+import fr.landel.utils.commons.Comparators.BiComparatorMapper;
 import fr.landel.utils.commons.tuple.Single;
 
 /**
@@ -417,7 +418,7 @@ public class ComparatorsTest extends AbstractTest {
 
         assertEquals("Group[content=test,digits=false,number=-1,snapshot=false]", group.toString());
         assertEquals("test".hashCode(), group.hashCode());
-        assertFalse(group.equals(null));
+        assertFalse(group.equals((Version.Group) null));
         assertFalse(group.equals(new Version.Group("1", true, 1, false)));
         assertTrue(group.equals(group));
     }
@@ -541,7 +542,7 @@ public class ComparatorsTest extends AbstractTest {
      */
     @Test
     public void testBiComparator() {
-        BiComparator<ComparableObject> c = new BiComparator<>();
+        BiComparator<ComparableObject> c = Comparators.createComparator();
 
         assertEquals(-1, c.asc().compare(new ComparableObject("a"), new ComparableObject("b")));
         assertEquals(1, c.desc().compare(new ComparableObject("a"), new ComparableObject("b")));
@@ -551,6 +552,25 @@ public class ComparatorsTest extends AbstractTest {
 
         assertEquals(0, c.asc().compare(new ComparableObject("a"), new ComparableObject("a")));
         assertEquals(0, c.desc().compare(new ComparableObject("a"), new ComparableObject("a")));
+
+    }
+
+    /**
+     * Check {@link BiComparatorMapper}
+     */
+    @Test
+    public void testBiComparatorMapper() {
+        BiComparatorMapper<ComparableObject, String> c = Comparators.createComparator(o -> o.text);
+
+        assertEquals(-1, c.asc().compare(new ComparableObject("a"), new ComparableObject("b")));
+        assertEquals(1, c.desc().compare(new ComparableObject("a"), new ComparableObject("b")));
+
+        assertEquals(1, c.asc().compare(new ComparableObject("b"), new ComparableObject("a")));
+        assertEquals(-1, c.desc().compare(new ComparableObject("b"), new ComparableObject("a")));
+
+        assertEquals(0, c.asc().compare(new ComparableObject("a"), new ComparableObject("a")));
+        assertEquals(0, c.desc().compare(new ComparableObject("a"), new ComparableObject("a")));
+
     }
 
     static class ComparableObject implements Comparable<ComparableObject> {
