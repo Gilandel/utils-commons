@@ -188,28 +188,28 @@ public class Version implements Comparable<Version> {
         /**
          * @return the content
          */
-        String getContent() {
+        public String getContent() {
             return this.content;
         }
 
         /**
          * @return the digit
          */
-        boolean isDigits() {
+        public boolean isDigits() {
             return this.digits;
         }
 
         /**
          * @return the number
          */
-        long getNumber() {
+        public long getNumber() {
             return this.number;
         }
 
         /**
          * @return the snapshot
          */
-        boolean isSnapshot() {
+        public boolean isSnapshot() {
             return this.snapshot;
         }
 

@@ -86,7 +86,8 @@ public final class NumberUtils extends NumberUtilsParsers {
     }
 
     /**
-     * Check if the two doubles are equal (nullsafe).
+     * Check if the two doubles are equal (nullsafe). Calculates the accuracy by
+     * checking the max decimals length of each numbers.
      * 
      * @param num1
      *            The first double
@@ -123,7 +124,30 @@ public final class NumberUtils extends NumberUtilsParsers {
     }
 
     /**
-     * Check if the two floats are equal (nullsafe).
+     * Check if the two doubles are equal (nullsafe).
+     * 
+     * @param num1
+     *            The first double
+     * @param num2
+     *            The second double
+     * @param delta
+     *            The max delta between the two numbers
+     * @return true if equals
+     */
+    public static boolean isEqual(final Double num1, final Double num2, final Double delta) {
+        if (num1 != null && num2 != null) {
+            if (delta != null) {
+                return Math.abs(num1 - num2) < delta;
+            } else {
+                return isEqual(num1, num2);
+            }
+        }
+        return num1 == null && num2 == null;
+    }
+
+    /**
+     * Check if the two floats are equal (nullsafe). Calculates the accuracy by
+     * checking the max decimals length each numbers.
      * 
      * @param num1
      *            The first float
@@ -152,6 +176,28 @@ public final class NumberUtils extends NumberUtilsParsers {
             if (accuracy != null) {
                 float maxGap = (float) (ONE / Math.pow(TEN, accuracy));
                 return Math.abs(num1 - num2) < maxGap;
+            } else {
+                return isEqual(num1, num2);
+            }
+        }
+        return num1 == null && num2 == null;
+    }
+
+    /**
+     * Check if the two floats are equal (nullsafe).
+     * 
+     * @param num1
+     *            The first float
+     * @param num2
+     *            The second float
+     * @param delta
+     *            The max delta between the two numbers
+     * @return true if equals
+     */
+    public static boolean isEqual(final Float num1, final Float num2, final Float delta) {
+        if (num1 != null && num2 != null) {
+            if (delta != null) {
+                return Math.abs(num1 - num2) < delta;
             } else {
                 return isEqual(num1, num2);
             }
