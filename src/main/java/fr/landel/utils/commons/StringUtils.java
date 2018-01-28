@@ -752,9 +752,12 @@ public final class StringUtils extends StringFormatUtils {
      *            the input char sequence
      * @param arguments
      *            the arguments to inject
+     * @param <T>
+     *            the arguments type
      * @return the result with replacements
      */
-    public static String inject(final CharSequence charSequence, final Object... arguments) {
+    @SafeVarargs
+    public static <T> String inject(final CharSequence charSequence, final T... arguments) {
         if (charSequence == null) {
             throw new IllegalArgumentException("The input char sequence cannot be null");
         } else if (isEmpty(charSequence) || arguments == null || arguments.length == 0) {
