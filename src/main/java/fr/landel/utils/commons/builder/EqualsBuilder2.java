@@ -135,7 +135,7 @@ public class EqualsBuilder2<T> implements Builder<Boolean> {
      *            the super equals state
      * @return the current builder
      */
-    public <V> EqualsBuilder2<T> appendSuper(final boolean superEquals) {
+    public EqualsBuilder2<T> appendSuper(final boolean superEquals) {
         if (this.isEqual) {
             this.builder.appendSuper(superEquals);
         }
@@ -149,7 +149,7 @@ public class EqualsBuilder2<T> implements Builder<Boolean> {
      *            the super predicate
      * @return the current builder
      */
-    public <V> EqualsBuilder2<T> appendSuper(final Predicate<T> predicate) {
+    public EqualsBuilder2<T> appendSuper(final Predicate<T> predicate) {
         if (this.isEqual) {
             this.builder.appendSuper(predicate.test(this.casted));
         }

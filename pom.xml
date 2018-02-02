@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>fr.landel</groupId>
 		<artifactId>utils</artifactId>
-		<version>1.0.15</version>
+		<version>1.0.16</version>
 	</parent>
 
 	<groupId>fr.landel.utils</groupId>
@@ -35,7 +35,7 @@
 		<gpg.home>${env.HOME}/build/Gilandel/${project.artifactId}/distribution</gpg.home>
 
 		<!-- Java 9 / Javadoc -->
-		<javadoc.additionalparam>--add-modules java.xml.bind</javadoc.additionalparam>
+		<javadoc.additionaloption>--add-modules java.xml.bind</javadoc.additionaloption>
 
 		<!-- Dependencies version -->
 		<utils-microbenchmark.version>1.0.5</utils-microbenchmark.version>
@@ -108,7 +108,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<configuration>
-							<additionalparam>${javadoc.additionalparam}</additionalparam>
+							<additionalOptions>${javadoc.additionaloption}</additionalOptions>
 						</configuration>
 					</plugin>
 				</plugins>
