@@ -78,6 +78,13 @@ public final class StringUtils extends StringFormatUtils {
     private static final int BUFFER_CAPACITY = 64;
     private static final char[] NULL_CHARS = {'n', 'u', 'l', 'l'};
 
+    private static final Function<String, String> PARAM_NULL = p -> "Parameter '".concat(p).concat("' cannot be null");
+
+    private static final String ERROR_SEQUENCE = PARAM_NULL.apply("sequence");
+    private static final String ERROR_OBJECTS = PARAM_NULL.apply("objects");
+    private static final String ERROR_PREFIX = PARAM_NULL.apply("prefix");
+    private static final String ERROR_SUFFIX = PARAM_NULL.apply("suffix");
+
     /**
      * Hidden constructor.
      */
@@ -333,14 +340,15 @@ public final class StringUtils extends StringFormatUtils {
     }
 
     /**
-     * Converts the char sequence in char array
+     * Converts the char sequence in char array. For {@link String}, you should
+     * use {@link String#toCharArray()}.
      * 
      * @param sequence
      *            the input sequence
      * @return the array
      */
     public static char[] toChars(final CharSequence sequence) {
-        Objects.requireNonNull(sequence);
+        Objects.requireNonNull(sequence, ERROR_SEQUENCE);
 
         final int length = sequence.length();
         char[] chars = new char[length];
@@ -1111,7 +1119,7 @@ public final class StringUtils extends StringFormatUtils {
      *             if {@code objects} array is {@code null}
      */
     public static String concat(final Object... objects) {
-        Objects.requireNonNull(objects, "objects array cannot be null");
+        Objects.requireNonNull(objects, ERROR_OBJECTS);
 
         if (objects.length > 0) {
             char[] buf = new char[BUFFER_CAPACITY];
@@ -1136,5 +1144,51 @@ public final class StringUtils extends StringFormatUtils {
         } else {
             return StringUtils.EMPTY;
         }
+    }
+
+    /**
+     * Try to prefix the sequence
+     * 
+     * @param sequence
+     *            the sequence to prefix
+     * @param prefix
+     *            the prefix
+     * @return the prefixed sequence
+     * @throws NullPointerException
+     *             if {@code sequence} or {@code prefix} are {@code null}
+     */
+    public static String prefixIfNotStartsWith(final CharSequence sequence, final CharSequence prefix) {
+        Objects.requireNonNull(sequence, ERROR_SEQUENCE);
+        Objects.requireNonNull(prefix, ERROR_PREFIX);
+
+        int lSequence = sequence.length();
+        int lPrefix = prefix.length();
+        if (lPrefix == 0 || (lSequence >= lPrefix && sequence.subSequence(0, lPrefix).equals(prefix))) {
+            return sequence.toString();
+        }
+        return prefix.toString().concat(sequence.toString());
+    }
+
+    /**
+     * Try to suffix the sequence
+     * 
+     * @param sequence
+     *            the sequence to suffix
+     * @param suffix
+     *            the suffix
+     * @return the suffixed sequence
+     * @throws NullPointerException
+     *             if {@code sequence} or {@code suffix} are {@code null}
+     */
+    public static String suffixIfNotEndsWith(final CharSequence sequence, final CharSequence suffix) {
+        Objects.requireNonNull(sequence, ERROR_SEQUENCE);
+        Objects.requireNonNull(suffix, ERROR_SUFFIX);
+
+        int lSequence = sequence.length();
+        int lSuffix = suffix.length();
+        if (lSuffix == 0 || (lSequence >= lSuffix && sequence.subSequence(lSequence - lSuffix, lSequence).equals(suffix))) {
+            return sequence.toString();
+        }
+        return sequence.toString().concat(suffix.toString());
     }
 }

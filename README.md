@@ -347,6 +347,9 @@ LOGGER.info("My new color: {}", colorContainer.get());
 ```
 
 ## Changelog
+### 1.0.19 - future
+- New: add prefix/suffix methods
+
 ### 1.0.18 - 2018-01-25
 - New: add functional interfaces to create predicates that return false if an exception is thrown
 - New: add Comparators with mapper
