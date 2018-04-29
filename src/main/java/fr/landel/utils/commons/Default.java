@@ -68,6 +68,11 @@ public final class Default<T> {
     private final T defaultValue;
 
     /**
+     * The default value supplier, only used if value is null.
+     */
+    private final Supplier<T> defaultValueSupplier;
+
+    /**
      * Constructs an empty instance.
      *
      * @param defaultValue
@@ -75,6 +80,16 @@ public final class Default<T> {
      */
     private Default(final T defaultValue) {
         this(null, defaultValue);
+    }
+
+    /**
+     * Constructs an empty instance.
+     *
+     * @param defaultValueSupplier
+     *            the default value supplier
+     */
+    private Default(final Supplier<T> defaultValueSupplier) {
+        this(null, defaultValueSupplier);
     }
 
     /**
@@ -88,6 +103,21 @@ public final class Default<T> {
     private Default(final T value, final T defaultValue) {
         this.value = value;
         this.defaultValue = Objects.requireNonNull(defaultValue);
+        this.defaultValueSupplier = null;
+    }
+
+    /**
+     * Constructs an instance with the value present.
+     *
+     * @param value
+     *            the non-null value to be present
+     * @param defaultValueSupplier
+     *            the default value supplier (cannot be {@code null})
+     */
+    private Default(final T value, final Supplier<T> defaultValueSupplier) {
+        this.value = value;
+        this.defaultValue = null;
+        this.defaultValueSupplier = Objects.requireNonNull(defaultValueSupplier);
     }
 
     /**
@@ -102,6 +132,20 @@ public final class Default<T> {
      */
     public static <T> Default<T> empty(final T defaultValue) {
         return new Default<>(defaultValue);
+    }
+
+    /**
+     * Returns an empty {@link Default} instance. No value is present for this
+     * {@link Default}.
+     *
+     * @param defaultValueSupplier
+     *            the default value supplier
+     * @param <T>
+     *            Type of the non-existent value
+     * @return an empty {@code Optional}
+     */
+    public static <T> Default<T> empty(final Supplier<T> defaultValueSupplier) {
+        return new Default<>(defaultValueSupplier);
     }
 
     /**
@@ -138,6 +182,23 @@ public final class Default<T> {
     }
 
     /**
+     * Returns an {@link Default} describing the specified value, if non-null,
+     * otherwise returns an empty {@link Default}.
+     *
+     * @param value
+     *            the possibly-null value to describe
+     * @param defaultValueSupplier
+     *            the default value supplier
+     * @param <T>
+     *            the class of the value
+     * @return an {@link Default} with a present value if the specified value is
+     *         non-null, otherwise an empty {@link Default}
+     */
+    public static <T> Default<T> ofNullable(final T value, final Supplier<T> defaultValueSupplier) {
+        return new Default<>(value, defaultValueSupplier);
+    }
+
+    /**
      * If a value is present in this {@link Default}, returns the value,
      * otherwise returns the default value.
      *
@@ -146,11 +207,11 @@ public final class Default<T> {
      * @see Default#isPresent()
      */
     public T get() {
-        return ObjectUtils.defaultIfNull(this.value, defaultValue);
+        return ObjectUtils.defaultIfNull(this.value, this.getDefaultValue());
     }
 
     /**
-     * Return the value
+     * Returns the value
      * 
      * @return the value (may be {@code null})
      */
@@ -159,12 +220,21 @@ public final class Default<T> {
     }
 
     /**
-     * Return the default value
+     * Returns the default value
      * 
-     * @return the default value
+     * @return the default value (may be {@code null})
      */
     public T getDefault() {
         return this.defaultValue;
+    }
+
+    /**
+     * Returns the default value supplier
+     * 
+     * @return the default value (may be {@code null})
+     */
+    public Supplier<T> getDefaultSupplier() {
+        return this.defaultValueSupplier;
     }
 
     /**
@@ -203,7 +273,7 @@ public final class Default<T> {
     public void ifAbsent(final Consumer<? super T> consumer) {
         Objects.requireNonNull(consumer);
         if (this.value == null)
-            consumer.accept(this.defaultValue);
+            consumer.accept(this.getDefaultValue());
     }
 
     /**
@@ -225,7 +295,7 @@ public final class Default<T> {
         if (!isPresent())
             return this;
         else
-            return predicate.test(this.value) ? this : empty(this.defaultValue);
+            return predicate.test(this.value) ? this : empty(this.getDefaultValue());
     }
 
     /**
@@ -248,9 +318,9 @@ public final class Default<T> {
     public <U> Default<U> map(final Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper);
         if (!isPresent())
-            return empty(mapper.apply(this.defaultValue));
+            return empty(mapper.apply(this.getDefaultValue()));
         else {
-            return Default.ofNullable(mapper.apply(this.value), mapper.apply(this.defaultValue));
+            return Default.ofNullable(mapper.apply(this.value), mapper.apply(this.getDefaultValue()));
         }
     }
 
@@ -276,7 +346,7 @@ public final class Default<T> {
     public <U> Default<U> flatMap(final Function<? super T, Default<U>> mapper) {
         Objects.requireNonNull(mapper);
         if (!isPresent())
-            return Objects.requireNonNull(mapper.apply(this.defaultValue));
+            return Objects.requireNonNull(mapper.apply(this.getDefaultValue()));
         else {
             return Objects.requireNonNull(mapper.apply(this.value));
         }
@@ -364,7 +434,8 @@ public final class Default<T> {
         }
 
         Default<?> other = (Default<?>) obj;
-        return new EqualsBuilder2<>(this, other).append(o -> o.value).append(o -> o.defaultValue).build();
+        return new EqualsBuilder2<>(this, other).append(o -> o.value).append(o -> o.defaultValue).append(o -> o.defaultValueSupplier)
+                .build();
     }
 
     /**
@@ -376,7 +447,7 @@ public final class Default<T> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(this.value, this.defaultValue);
+        return Objects.hash(this.value, this.defaultValue, this.defaultValueSupplier);
     }
 
     /**
@@ -395,5 +466,24 @@ public final class Default<T> {
     @Override
     public String toString() {
         return StringUtils.inject("Default: {} otherwise {}", this.value, this.defaultValue);
+    }
+
+    /**
+     * Returns the default value, starts with the default value and if
+     * {@code null}, calls the default value supplier.
+     * 
+     * @return the default value
+     * @throws NullPointerException
+     *             if {@code defaultValueSupplier} or its returned value are
+     *             {@code null}
+     */
+    private T getDefaultValue() {
+        if (this.defaultValue != null) {
+            return this.defaultValue;
+        } else {
+            return Objects.requireNonNull(
+                    Objects.requireNonNull(this.defaultValueSupplier, "The parameter defaultValueSupplier cannot be null").get(),
+                    "The default value provided by defaultValueSupplier cannot be null");
+        }
     }
 }
