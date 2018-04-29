@@ -345,20 +345,16 @@ public class StringUtilsTest extends AbstractTest {
     @Test
     public void testToChars() {
         final String string = "I'll go to the beach this afternoon.";
-        final char[] expectedChars = new char[] {'I', '\'', 'l', 'l', ' ', 'g', 'o', ' ', 't', 'o', ' ', 't', 'h', 'e', ' ', 'b', 'e', 'a',
-                'c', 'h', ' ', 't', 'h', 'i', 's', ' ', 'a', 'f', 't', 'e', 'r', 'n', 'o', 'o', 'n', '.'};
+        final char[] expectedChars = string.toCharArray();
+
         final char[] chars = StringUtils.toChars(string);
         assertEquals(expectedChars.length, chars.length);
+
         for (int i = 0; i < chars.length; i++) {
             assertEquals(expectedChars[i], chars[i]);
         }
 
-        try {
-            StringUtils.toChars(null);
-            fail();
-        } catch (NullPointerException e) {
-            assertNotNull(e);
-        }
+        assertException(() -> StringUtils.toChars(null), NullPointerException.class, "Parameter 'sequence' cannot be null");
     }
 
     /**
@@ -788,6 +784,37 @@ public class StringUtilsTest extends AbstractTest {
 
         assertEquals(lettersNumbers + lettersNumbers, StringUtils.concat(lettersNumbers, lettersNumbers));
 
-        assertException(() -> StringUtils.concat((Object[]) null), NullPointerException.class, "objects array cannot be null");
+        assertException(() -> StringUtils.concat((Object[]) null), NullPointerException.class, "Parameter 'objects' cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#prefixIfNotStartsWith(CharSequence, CharSequence)}
+     */
+    @Test
+    public void testPrefixIfNotStartsWith() {
+        assertEquals("test", StringUtils.prefixIfNotStartsWith("test", ""));
+        assertEquals("", StringUtils.prefixIfNotStartsWith("", ""));
+        assertEquals("/", StringUtils.prefixIfNotStartsWith("", "/"));
+        assertEquals("/test", StringUtils.prefixIfNotStartsWith("test", "/"));
+
+        assertException(() -> StringUtils.prefixIfNotStartsWith(null, ""), NullPointerException.class,
+                "Parameter 'sequence' cannot be null");
+        assertException(() -> StringUtils.prefixIfNotStartsWith("", null), NullPointerException.class, "Parameter 'prefix' cannot be null");
+    }
+
+    /**
+     * Test method for
+     * {@link StringUtils#suffixIfNotEndsWith(CharSequence, CharSequence)}
+     */
+    @Test
+    public void testSuffixIfNotEndsWith() {
+        assertEquals("test", StringUtils.suffixIfNotEndsWith("test", ""));
+        assertEquals("", StringUtils.suffixIfNotEndsWith("", ""));
+        assertEquals("/", StringUtils.suffixIfNotEndsWith("", "/"));
+        assertEquals("test/", StringUtils.suffixIfNotEndsWith("test", "/"));
+
+        assertException(() -> StringUtils.suffixIfNotEndsWith(null, ""), NullPointerException.class, "Parameter 'sequence' cannot be null");
+        assertException(() -> StringUtils.suffixIfNotEndsWith("", null), NullPointerException.class, "Parameter 'suffix' cannot be null");
     }
 }

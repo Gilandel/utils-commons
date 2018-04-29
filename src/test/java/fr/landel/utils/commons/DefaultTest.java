@@ -49,10 +49,10 @@ public class DefaultTest {
      */
     @Test
     public void testHashCode() {
-        final int hc = 31 * 31;
+        final int hc = 31 * 31 * 31;
         assertEquals(hc, Default.empty(0).hashCode());
         assertEquals(hc, Default.ofNullable(null, 0).hashCode());
-        assertEquals(Objects.hash("test", "test"), Default.of("test").hashCode());
+        assertEquals(Objects.hash("test", "test", null), Default.of("test").hashCode());
     }
 
     /**
@@ -95,6 +95,11 @@ public class DefaultTest {
         assertTrue(Default.ofNullable(5, 2).isPresent());
         assertEquals(2, (int) Default.ofNullable(null, 2).get());
         assertFalse(Default.ofNullable(null, 2).isPresent());
+
+        assertEquals(5, (int) Default.ofNullable(5, () -> 2).get());
+        assertTrue(Default.ofNullable(5, () -> 2).isPresent());
+        assertEquals(2, (int) Default.ofNullable(null, () -> 2).get());
+        assertFalse(Default.ofNullable(null, () -> 2).isPresent());
     }
 
     /**
@@ -105,7 +110,10 @@ public class DefaultTest {
         assertEquals(5, (int) Default.of(5).get());
         assertEquals(5, (int) Default.ofNullable(5, 2).get());
         assertEquals(2, (int) Default.ofNullable(null, 2).get());
+        assertEquals(5, (int) Default.ofNullable(5, () -> 2).get());
+        assertEquals(2, (int) Default.ofNullable(null, () -> 2).get());
         assertEquals(2, (int) Default.empty(2).get());
+        assertEquals(2, (int) Default.empty(() -> 2).get());
     }
 
     /**
@@ -114,9 +122,12 @@ public class DefaultTest {
     @Test
     public void testGetValue() {
         assertEquals(5, (int) Default.of(5).getValue());
-        assertEquals(5, (int) Default.ofNullable(5, 2).getValue());
+        assertEquals(5, (int) Default.ofNullable(5, () -> 2).getValue());
+        assertNull(Default.ofNullable(null, 2).getValue());
+        assertEquals(5, (int) Default.ofNullable(5, () -> 2).getValue());
         assertNull(Default.ofNullable(null, 2).getValue());
         assertNull(Default.empty(2).getValue());
+        assertNull(Default.empty(() -> 2).getValue());
     }
 
     /**
@@ -127,7 +138,23 @@ public class DefaultTest {
         assertEquals(5, (int) Default.of(5).getDefault());
         assertEquals(2, (int) Default.ofNullable(5, 2).getDefault());
         assertEquals(2, (int) Default.ofNullable(null, 2).getDefault());
+        assertNull(Default.ofNullable(5, () -> 2).getDefault());
+        assertNull(Default.ofNullable(null, () -> 2).getDefault());
         assertEquals(2, (int) Default.empty(2).getDefault());
+        assertNull(Default.empty(() -> 2).getDefault());
+    }
+
+    /**
+     * Test method for {@link Default#getDefaultSupplier()}.
+     */
+    @Test
+    public void testGetDefaultSupplier() {
+        assertNull(Default.of(5).getDefaultSupplier());
+        assertNull(Default.ofNullable(5, 2).getDefaultSupplier());
+        assertNull(Default.ofNullable(null, 2).getDefaultSupplier());
+        assertEquals(2, (int) Default.ofNullable(5, () -> 2).getDefaultSupplier().get());
+        assertEquals(2, (int) Default.ofNullable(null, () -> 2).getDefaultSupplier().get());
+        assertNull(Default.empty(2).getDefaultSupplier());
     }
 
     /**

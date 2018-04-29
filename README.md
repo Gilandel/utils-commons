@@ -2,7 +2,6 @@
 
 [![Build Status](https://api.travis-ci.org/Gilandel/utils-commons.svg?branch=master)](https://travis-ci.org/Gilandel/utils-commons/builds)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/8f3069e16a174fecaeeaff3cd742414b)](https://www.codacy.com/app/gilles/utils-commons)
-[![Dependency Status](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58b29b6f7b9e15003a17e544)
 [![codecov.io](https://codecov.io/github/Gilandel/utils-commons/coverage.svg?branch=master)](https://codecov.io/github/Gilandel/utils-commons?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-commons/badge.svg)](https://maven-badges.herokuapp.com/maven-central/fr.landel.utils/utils-commons)
 [![Javadocs](http://www.javadoc.io/badge/fr.landel.utils/utils-commons.svg)](http://www.javadoc.io/doc/fr.landel.utils/utils-commons)
@@ -347,6 +346,10 @@ LOGGER.info("My new color: {}", colorContainer.get());
 ```
 
 ## Changelog
+### 1.0.19 - 2018-04-29
+- New: add prefix/suffix methods
+- New: improve Default add default value supplier
+
 ### 1.0.18 - 2018-01-25
 - New: add functional interfaces to create predicates that return false if an exception is thrown
 - New: add Comparators with mapper
