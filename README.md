@@ -23,7 +23,7 @@ Work progress:
 <dependency>
 	<groupId>fr.landel.utils</groupId>
 	<artifactId>utils-commons</artifactId>
-	<version>1.0.18</version>
+	<version>1.0.20</version>
 </dependency>
 ```
 
@@ -346,6 +346,10 @@ LOGGER.info("My new color: {}", colorContainer.get());
 ```
 
 ## Changelog
+### 1.0.20 - 2018-07-02
+- Misc: update dependencies
+- Misc: remove classpath definition from JAR (Wildfly warning when some dependencies are in multiple versions and defined provided)
+
 ### 1.0.19 - 2018-04-29
 - New: add prefix/suffix methods
 - New: improve Default add default value supplier
