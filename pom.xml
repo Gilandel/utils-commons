@@ -38,7 +38,7 @@
 		<javadoc.additionaloption>--add-modules java.xml.bind</javadoc.additionaloption>
 
 		<!-- Dependencies version -->
-		<utils-microbenchmark.version>1.0.6</utils-microbenchmark.version>
+		<utils-microbenchmark.version>1.0.7</utils-microbenchmark.version>
 	</properties>
 
 	<build>
