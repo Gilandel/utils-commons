@@ -46,7 +46,7 @@ public class ToStringBuilderPerf extends AbstractMicrobenchmark {
 
     @Override
     protected double getExpectedMinNbOpsPerSeconds() {
-        return 150_000d;
+        return 100_000d;
     }
 
     /**
