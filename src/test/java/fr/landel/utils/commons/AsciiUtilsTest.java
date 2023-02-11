@@ -19,13 +19,13 @@
  */
 package fr.landel.utils.commons;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.Function;
 import java.util.function.IntPredicate;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Check {@link AsciiUtils}

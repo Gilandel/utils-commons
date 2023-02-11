@@ -56,7 +56,7 @@ public final class ImmutableGeneric<T> extends AbstractImmutableGeneric<T> {
      *
      * @param objects
      *            the objects, may be null but not the whole array, ex:
-     *            <tt>(Object[]) null</tt>
+     *            <pre>(Object[]) null</pre>
      */
     @SafeVarargs
     public ImmutableGeneric(final T... objects) {

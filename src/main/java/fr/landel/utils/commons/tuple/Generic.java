@@ -73,8 +73,8 @@ public abstract class Generic<T> implements Comparable<Generic<T>>, Serializable
      *            index of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException
-     *             if the index is out of range <tt>(index &lt; 0 || index &gt;=
-     *             size())</tt>
+     *             if the index is out of range <pre>(index &lt; 0 || index &gt;=
+     *             size())</pre>
      */
     public abstract T get(int index);
 

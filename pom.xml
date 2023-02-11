@@ -1,10 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>fr.landel</groupId>
 		<artifactId>utils</artifactId>
-		<version>1.0.18</version>
+		<version>1.0.19-SNAPSHOT</version>
 	</parent>
 
 	<groupId>fr.landel.utils</groupId>
@@ -34,9 +35,6 @@
 	<properties>
 		<gpg.home>${env.HOME}/build/Gilandel/${project.artifactId}/distribution</gpg.home>
 
-		<!-- Java 9 / Javadoc -->
-		<javadoc.additionaloption>--add-modules java.xml.bind</javadoc.additionaloption>
-
 		<!-- Dependencies version -->
 		<utils-microbenchmark.version>1.0.7</utils-microbenchmark.version>
 	</properties>
@@ -59,10 +57,8 @@
 							</sources>
 						</configuration>
 					</execution>
-					<!-- <execution> <id>add-perf-resources</id> <phase>generate-sources</phase> 
-						<goals> <goal>add-test-resource</goal> </goals> <configuration> <resources> 
-						<resource> <directory>src/perf/resources</directory> </resource> </resources> 
-						</configuration> </execution> -->
+					<!-- <execution> <id>add-perf-resources</id> <phase>generate-sources</phase> <goals> <goal>add-test-resource</goal> </goals> <configuration> <resources> 
+						<resource> <directory>src/perf/resources</directory> </resource> </resources> </configuration> </execution> -->
 				</executions>
 			</plugin>
 
@@ -114,10 +110,10 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>proguard</id>
-			
+
 			<build>
 				<plugins>
 					<plugin>
@@ -140,10 +136,10 @@
 										<option>-optimizationpasses 3</option>
 										<option>-overloadaggressively</option>
 										<option>-allowaccessmodification</option>
-		                				<option>-ignorewarnings</option>
-		                				<!-- <option>-dontwarn</option> -->
-		                				<option>-keep public class * { public *; }</option>
-		                				<option>-keepattributes Signature</option>
+										<option>-ignorewarnings</option>
+										<!-- <option>-dontwarn</option> -->
+										<option>-keep public class * { public *; }</option>
+										<option>-keepattributes Signature</option>
 									</options>
 									<!-- <proguardInclude>${project.basedir}/proguard.conf</proguardInclude> -->
 								</configuration>
@@ -156,6 +152,11 @@
 	</profiles>
 
 	<dependencies>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+		</dependency>
+
 		<!-- Commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -174,14 +175,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-		</dependency>
-
-		<!-- Performance testing -->
-		<dependency>
-			<groupId>fr.landel.utils</groupId>
-			<artifactId>utils-microbenchmark</artifactId>
-			<version>${utils-microbenchmark.version}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

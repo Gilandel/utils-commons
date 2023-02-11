@@ -19,18 +19,13 @@
  */
 package fr.landel.utils.commons.builder;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
 import java.util.Objects;
 
-import org.junit.Test;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.runner.RunnerException;
 
-import fr.landel.utils.microbenchmark.AbstractMicrobenchmark;
 import samples.builder.Entity1;
 import samples.builder.Entity2;
 import samples.builder.Entity3;
@@ -44,13 +39,14 @@ import samples.builder.EqualsProperty;
  * @author Gilles
  *
  */
+@Fork(1)
 @State(Scope.Benchmark)
-public class EqualsBuilderPerf extends AbstractMicrobenchmark {
+public class EqualsBuilderPerf {
 
-    @Override
-    protected double getExpectedMinNbOpsPerSeconds() {
-        return 500_000d;
-    }
+//    @Override
+//    protected double getExpectedMinNbOpsPerSeconds() {
+//        return 500_000d;
+//    }
 
     /**
      * Test method for {@link EqualsProperty}.
@@ -166,10 +162,5 @@ public class EqualsBuilderPerf extends AbstractMicrobenchmark {
         e2.setValue(2);
 
         Objects.equals(e1, e2);
-    }
-
-    @Test
-    public void testPerf() throws IOException, RunnerException {
-        assertNotNull(super.run());
     }
 }
